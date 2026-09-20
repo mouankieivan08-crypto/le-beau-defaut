@@ -22,9 +22,12 @@ export function discountPct(original: number, price: number): number {
   return Math.round(((original - price) / original) * 100);
 }
 
+/** Fuseau de référence : les serveurs tournent en UTC, nos clients vivent à Brazzaville (UTC+1). */
+export const TIME_ZONE = "Africa/Brazzaville";
+
 export function dateFR(d: Date | string | null | undefined): string {
   if (!d) return "—";
-  return new Date(d).toLocaleDateString("fr-FR", { day: "2-digit", month: "short", year: "numeric" });
+  return new Date(d).toLocaleDateString("fr-FR", { day: "2-digit", month: "short", year: "numeric", timeZone: TIME_ZONE });
 }
 
 export function dateTimeFR(d: Date | string | null | undefined): string {
@@ -35,6 +38,7 @@ export function dateTimeFR(d: Date | string | null | undefined): string {
     year: "numeric",
     hour: "2-digit",
     minute: "2-digit",
+    timeZone: TIME_ZONE,
   });
 }
 

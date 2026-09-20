@@ -35,9 +35,9 @@ export function weeklySeries(rows: { date: Date; amount: number }[], weeks = 12)
     }
   }
   return buckets.map((b) => ({
-    label: b.start.toLocaleDateString("fr-FR", { day: "numeric", month: "short" }),
+    label: b.start.toLocaleDateString("fr-FR", { day: "numeric", month: "short", timeZone: "Africa/Brazzaville" }),
     value: b.value,
-    detail: `Semaine du ${b.start.toLocaleDateString("fr-FR", { day: "numeric", month: "long" })} · ${b.count} commande${b.count > 1 ? "s" : ""}`,
+    detail: `Semaine du ${b.start.toLocaleDateString("fr-FR", { day: "numeric", month: "long", timeZone: "Africa/Brazzaville" })} · ${b.count} commande${b.count > 1 ? "s" : ""}`,
   }));
 }
 

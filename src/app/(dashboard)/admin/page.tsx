@@ -105,7 +105,7 @@ export default async function AdminDashboard() {
     <>
       <PageHeader
         title={`Bonjour ${admin.firstName}`}
-        subtitle={`Activité des 30 derniers jours · ${new Date().toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" })}`}
+        subtitle={`Activité des 30 derniers jours · ${new Date().toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", timeZone: "Africa/Brazzaville" })}`}
         action={
           <div className="flex gap-2">
             <Link href="/admin/annonces?statut=EN_ATTENTE" className="btn btn-gold btn-sm">

@@ -81,12 +81,14 @@ export function LoginForm({ next, team = false }: { next?: string; team?: boolea
           {pending ? "Connexion…" : "Se connecter"}
         </button>
 
+        {!team && (
         <p className="text-sm text-center text-[var(--color-ink-muted)]">
           Pas encore de compte ?{" "}
           <Link href="/inscription" className="text-[var(--color-gold-dark)] font-medium underline underline-offset-2">
             Créer un compte
           </Link>
         </p>
+        )}
       </form>
 
       {/* Accès rapide aux comptes de démonstration (mode vitrine uniquement) */}

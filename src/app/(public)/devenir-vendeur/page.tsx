@@ -24,7 +24,7 @@ export default async function BecomeSellerPage() {
   if (user.seller) redirect("/vendeur");
 
   return (
-    <div className="container-lbd py-8 md:py-12 max-w-3xl">
+    <div className="mx-auto max-w-3xl px-4 py-8 md:py-12">
       <PageHeader
         title="Ouvrir une boutique"
         subtitle="Votre compte reste le même : vous continuez à acheter, et l'espace vente s'ajoute à côté."

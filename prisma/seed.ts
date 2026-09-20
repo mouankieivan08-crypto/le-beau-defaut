@@ -20,6 +20,8 @@ const daysAgo = (d: number, h = 10) => {
   if (date.getTime() > Date.now()) date.setTime(Date.now() - (1 + ((d * 13 + h) % 5)) * 60 * 60 * 1000);
   return date;
 };
+/** Une étape ne peut pas avoir lieu après « maintenant » : on la ramène à l'instant présent. */
+const notFuture = (ms: number) => new Date(Math.min(ms, Date.now() - 60 * 1000));
 const pct = (orig: number, price: number) => Math.round(((orig - price) / orig) * 100);
 const slugify = (s: string) =>
   s
@@ -1270,6 +1272,8 @@ async function main() {
   // La cliente de démo a toujours au moins une commande en cours
   plans[plans.length - 5].client = 0;
   plans[19].client = 0;
+  // …et une commande livrée dont l argent attend sa confirmation (bouton « J ai bien reçu »).
+  plans[18].client = 0;
 
   const flow = ["EN_ATTENTE_PAIEMENT", "PAYEE", "CONFIRMEE", "EN_PREPARATION", "EN_LIVRAISON", "LIVREE"];
   const flowLabels: Record<string, string> = {
@@ -1367,10 +1371,10 @@ async function main() {
         landmark: client.landmark,
         notes: orderCount % 4 === 0 ? "Appeler 30 minutes avant d'arriver, s'il vous plaît." : null,
         cancelReason: plan.status === "ANNULEE" ? "Paiement Mobile Money non finalisé sous 48 h" : null,
-        paidAt: paid ? new Date(createdAt.getTime() + 20 * 60 * 1000) : null,
-        deliveredAt: plan.status === "LIVREE" ? new Date(createdAt.getTime() + 2 * DAY) : null,
+        paidAt: paid ? notFuture(createdAt.getTime() + 20 * 60 * 1000) : null,
+        deliveredAt: plan.status === "LIVREE" ? notFuture(createdAt.getTime() + 2 * DAY) : null,
         createdAt,
-        updatedAt: new Date(createdAt.getTime() + (plan.status === "LIVREE" ? 2 : 0.3) * DAY),
+        updatedAt: notFuture(createdAt.getTime() + (plan.status === "LIVREE" ? 2 : 0.3) * DAY),
         items: {
           create: lines.map((l) => ({
             productId: l.it.id,
@@ -1396,7 +1400,7 @@ async function main() {
                 : s === "ANNULEE"
                   ? "Paiement non finalisé"
                   : null,
-            createdAt: new Date(createdAt.getTime() + idx * 0.45 * DAY),
+            createdAt: notFuture(createdAt.getTime() + idx * 0.45 * DAY - (steps.length - 1 - idx) * 60 * 1000),
             actorId: idx === 0 ? client.id : admin.id,
           })),
         },
@@ -1408,9 +1412,9 @@ async function main() {
             fee: deliveryFee,
             scheduledFor: plan.status === "CONFIRMEE" ? daysAgo(-1, 14) : null,
             pickedUpAt: ["EN_PREPARATION", "EN_LIVRAISON", "LIVREE"].includes(plan.status)
-              ? new Date(createdAt.getTime() + DAY)
+              ? notFuture(createdAt.getTime() + DAY)
               : null,
-            deliveredAt: plan.status === "LIVREE" ? new Date(createdAt.getTime() + 2 * DAY) : null,
+            deliveredAt: plan.status === "LIVREE" ? notFuture(createdAt.getTime() + 2 * DAY) : null,
             failureNote: plan.status === "ANNULEE" ? "Commande annulée avant expédition" : null,
             createdAt,
           },
