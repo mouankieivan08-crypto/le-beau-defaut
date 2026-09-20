@@ -48,9 +48,19 @@ export async function saveImage(file: File | null): Promise<string | null> {
 
   if (remoteStorageEnabled) return uploadToSupabase(name, buffer, file.type);
 
-  await mkdir(UPLOAD_DIR, { recursive: true });
-  await writeFile(join(UPLOAD_DIR, name), buffer);
-  return `/uploads/${name}`;
+  // Repli disque : valable en développement seulement. En hébergement serverless
+  // le disque est en lecture seule — on renvoie null plutôt que de casser le formulaire.
+  try {
+    await mkdir(UPLOAD_DIR, { recursive: true });
+    await writeFile(join(UPLOAD_DIR, name), buffer);
+    return `/uploads/${name}`;
+  } catch (err) {
+    console.error(
+      "Écriture de la photo impossible. Définissez SUPABASE_URL et SUPABASE_SERVICE_KEY pour stocker les photos sur Supabase.",
+      err
+    );
+    return null;
+  }
 }
 
 /** Récupère toutes les images d'un champ multiple d'un formulaire. */
