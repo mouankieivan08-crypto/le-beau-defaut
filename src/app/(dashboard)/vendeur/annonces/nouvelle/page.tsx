@@ -37,7 +37,11 @@ export default async function NewListingPage() {
         </div>
       )}
 
-      <ProductForm categories={categories} defaultCity={user.seller?.city ?? user.city ?? "Brazzaville"} />
+      <ProductForm
+        categories={categories}
+        defaultCity={user.seller?.city ?? user.city ?? "Brazzaville"}
+        isHouse={user.role === "ADMIN" || user.seller?.isHouse === true}
+      />
     </div>
   );
 }

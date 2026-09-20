@@ -80,7 +80,9 @@ export default async function EditListingPage({ params }: { params: Promise<{ id
 
       <ProductForm
         categories={categories}
+        isHouse={user.role === "ADMIN" || user.seller?.isHouse === true}
         initial={{
+          supplierName: product.supplierName,
           id: product.id,
           title: product.title,
           description: product.description,

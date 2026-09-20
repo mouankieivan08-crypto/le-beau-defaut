@@ -224,6 +224,12 @@ export async function updateProductAction(_prev: State, formData: FormData): Pro
 
   if (d.price >= d.priceOriginal) return { error: "Le prix doit rester inférieur au prix d'origine." };
 
+  // Même règle qu'à la création : le mobilier et les sacs restent réservés à la boutique maison.
+  const isHouse = user.role === "ADMIN" || user.seller?.isHouse === true;
+  if (!isHouse && saleModeForVertical(d.vertical) === "MAISON") {
+    return { error: "Le mobilier et les sacs de luxe sont vendus par Le Beau Défaut : gardez cette annonce dans le fourre-tout." };
+  }
+
   const pct = discountPct(d.priceOriginal, d.price);
   const g = gradeOf(d.defectGrade);
   if (pct < g.minDiscount) {
@@ -243,6 +249,7 @@ export async function updateProductAction(_prev: State, formData: FormData): Pro
       description: d.description,
       vertical: d.vertical,
       saleMode: saleModeForVertical(d.vertical),
+      ...(isHouse ? { supplierName: String(formData.get("supplierName") || "").trim() || null } : {}),
       categoryId: d.categoryId,
       priceOriginal: d.priceOriginal,
       price: d.price,

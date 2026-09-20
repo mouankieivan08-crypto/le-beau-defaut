@@ -17,6 +17,7 @@ export type ProductInitial = {
   title: string;
   description: string;
   vertical: string;
+  supplierName?: string | null;
   categoryId: string;
   priceOriginal: number;
   price: number;
@@ -44,15 +45,20 @@ export default function ProductForm({
   categories,
   initial,
   defaultCity = "Brazzaville",
+  isHouse = false,
 }: {
   categories: Category[];
   initial?: ProductInitial;
   defaultCity?: string;
+  /** Boutique maison : seule à pouvoir publier du mobilier et des sacs de luxe. */
+  isHouse?: boolean;
 }) {
   const isEdit = !!initial;
   const [state, onSubmit, pending] = useStickyAction(isEdit ? updateProductAction : createProductAction, undefined);
 
-  const [vertical, setVertical] = useState(initial?.vertical ?? "MOBILIER");
+  // Un vendeur extérieur ne publie que dans le fourre-tout ; la boutique maison, partout.
+  const allowedVerticals = isHouse ? VERTICAL_LIST : VERTICAL_LIST.filter((v) => v.key === "FOURRE_TOUT");
+  const [vertical, setVertical] = useState(initial?.vertical ?? allowedVerticals[0].key);
   const [grade, setGrade] = useState(initial?.defectGrade ?? "A");
   const [orig, setOrig] = useState<number>(initial?.priceOriginal ?? 0);
   const [price, setPrice] = useState<number>(initial?.price ?? 0);
@@ -92,8 +98,28 @@ export default function ProductForm({
       {/* 1. Univers */}
       <Section n={1} title="Univers et catégorie">
         <input type="hidden" name="vertical" value={vertical} />
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
-          {VERTICAL_LIST.map((v) => (
+        {isHouse && vertical !== "FOURRE_TOUT" && (
+          <div className="mb-4">
+            <label className="label" htmlFor="supplierName">
+              Fournisseur d&apos;origine
+            </label>
+            <input
+              id="supplierName"
+              name="supplierName"
+              className="field"
+              defaultValue={initial?.supplierName ?? ""}
+              placeholder="Ex. Maison Mbemba Mobilier — l'entreprise qui nous a vendu le lot"
+            />
+          </div>
+        )}
+        {!isHouse && (
+          <p className="text-xs text-[var(--color-ink-muted)] mb-3">
+            Vous publiez dans le <strong>fourre-tout</strong>. Le mobilier et les sacs de luxe sont rachetés puis
+            vendus directement par Le Beau Défaut.
+          </p>
+        )}
+        <div className={`grid grid-cols-1 ${isHouse ? "sm:grid-cols-3" : ""} gap-3 mb-4`}>
+          {allowedVerticals.map((v) => (
             <button
               key={v.key}
               type="button"
