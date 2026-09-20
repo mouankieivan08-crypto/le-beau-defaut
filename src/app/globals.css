@@ -1,0 +1,349 @@
+@import "tailwindcss";
+
+/* ============================================================
+   LE BEAU DÉFAUT — Identité visuelle
+   Palette extraite du logo : ivoire, or, encre noire, blush.
+   ============================================================ */
+
+@theme {
+  /* --- Neutres chauds --- */
+  --color-cream: #faf5ec;
+  --color-cream-deep: #f4ecdd;
+  --color-sand: #e9dcc6;
+  --color-linen: #fffdf8;
+
+  /* --- Encre --- */
+  --color-ink: #14110e;
+  --color-ink-soft: #3b342c;
+  --color-ink-muted: #7a6f60;
+
+  /* --- Or (le dégradé du monogramme) --- */
+  --color-gold: #b8913c;
+  --color-gold-light: #e3c87e;
+  --color-gold-pale: #f0e2be;
+  --color-gold-dark: #8c6a24;
+  --color-gold-deep: #7d5e1f; /* or lisible en texte (AA) */
+
+  /* --- Accents --- */
+  --color-blush: #d8a594;
+  --color-copper: #b87333;
+
+  /* --- Sémantique des grades de défaut --- */
+  --color-grade-a: #276b4e;
+  --color-grade-a-bg: #e6f2ec;
+  --color-grade-b: #7d5e1f;
+  --color-grade-b-bg: #f7efdd;
+  --color-grade-c: #a34e2d;
+  --color-grade-c-bg: #f8e9e2;
+
+  /* --- Graphiques (palette validée CVD, voir docs/DESIGN.md) --- */
+  --color-viz-mobilier: #b8861c;
+  --color-viz-fourre-tout: #2a6fc0;
+  --color-viz-sacs: #9b2f5c;
+  --color-viz-grid: #ece3d3;
+
+  /* --- États --- */
+  --color-success: #2e7d5b;
+  --color-warning: #c8891f;
+  --color-danger: #b03a2e;
+  --color-info: #35607d;
+
+  /* --- Typographie --- */
+  --font-display: "Playfair Display", "Times New Roman", serif;
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-script: "Parisienne", "Segoe Script", cursive;
+
+  /* --- Rayons & ombres --- */
+  --radius-card: 14px;
+  --shadow-soft: 0 1px 2px rgb(20 17 14 / 0.04), 0 8px 24px -12px rgb(20 17 14 / 0.12);
+  --shadow-lift: 0 2px 4px rgb(20 17 14 / 0.05), 0 18px 40px -18px rgb(20 17 14 / 0.22);
+}
+
+/* ------------------------------------------------------------------ */
+
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background: var(--color-cream);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-size: 15px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  .font-display {
+    font-family: var(--font-display);
+    letter-spacing: -0.015em;
+  }
+
+  .font-script {
+    font-family: var(--font-script);
+  }
+}
+
+@layer components {
+  /* --- Filet doré : le séparateur du logo --- */
+  .rule-gold {
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      var(--color-gold-light) 15%,
+      var(--color-gold) 50%,
+      var(--color-gold-light) 85%,
+      transparent
+    );
+  }
+
+  /* --- Texte doré (reprend le dégradé du "B" et du "D") --- */
+  .text-gilded {
+    background: linear-gradient(
+      135deg,
+      var(--color-gold-dark) 0%,
+      var(--color-gold) 30%,
+      var(--color-gold-light) 55%,
+      var(--color-gold) 80%,
+      var(--color-gold-dark) 100%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* --- Surfaces --- */
+  .surface {
+    background: var(--color-linen);
+    border: 1px solid color-mix(in srgb, var(--color-sand) 70%, transparent);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-soft);
+  }
+
+  .surface-hover {
+    transition: box-shadow 0.25s ease, transform 0.25s ease, border-color 0.25s ease;
+  }
+  .surface-hover:hover {
+    box-shadow: var(--shadow-lift);
+    transform: translateY(-2px);
+    border-color: color-mix(in srgb, var(--color-gold) 40%, transparent);
+  }
+
+  /* --- Boutons --- */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.625rem 1.15rem;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 1;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+    white-space: nowrap;
+  }
+  .btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .btn-primary {
+    background: var(--color-ink);
+    color: var(--color-cream);
+  }
+  .btn-primary:hover:not(:disabled) {
+    background: #000;
+    box-shadow: 0 8px 20px -8px rgb(20 17 14 / 0.6);
+  }
+
+  .btn-gold {
+    background: linear-gradient(135deg, #7d5e1f, var(--color-gold-dark) 50%, #9a7428);
+    color: #fff;
+    box-shadow: inset 0 1px 0 rgb(240 220 160 / 0.35);
+  }
+  .btn-gold:hover:not(:disabled) {
+    filter: brightness(1.07);
+    box-shadow: 0 8px 20px -8px rgb(184 145 60 / 0.75);
+  }
+
+  .btn-outline {
+    border-color: color-mix(in srgb, var(--color-ink) 22%, transparent);
+    color: var(--color-ink);
+    background: transparent;
+  }
+  .btn-outline:hover:not(:disabled) {
+    border-color: var(--color-gold);
+    color: var(--color-gold-dark);
+    background: color-mix(in srgb, var(--color-gold-pale) 40%, transparent);
+  }
+
+  .btn-ghost {
+    color: var(--color-ink-soft);
+    background: transparent;
+  }
+  .btn-ghost:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--color-sand) 45%, transparent);
+    color: var(--color-ink);
+  }
+
+  .btn-danger {
+    background: var(--color-danger);
+    color: #fff;
+  }
+  .btn-danger:hover:not(:disabled) {
+    filter: brightness(1.08);
+  }
+
+  .btn-sm {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.78rem;
+  }
+  .btn-lg {
+    padding: 0.85rem 1.75rem;
+    font-size: 0.95rem;
+  }
+
+  /* --- Champs --- */
+  .field {
+    width: 100%;
+    padding: 0.6rem 0.85rem;
+    border-radius: 10px;
+    border: 1px solid color-mix(in srgb, var(--color-sand) 90%, transparent);
+    background: var(--color-linen);
+    font-size: 0.9rem;
+    color: var(--color-ink);
+    transition: border-color 0.18s ease, box-shadow 0.18s ease;
+  }
+  .field:focus {
+    outline: none;
+    border-color: var(--color-gold);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-gold) 18%, transparent);
+  }
+  .field::placeholder {
+    color: color-mix(in srgb, var(--color-ink-muted) 75%, transparent);
+  }
+
+  .label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--color-ink-muted);
+    margin-bottom: 0.35rem;
+  }
+
+  /* --- Puces / badges --- */
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 9999px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+  }
+
+  /* --- Tableaux --- */
+  .table-lbd {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+  }
+  .table-lbd thead th {
+    text-align: left;
+    padding: 0.7rem 0.9rem;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--color-ink-muted);
+    border-bottom: 1px solid var(--color-sand);
+    white-space: nowrap;
+  }
+  .table-lbd tbody td {
+    padding: 0.75rem 0.9rem;
+    border-bottom: 1px solid color-mix(in srgb, var(--color-sand) 50%, transparent);
+    vertical-align: middle;
+  }
+  .table-lbd tbody tr:hover {
+    background: color-mix(in srgb, var(--color-cream-deep) 55%, transparent);
+  }
+
+}
+
+/* --- Barre de défilement --- */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-cream-deep);
+}
+::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--color-gold) 45%, var(--color-sand));
+  border-radius: 9999px;
+  border: 2px solid var(--color-cream-deep);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-gold);
+}
+
+/* --- Utilitaires --- */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+@keyframes lbd-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-fade-up {
+  animation: lbd-fade-up 0.45s ease both;
+}
+
+@keyframes lbd-shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+.shimmer {
+  background: linear-gradient(90deg, var(--color-cream-deep) 25%, var(--color-sand) 50%, var(--color-cream-deep) 75%);
+  background-size: 200% 100%;
+  animation: lbd-shimmer 1.4s infinite;
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+}

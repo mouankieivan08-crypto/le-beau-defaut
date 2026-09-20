@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-4 0 116 104" width="1024" height="918"><defs><linearGradient id="gold" x1="20" y1="18" x2="80" y2="92" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#8C6A24"/><stop offset="25%" stop-color="#C9A227"/><stop offset="50%" stop-color="#F0DCA0"/><stop offset="75%" stop-color="#C9A227"/><stop offset="100%" stop-color="#8C6A24"/></linearGradient><linearGradient id="goldH" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#8C6A24"/><stop offset="25%" stop-color="#C9A227"/><stop offset="50%" stop-color="#F0DCA0"/><stop offset="75%" stop-color="#C9A227"/><stop offset="100%" stop-color="#8C6A24"/></linearGradient></defs><g transform="translate(0 0) scale(1)">
+<mask id="m1-cutB" maskUnits="userSpaceOnUse" x="-20" y="-20" width="140" height="140">
+<rect x="-20" y="-20" width="140" height="140" fill="white"/>
+<path d="M30,24 H45 V24 H53 C62.5,24 67,30 67,37.6 C67,43.6 63.6,48.2 57.6,50.6 C66,52.4 71,58.4 71,66.8 C71,77.6 64.6,84 54.6,84 H30 V81.8 H36 V26.2 H30 Z M45,26.2 V49.8 H52.4 C57.6,49.8 60.2,45.4 60.2,38 C60.2,30.6 57.6,26.2 52.4,26.2 Z M45,52.2 V81.8 H54.2 C60.4,81.8 63.6,76.4 63.6,67 C63.6,57.6 60.4,52.2 54.2,52.2 Z" transform="translate(-6 -3)" fill="black" fill-rule="evenodd" stroke="black" stroke-width="3.2" stroke-linejoin="round"/>
+</mask>
+<mask id="m1-cutD" maskUnits="userSpaceOnUse" x="-20" y="-20" width="140" height="140">
+<rect x="-20" y="-20" width="140" height="140" fill="white"/>
+<path d="M51,40 H72 C86,40 94,50.5 94,68 C94,85.5 86,96 72,96 H51 V93.8 H57 V42.2 H51 Z M66.5,42.2 V93.8 H71 C80.5,93.8 85.5,84 85.5,68 C85.5,52 80.5,42.2 71,42.2 Z" transform="translate(7 2)" fill="black" fill-rule="evenodd" stroke="black" stroke-width="3.2" stroke-linejoin="round"/>
+</mask>
+<path d="M4,8 H26 V10.2 H20 V63.8 H37.8 V56 H40 V66 H4 V63.8 H10 V10.2 H4 Z" fill="#14110E" transform="translate(-2 -2)" mask="url(#m1-cutB)"/>
+<path d="M30,24 H45 V24 H53 C62.5,24 67,30 67,37.6 C67,43.6 63.6,48.2 57.6,50.6 C66,52.4 71,58.4 71,66.8 C71,77.6 64.6,84 54.6,84 H30 V81.8 H36 V26.2 H30 Z M45,26.2 V49.8 H52.4 C57.6,49.8 60.2,45.4 60.2,38 C60.2,30.6 57.6,26.2 52.4,26.2 Z M45,52.2 V81.8 H54.2 C60.4,81.8 63.6,76.4 63.6,67 C63.6,57.6 60.4,52.2 54.2,52.2 Z" transform="translate(-6 -3)" fill="url(#gold)" fill-rule="evenodd" mask="url(#m1-cutD)"/>
+<path d="M51,40 H72 C86,40 94,50.5 94,68 C94,85.5 86,96 72,96 H51 V93.8 H57 V42.2 H51 Z M66.5,42.2 V93.8 H71 C80.5,93.8 85.5,84 85.5,68 C85.5,52 80.5,42.2 71,42.2 Z" transform="translate(7 2)" fill="#14110E" fill-rule="evenodd"/>
+<path d="M88,11 C88.8,21 89.9,23.9 97.5,25.5 C89.9,27.1 88.8,30 88,40 C87.2,30 86.1,27.1 78.5,25.5 C86.1,23.9 87.2,21 88,11 Z" fill="url(#gold)" transform="translate(9 -3)"/>
+</g></svg>

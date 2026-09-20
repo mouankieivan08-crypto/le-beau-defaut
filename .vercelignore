@@ -1,0 +1,7 @@
+.env
+.env.*
+*.db
+*.db-journal
+prisma/dev.db
+scripts/fonts
+docs

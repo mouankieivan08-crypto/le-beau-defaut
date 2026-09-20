@@ -1,0 +1,537 @@
+// ============================================================
+//  LE BEAU DÉFAUT — Schéma de données
+//  Marketplace : Mobilier à petit défaut · Sacs de luxe · Fourre-tout
+//  Montants en FCFA (entiers, pas de centimes)
+// ============================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")   // connexion mutualisee (Supabase pooler, port 6543)
+  directUrl = env("DIRECT_URL")     // connexion directe pour les migrations (port 5432)
+}
+
+// ---------------------- UTILISATEURS ----------------------
+
+model User {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  phone        String?   @unique
+  passwordHash String
+  firstName    String
+  lastName     String
+  role         String    @default("CLIENT") // CLIENT | VENDEUR | LIVREUR | ADMIN
+  avatarUrl    String?
+  city         String?
+  quartier     String?
+  isActive     Boolean   @default(true)
+  isVerified   Boolean   @default(false)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  lastLoginAt  DateTime?
+
+  seller        SellerProfile?
+  courier       CourierProfile?
+  products      Product[]       @relation("ProductSeller")
+  moderated     Product[]       @relation("ProductModerator")
+  favorites     Favorite[]
+  cartItems     CartItem[]
+  orders        Order[]         @relation("OrderBuyer")
+  reviews       Review[]
+  messagesSent  Message[]       @relation("MessageSender")
+  threads       ThreadMember[]
+  notifications Notification[]
+  auditLogs     AuditLog[]
+  addresses     Address[]
+  claims        Claim[]        @relation("ClaimBuyer")
+  claimsHandled Claim[]        @relation("ClaimHandler")
+
+  @@index([role])
+  @@index([createdAt])
+}
+
+model SellerProfile {
+  id            String   @id @default(cuid())
+  userId        String   @unique
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  shopName      String
+  shopSlug      String   @unique
+  type          String   @default("ENTREPRISE") // ENTREPRISE | PARTICULIER | DEPOT_VENTE
+  description   String?
+  logoUrl       String?
+  rccm          String? // Registre du commerce
+  niu           String? // Numéro d'identification unique
+  contactPhone  String?
+  address       String?
+  city          String   @default("Brazzaville")
+  commissionPct Int      @default(15) // commission LBD en %
+  status        String   @default("EN_ATTENTE") // EN_ATTENTE | ACTIF | SUSPENDU
+  rating        Float    @default(0)
+  ratingCount   Int      @default(0)
+  totalSales    Int      @default(0)
+  mobileMoney   String? // numéro de versement
+  mobileMoneyOp String? // MTN | AIRTEL
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  payouts Payout[]
+
+  @@index([status])
+}
+
+model CourierProfile {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  vehicle     String   @default("MOTO") // MOTO | TRICYCLE | CAMIONNETTE | CAMION
+  plateNumber String?
+  zones       String   @default("Brazzaville") // zones séparées par ;
+  capacityKg  Int      @default(50)
+  status      String   @default("DISPONIBLE") // DISPONIBLE | EN_COURSE | HORS_LIGNE
+  rating      Float    @default(0)
+  ratingCount Int      @default(0)
+  totalRuns   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  deliveries Delivery[]
+
+  @@index([status])
+}
+
+model Address {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  label     String   @default("Domicile")
+  fullName  String
+  phone     String
+  city      String
+  quartier  String
+  landmark  String? // repère : "en face de la pharmacie"
+  isDefault Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+// ---------------------- CATALOGUE ----------------------
+
+model Category {
+  id          String     @id @default(cuid())
+  name        String
+  slug        String     @unique
+  vertical    String // MOBILIER | SACS | FOURRE_TOUT
+  icon        String?
+  description String?
+  parentId    String?
+  parent      Category?  @relation("CategoryTree", fields: [parentId], references: [id])
+  children    Category[] @relation("CategoryTree")
+  position    Int        @default(0)
+  isActive    Boolean    @default(true)
+  createdAt   DateTime   @default(now())
+
+  products Product[]
+
+  @@index([vertical])
+  @@index([parentId])
+}
+
+model Product {
+  id          String @id @default(cuid())
+  reference   String @unique // LBD-M-00001
+  title       String
+  slug        String @unique
+  description String
+
+  vertical   String // MOBILIER | SACS | FOURRE_TOUT
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id])
+
+  sellerId String
+  seller   User   @relation("ProductSeller", fields: [sellerId], references: [id])
+
+  // Prix (FCFA)
+  priceOriginal Int // prix neuf / catalogue
+  price         Int // prix Le Beau Défaut
+  discountPct   Int     @default(0)
+  currency      String  @default("XAF")
+  negotiable    Boolean @default(false)
+
+  // Le défaut — cœur du concept
+  defectGrade   String @default("A") // A = quasi invisible | B = visible léger | C = marqué
+  defectSummary String // résumé en une phrase, obligatoire
+
+  // Caractéristiques
+  brand      String?
+  material   String?
+  color      String?
+  dimensions String? // "L120 x l60 x H75 cm"
+  weightKg   Float?
+  quantity   Int     @default(1)
+
+  // Spécifique sacs de luxe
+  authenticity String  @default("NON_APPLICABLE") // NON_APPLICABLE | NON_VERIFIE | EN_COURS | AUTHENTIFIE_LBD | REFUSE
+  serialNumber String?
+  hasDustBag   Boolean @default(false)
+  hasCertif    Boolean @default(false)
+
+  // Logistique
+  city        String  @default("Brazzaville")
+  quartier    String?
+  deliverable Boolean @default(true)
+  pickupOnly  Boolean @default(false)
+  deliveryFee Int     @default(0) // 0 = tarif standard de la zone
+
+  // Publication
+  status          String    @default("BROUILLON") // BROUILLON | EN_ATTENTE | PUBLIE | REJETE | VENDU | ARCHIVE
+  rejectionReason String?
+  moderatorId     String?
+  moderator       User?     @relation("ProductModerator", fields: [moderatorId], references: [id])
+  moderatedAt     DateTime?
+  publishedAt     DateTime?
+  isFeatured      Boolean   @default(false)
+  isFlashDeal     Boolean   @default(false)
+
+  views     Int      @default(0)
+  soldCount Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  images     ProductImage[]
+  defects    Defect[]
+  favorites  Favorite[]
+  cartItems  CartItem[]
+  orderItems OrderItem[]
+  reviews    Review[]
+  threads    Thread[]
+
+  @@index([vertical, status])
+  @@index([categoryId])
+  @@index([sellerId])
+  @@index([status])
+  @@index([defectGrade])
+  @@index([price])
+}
+
+model ProductImage {
+  id        String  @id @default(cuid())
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  url       String
+  alt       String?
+  position  Int     @default(0)
+  isCover   Boolean @default(false)
+  isDefect  Boolean @default(false) // photo qui montre explicitement le défaut
+
+  @@index([productId])
+}
+
+/// Le défaut déclaré — transparence totale, c'est la promesse de la marque.
+model Defect {
+  id          String   @id @default(cuid())
+  productId   String
+  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  type        String // RAYURE | TACHE | ACCROC | DECOLORATION | BOSSE | ECLAT | PIECE_MANQUANTE | FIN_DE_SERIE | EMBALLAGE_ABIME | DEMONTE | ODEUR | USURE | AUTRE
+  zone        String // "Accoudoir gauche", "Pied arrière droit", "Doublure intérieure"
+  severity    Int      @default(1) // 1 (léger) → 5 (marqué)
+  description String
+  photoUrl    String?
+  repairable  Boolean  @default(false)
+  repairNote  String?
+  createdAt   DateTime @default(now())
+
+  @@index([productId])
+}
+
+// ---------------------- ACHAT ----------------------
+
+model Favorite {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, productId])
+  @@index([userId])
+}
+
+model CartItem {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  quantity  Int      @default(1)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, productId])
+  @@index([userId])
+}
+
+model Order {
+  id        String @id @default(cuid())
+  reference String @unique // LBD-2026-000123
+  buyerId   String
+  buyer     User   @relation("OrderBuyer", fields: [buyerId], references: [id])
+
+  // EN_ATTENTE_PAIEMENT | PAYEE | CONFIRMEE | EN_PREPARATION | EN_LIVRAISON | LIVREE | ANNULEE | REMBOURSEE
+  status String @default("EN_ATTENTE_PAIEMENT")
+  // MOBILE_MONEY_MTN | MOBILE_MONEY_AIRTEL | ESPECES_LIVRAISON | VIREMENT
+  paymentMethod String  @default("ESPECES_LIVRAISON")
+  paymentStatus String  @default("EN_ATTENTE") // EN_ATTENTE | PAYE | ECHOUE | REMBOURSE
+  paymentRef    String?
+
+  subtotal    Int
+  deliveryFee Int @default(0)
+  discount    Int @default(0)
+  total       Int
+
+  // Livraison
+  recipientName  String
+  recipientPhone String
+  city           String
+  quartier       String
+  landmark       String?
+  notes          String?
+
+  cancelReason String?
+  paidAt       DateTime?
+  deliveredAt  DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  items    OrderItem[]
+  delivery Delivery?
+  events   OrderEvent[]
+  payouts  Payout[]
+  claims   Claim[]
+
+  @@index([buyerId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model OrderItem {
+  id        String  @id @default(cuid())
+  orderId   String
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+  sellerId  String
+
+  // Instantané au moment de l'achat (le produit peut changer ensuite)
+  titleSnapshot  String
+  imageSnapshot  String?
+  defectSnapshot String
+  gradeSnapshot  String
+  unitPrice      Int
+  quantity       Int     @default(1)
+  lineTotal      Int
+  commissionPct  Int     @default(15)
+  sellerAmount   Int     @default(0)
+
+  claims Claim[]
+
+  @@index([orderId])
+  @@index([sellerId])
+}
+
+model OrderEvent {
+  id        String   @id @default(cuid())
+  orderId   String
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  status    String
+  label     String
+  note      String?
+  actorId   String?
+  createdAt DateTime @default(now())
+
+  @@index([orderId])
+}
+
+model Delivery {
+  id        String          @id @default(cuid())
+  orderId   String          @unique
+  order     Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  courierId String?
+  courier   CourierProfile? @relation(fields: [courierId], references: [id])
+
+  status       String    @default("A_ASSIGNER") // A_ASSIGNER | ASSIGNEE | RECUPEREE | EN_ROUTE | LIVREE | ECHEC
+  trackingCode String    @unique
+  scheduledFor DateTime?
+  pickedUpAt   DateTime?
+  deliveredAt  DateTime?
+  failureNote  String?
+  proofUrl     String?
+  fee          Int       @default(0)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@index([courierId])
+  @@index([status])
+}
+
+model Payout {
+  id         String        @id @default(cuid())
+  sellerId   String
+  seller     SellerProfile @relation(fields: [sellerId], references: [id])
+  orderId    String?
+  order      Order?        @relation(fields: [orderId], references: [id])
+  amount     Int
+  commission Int           @default(0)
+  status     String        @default("EN_ATTENTE") // EN_ATTENTE | PAYE | ANNULE
+  method     String        @default("MOBILE_MONEY")
+  reference  String?
+  note       String?
+  paidAt     DateTime?
+  createdAt  DateTime      @default(now())
+
+  @@index([sellerId])
+  @@index([status])
+}
+
+/// Réclamation : la garantie « défaut conforme » rendue exécutable.
+/// L'acheteur signale un écart entre l'annonce et l'article reçu ; l'équipe tranche.
+model Claim {
+  id        String @id @default(cuid())
+  reference String @unique // REC-2026-00012
+
+  orderId     String
+  order       Order      @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderItemId String?
+  orderItem   OrderItem? @relation(fields: [orderItemId], references: [id], onDelete: SetNull)
+
+  buyerId String
+  buyer   User   @relation("ClaimBuyer", fields: [buyerId], references: [id], onDelete: Cascade)
+
+  // DEFAUT_NON_ANNONCE | ARTICLE_DIFFERENT | CASSE_TRANSPORT | PIECE_MANQUANTE | NON_LIVRE | AUTRE
+  type        String
+  description String
+  photoUrl    String?
+
+  status String @default("OUVERTE") // OUVERTE | EN_EXAMEN | ACCEPTEE | REFUSEE | CLOTUREE
+  // REMBOURSEMENT | REPRISE | GESTE_COMMERCIAL | AUCUNE
+  resolution   String?
+  refundAmount Int     @default(0)
+  adminNote    String?
+
+  handledById String?
+  handledBy   User?     @relation("ClaimHandler", fields: [handledById], references: [id], onDelete: SetNull)
+  handledAt   DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+  @@index([buyerId])
+  @@index([orderId])
+}
+
+// ---------------------- SOCIAL ----------------------
+
+model Review {
+  id        String  @id @default(cuid())
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  rating    Int // 1-5
+  comment   String?
+  /// Le défaut annoncé correspondait-il à la réalité ? Indicateur clé de confiance.
+  defectAsDescribed Boolean  @default(true)
+  isPublished       Boolean  @default(true)
+  createdAt         DateTime @default(now())
+
+  @@unique([productId, userId])
+  @@index([productId])
+}
+
+model Thread {
+  id        String   @id @default(cuid())
+  productId String?
+  product   Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+  subject   String   @default("Question sur un article")
+  isClosed  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  members  ThreadMember[]
+  messages Message[]
+}
+
+model ThreadMember {
+  id         String    @id @default(cuid())
+  threadId   String
+  thread     Thread    @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lastReadAt DateTime?
+
+  @@unique([threadId, userId])
+  @@index([userId])
+}
+
+model Message {
+  id        String   @id @default(cuid())
+  threadId  String
+  thread    Thread   @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  senderId  String
+  sender    User     @relation("MessageSender", fields: [senderId], references: [id], onDelete: Cascade)
+  body      String
+  createdAt DateTime @default(now())
+
+  @@index([threadId])
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      String // COMMANDE | ANNONCE | MESSAGE | PAIEMENT | SYSTEME
+  title     String
+  body      String
+  link      String?
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([userId, isRead])
+}
+
+// ---------------------- ADMINISTRATION ----------------------
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  actorId   String?
+  actor     User?    @relation(fields: [actorId], references: [id], onDelete: SetNull)
+  action    String
+  entity    String
+  entityId  String?
+  details   String?
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+}
+
+model Setting {
+  key       String   @id
+  value     String
+  label     String?
+  updatedAt DateTime @updatedAt
+}
+
+model DeliveryZone {
+  id       String  @id @default(cuid())
+  city     String
+  name     String
+  fee      Int
+  etaHours Int     @default(48)
+  isActive Boolean @default(true)
+
+  @@unique([city, name])
+}
