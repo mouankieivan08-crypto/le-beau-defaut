@@ -3,7 +3,7 @@ import { join } from "node:path";
 import { randomUUID } from "node:crypto";
 
 const UPLOAD_DIR = join(process.cwd(), "public", "uploads");
-const MAX_BYTES = 6 * 1024 * 1024; // 6 Mo
+const MAX_BYTES = 4 * 1024 * 1024; // 4 Mo (plafond d une requete Vercel)
 const ALLOWED = ["image/jpeg", "image/png", "image/webp", "image/avif"];
 
 // Stockage distant (Supabase Storage). Si ces variables sont absentes,

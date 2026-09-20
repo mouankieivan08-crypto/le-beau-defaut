@@ -7,6 +7,7 @@ import { daysAgo } from "@/lib/stats";
 import { updateDeliveryStatusAction, setCourierStatusAction, claimDeliveryAction } from "@/lib/actions/courier";
 import Icon from "@/components/Icon";
 import { Badge, Stat, EmptyState, Alert, PageHeader } from "@/components/ui";
+import PhotoInput from "@/components/PhotoInput";
 
 export const metadata: Metadata = { title: "Mes courses" };
 
@@ -230,7 +231,7 @@ export default async function CourierHome() {
                       {next.status === "LIVREE" && (
                         <label className="text-xs text-[var(--color-ink-muted)] flex flex-col gap-1">
                           Photo de remise (facultatif)
-                          <input name="proof" type="file" accept="image/*" capture="environment" className="text-sm" />
+                          <PhotoInput name="proof" type="file" accept="image/*" capture="environment" className="text-sm" />
                         </label>
                       )}
                       <button className="btn btn-gold btn-lg w-full">

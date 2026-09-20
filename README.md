@@ -12,7 +12,7 @@ Prérequis : **Node.js 20+** (testé avec Node 24).
 
 ```bash
 npm install
-npm run setup      # crée la base SQLite + données de démonstration
+npm run setup      # crée les tables + données de démonstration
 npm run dev        # http://localhost:3000
 ```
 
@@ -75,7 +75,7 @@ Commande → paiement (validé par l'admin pour Mobile Money, encaissé par le l
 |---|---|
 | Framework | **Next.js 15** (App Router, Server Components, Server Actions) |
 | Langage | TypeScript strict |
-| Base de données | **Prisma** + SQLite en développement |
+| Base de données | **Prisma** + PostgreSQL (Supabase) |
 | Authentification | Session JWT signée (`jose`) en cookie httpOnly, mots de passe `bcrypt` |
 | Style | Tailwind CSS v4 + jetons de marque dans `src/app/globals.css` |
 | Graphiques | SVG maison, sans dépendance (`src/components/Charts.tsx`) |
@@ -107,13 +107,20 @@ Chaque page et chaque action serveur vérifient le rôle de l'utilisateur (`requ
 
 ---
 
-## Avant la mise en production
+## Mise en ligne
+
+Hébergement : **Vercel** (le site) + **Supabase** (la base PostgreSQL et les photos).
+Marche à suivre complète : **[docs/DEPLOIEMENT.md](docs/DEPLOIEMENT.md)**.
+
+- Les photos téléversées partent vers Supabase Storage dès que `SUPABASE_URL` et `SUPABASE_SERVICE_KEY` sont définies ; sinon elles vont dans `public/uploads` (développement).
+- Elles sont **allégées dans le navigateur** avant l'envoi (1600 px, JPEG) : une requête Vercel est plafonnée à 4,5 Mo.
+- Les boutons de connexion rapide aux comptes de démonstration n'apparaissent que si `NEXT_PUBLIC_DEMO=1`.
+
+## Avant d'ouvrir aux vrais clients
 
 Ces points sont **volontairement simplifiés** dans cette version :
 
 1. **Paiement Mobile Money simulé.** Aucune API MTN MoMo / Airtel Money n'est branchée : l'admin marque la commande « payée ». Il faudra intégrer l'API marchande de l'opérateur (ou un agrégateur local) et un webhook de confirmation.
-2. **Base de données.** Passer à PostgreSQL : dans `prisma/schema.prisma`, `provider = "postgresql"`, puis `DATABASE_URL` vers la base.
-3. **Photos téléversées** stockées dans `public/uploads/`. Sur un hébergement serverless ce dossier n'est pas persistant : utiliser un VPS ou un stockage objet (S3, Cloudflare R2…).
 4. **Secret de session et adresse du site.** Remplacer `AUTH_SECRET` dans `.env` par une valeur aléatoire longue, et `NEXT_PUBLIC_SITE_URL` par l'adresse réelle (utilisée par le plan du site et les partages).
 5. **Notifications externes.** Les notifications sont internes à l'application ; SMS / WhatsApp restent à brancher.
 6. **Images de démonstration** chargées depuis Unsplash (connexion Internet requise). En production, ce sont les photos des vendeurs.

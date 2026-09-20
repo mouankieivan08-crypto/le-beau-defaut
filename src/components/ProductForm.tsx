@@ -7,6 +7,7 @@ import { VERTICAL_LIST, GRADE_LIST, CITIES, QUARTIERS, defectTypesFor, SEVERITY_
 import { money } from "@/lib/format";
 import Icon from "./Icon";
 import { Alert, GradeBadge } from "./ui";
+import PhotoInput from "./PhotoInput";
 
 type Category = { id: string; name: string; vertical: string };
 type DefectInput = { type: string; zone: string; severity: number; description: string; repairable: boolean; repairNote: string };
@@ -322,7 +323,7 @@ export default function ProductForm({
           <p className="text-xs text-[var(--color-ink-muted)] mb-3">
             Gros plan, bonne lumière, avec un objet pour l&apos;échelle (une pièce, un stylo).
           </p>
-          <input name="defectImages" type="file" accept="image/jpeg,image/png,image/webp" multiple className="text-sm" />
+          <PhotoInput name="defectImages" type="file" accept="image/jpeg,image/png,image/webp" multiple className="text-sm" />
           {!isEdit && (
             <textarea
               name="defectImageUrls"
@@ -410,12 +411,12 @@ export default function ProductForm({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="rounded-xl border border-[var(--color-sand)] p-4">
               <p className="label">Photo principale</p>
-              <input name="coverImage" type="file" accept="image/jpeg,image/png,image/webp" className="text-sm" />
+              <PhotoInput name="coverImage" type="file" accept="image/jpeg,image/png,image/webp" className="text-sm" />
               <input name="coverImageUrl" className="field mt-3 text-xs" placeholder="…ou lien d'une image (https://…)" />
             </div>
             <div className="rounded-xl border border-[var(--color-sand)] p-4">
               <p className="label">Autres vues (facultatif)</p>
-              <input name="galleryImages" type="file" accept="image/jpeg,image/png,image/webp" multiple className="text-sm" />
+              <PhotoInput name="galleryImages" type="file" accept="image/jpeg,image/png,image/webp" multiple className="text-sm" />
               <textarea name="galleryImageUrls" rows={2} className="field mt-3 text-xs" placeholder="…ou liens, un par ligne" />
             </div>
           </div>
@@ -423,7 +424,7 @@ export default function ProductForm({
         </Section>
       ) : (
         <Section n={5} title="Ajouter des photos">
-          <input name="galleryImages" type="file" accept="image/jpeg,image/png,image/webp" multiple className="text-sm" />
+          <PhotoInput name="galleryImages" type="file" accept="image/jpeg,image/png,image/webp" multiple className="text-sm" />
         </Section>
       )}
 

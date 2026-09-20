@@ -6,6 +6,7 @@ import { updateShopAction } from "@/lib/actions/seller";
 import ActionForm from "@/components/ActionForm";
 import Icon from "@/components/Icon";
 import { PageHeader, Card, Badge, EmptyState, Avatar } from "@/components/ui";
+import PhotoInput from "@/components/PhotoInput";
 
 export const metadata: Metadata = { title: "Ma boutique" };
 
@@ -83,7 +84,7 @@ export default async function ShopPage() {
                 </Field>
               </div>
               <Field label="Logo (fichier)" id="logo">
-                <input id="logo" name="logo" type="file" accept="image/jpeg,image/png,image/webp" className="text-sm" />
+                <PhotoInput id="logo" name="logo" type="file" accept="image/jpeg,image/png,image/webp" className="text-sm" />
               </Field>
               <Field label="…ou lien du logo" id="logoUrl">
                 <input id="logoUrl" name="logoUrl" defaultValue={shop.logoUrl ?? ""} className="field" placeholder="https://…" />

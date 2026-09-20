@@ -6,6 +6,7 @@ import { createClaimAction } from "@/lib/actions/claims";
 import { CLAIM_TYPES, CLAIM_WINDOW_DAYS } from "@/lib/constants";
 import Icon from "./Icon";
 import { Alert } from "./ui";
+import PhotoInput from "./PhotoInput";
 
 type Item = { id: string; title: string };
 
@@ -121,7 +122,7 @@ export default function ClaimForm({ orderId, items }: { orderId: string; items: 
         <label className="label" htmlFor="claim-photo">
           Photo du problème (fortement conseillée)
         </label>
-        <input id="claim-photo" name="photo" type="file" accept="image/*" capture="environment" className="text-sm" />
+        <PhotoInput id="claim-photo" name="photo" type="file" accept="image/*" capture="environment" className="text-sm" />
       </div>
 
       <button className="btn btn-primary" disabled={pending}>
