@@ -1,4 +1,5 @@
 import Link from "next/link";
+import EscrowPanel from "@/components/EscrowPanel";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
@@ -200,6 +201,8 @@ export default async function OrderDetailPage({
               </ul>
             </section>
           )}
+
+          <EscrowPanel order={order} />
 
           {order.status === "LIVREE" &&
             order.buyerId === user.id &&

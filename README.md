@@ -27,10 +27,24 @@ Repartir d'une base propre à tout moment : `npm run db:reset`.
 
 ### Comptes de démonstration
 
-Mot de passe commun : **`Demo2026!`** (boutons de connexion rapide sur la page `/connexion`).
+Mot de passe commun : **`Demo2026!`**.
 
-| Rôle | E-mail | Ce qu'on y voit |
+Sur **`/connexion`** (public) :
+
+| Profil | E-mail | Ce qu'on y voit |
 |---|---|---|
+| Acheteur | `client@lebeaudefaut.cg` | Commandes (dont une sous séquestre à confirmer), réclamation, favoris, messages |
+| Vendeur fourre-tout | `vendeur@lebeaudefaut.cg` | Mbemba Déco & Électro : annonces, ventes, argent sous séquestre puis versé |
+
+Sur **`/acces-equipe`** (adresse discrète, non liée sur le site, non indexée) :
+
+| Profil | E-mail | Ce qu'on y voit |
+|---|---|---|
+| Administration | `admin@lebeaudefaut.cg` | Tableau de bord, modération, séquestre, réclamations, commandes, livraisons, versements |
+| Boutique maison | `maison@lebeaudefaut.cg` | Le stock de Le Beau Défaut : mobilier et sacs de luxe, avec leur fournisseur d'origine |
+| Livreur | `livreur@lebeaudefaut.cg` | Courses assignées, courses disponibles, historique |
+
+---|---|---|
 | Client | `client@lebeaudefaut.cg` | Commandes en cours et livrées, réclamation en cours, favoris, panier, messages |
 | Vendeur mobilier | `vendeur@lebeaudefaut.cg` | Maison Mbemba Mobilier : ventes, annonces, une annonce rejetée à corriger |
 | Vendeur luxe | `luxe@lebeaudefaut.cg` | Luxe & Seconde Main : sacs authentifiés |
@@ -40,6 +54,19 @@ Mot de passe commun : **`Demo2026!`** (boutons de connexion rapide sur la page `
 ---
 
 ## Le concept, traduit en produit
+
+### Deux circuits de vente
+| | Mobilier · Sacs de luxe | Fourre-tout |
+|---|---|---|
+| **À qui appartient l'article** | À Le Beau Défaut, qui l'a racheté à une entreprise | À un vendeur de la plateforme |
+| **Qui vend** | La boutique maison (`isHouse`), fournisseur d'origine indiqué | Le vendeur, via sa boutique |
+| **Contact** | Direct avec l'équipe, WhatsApp compris | Messagerie du site uniquement : numéros, e-mails et liens masqués |
+| **Argent** | Encaissé par Le Beau Défaut | **Séquestre** : conservé jusqu'à la réception confirmée, ou 3 jours après la livraison |
+| **Qui peut publier** | L'équipe | Tout compte ayant ouvert une boutique |
+
+Un compte n'est pas « acheteur » ou « vendeur » : il achète toujours, et vend dès qu'il ouvre une boutique (`/devenir-vendeur`). Le menu du profil passe d'un espace à l'autre.
+
+Le séquestre vit dans `src/lib/escrow.ts`, le filtre des coordonnées dans `src/lib/safe-message.ts`. Une tâche Vercel quotidienne (`/api/cron/sequestre`, voir `vercel.json`) libère ce qui a dépassé le délai sans réclamation ; l'administration peut aussi libérer à la main depuis `/admin/sequestre`.
 
 ### La grille du défaut
 Chaque annonce porte un **grade** qui impose une **remise minimale**, vérifiée à la saisie *et* côté serveur :

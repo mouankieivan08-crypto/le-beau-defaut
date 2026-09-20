@@ -1,14 +1,14 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
-import { requireRole } from "@/lib/auth";
+import { requireSeller } from "@/lib/auth";
 import { money, dateFR, phoneFR } from "@/lib/format";
 import { PageHeader, Stat, Badge, EmptyState, Alert } from "@/components/ui";
 
 export const metadata: Metadata = { title: "Versements" };
 
 export default async function SellerPayoutsPage() {
-  const user = await requireRole(["VENDEUR", "ADMIN"], "/vendeur/paiements");
+  const user = await requireSeller("/vendeur/paiements");
   const shop = user.seller;
 
   if (!shop) {

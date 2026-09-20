@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
-import { requireRole } from "@/lib/auth";
+import { requireSeller } from "@/lib/auth";
 import { money, relativeFR } from "@/lib/format";
 import { PRODUCT_STATUS, AUTHENTICITY } from "@/lib/constants";
 import { changeProductStatusAction, deleteProductAction } from "@/lib/actions/seller";
@@ -25,7 +25,7 @@ export default async function SellerListingsPage({
 }: {
   searchParams: Promise<{ statut?: string; cree?: string }>;
 }) {
-  const user = await requireRole(["VENDEUR", "ADMIN"], "/vendeur/annonces");
+  const user = await requireSeller("/vendeur/annonces");
   const { statut = "", cree } = await searchParams;
 
   const [products, counts] = await Promise.all([

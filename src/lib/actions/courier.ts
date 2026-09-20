@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { createPayoutsForOrder } from "@/lib/escrow";
 import { prisma } from "@/lib/prisma";
 import { requireRole } from "@/lib/auth";
 import { saveImage } from "@/lib/upload";
@@ -77,23 +78,8 @@ export async function updateDeliveryStatusAction(formData: FormData) {
           data: { totalRuns: { increment: 1 }, status: "DISPONIBLE" },
         });
       }
-      // Versements vendeurs exigibles
-      const bySeller = new Map<string, number>();
-      for (const item of delivery.order.items) {
-        bySeller.set(item.sellerId, (bySeller.get(item.sellerId) ?? 0) + item.sellerAmount);
-      }
-      for (const [sellerUserId, amount] of bySeller) {
-        const profile = await tx.sellerProfile.findUnique({ where: { userId: sellerUserId } });
-        if (!profile) continue;
-        if (await tx.payout.findFirst({ where: { orderId: delivery.orderId, sellerId: profile.id } })) continue;
-        const gross = delivery.order.items
-          .filter((i) => i.sellerId === sellerUserId)
-          .reduce((s, i) => s + i.lineTotal, 0);
-        await tx.payout.create({
-          data: { sellerId: profile.id, orderId: delivery.orderId, amount, commission: gross - amount },
-        });
-        await tx.sellerProfile.update({ where: { id: profile.id }, data: { totalSales: { increment: gross } } });
-      }
+      // Versements vendeurs : sous séquestre jusqu'à la confirmation de l'acheteur.
+      await createPayoutsForOrder(tx, { id: delivery.orderId, items: delivery.order.items });
     }
 
     if (status === "ECHEC" && delivery.courierId) {

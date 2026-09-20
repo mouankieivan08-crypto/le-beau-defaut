@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
-import { requireRole } from "@/lib/auth";
+import { requireSeller } from "@/lib/auth";
 import { PRODUCT_STATUS } from "@/lib/constants";
 import { deleteProductImageAction } from "@/lib/actions/seller";
 import ProductForm from "@/components/ProductForm";
@@ -13,7 +13,7 @@ export const metadata: Metadata = { title: "Modifier l'annonce" };
 
 export default async function EditListingPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const user = await requireRole(["VENDEUR", "ADMIN"], `/vendeur/annonces/${id}`);
+  const user = await requireSeller(`/vendeur/annonces/${id}`);
 
   const [product, categories] = await Promise.all([
     prisma.product.findUnique({

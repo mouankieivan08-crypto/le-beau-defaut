@@ -94,3 +94,23 @@ export async function requireRole(roles: string[], nextPath?: string) {
 export async function requireAdmin(nextPath?: string) {
   return requireRole(["ADMIN"], nextPath);
 }
+
+/**
+ * Exige de pouvoir vendre.
+ *
+ * Vendre n'est pas un rôle à part : n'importe quel compte peut ouvrir une boutique
+ * sans cesser d'être acheteur. La capacité de vendre, c'est d'avoir une boutique.
+ */
+export async function requireSeller(nextPath?: string) {
+  const user = await requireUser(nextPath);
+  if (user.role === "ADMIN") return user;
+  if (!user.seller) redirect("/devenir-vendeur");
+  if (user.seller.status === "SUSPENDU") redirect("/compte");
+  return user;
+}
+
+/** Ce compte a-t-il une boutique ? (sert à afficher le passage d'un espace à l'autre) */
+export function canSell(user: { role: string; seller?: unknown | null } | null) {
+  if (!user) return false;
+  return user.role === "ADMIN" || Boolean(user.seller);
+}

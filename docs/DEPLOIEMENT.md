@@ -49,6 +49,7 @@ npm run db:seed     # données de démonstration (facultatif)
 | `SUPABASE_SERVICE_KEY` | clé secrète du projet Supabase |
 | `SUPABASE_BUCKET` | `photos` |
 | `NEXT_PUBLIC_DEMO` | `1` en vitrine, `0` dès l'ouverture au public |
+| `CRON_SECRET` | chaîne aléatoire : protège la libération automatique du séquestre (`/api/cron/sequestre`) |
 
 ## 5. Déployer
 
@@ -62,6 +63,14 @@ Après le premier déploiement, remettre `NEXT_PUBLIC_SITE_URL` à l'adresse ré
 puis relancer `npx vercel --prod` pour que les partages et le plan du site pointent au bon endroit.
 
 ---
+
+## Tâche quotidienne
+
+`vercel.json` programme chaque jour à 6 h (UTC) l'appel de `/api/cron/sequestre`, qui verse aux vendeurs l'argent des commandes livrées depuis plus de 3 jours sans réclamation. Vercel envoie `CRON_SECRET` dans l'en-tête ; sans lui, l'appel est refusé.
+
+## Accès de l'équipe
+
+L'administration, la boutique maison et les livreurs se connectent par `/acces-equipe`. Cette adresse n'apparaît nulle part sur le site et n'est pas indexée : à communiquer en interne uniquement.
 
 ## Points de vigilance
 

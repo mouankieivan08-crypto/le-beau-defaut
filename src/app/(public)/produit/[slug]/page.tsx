@@ -1,4 +1,5 @@
 import Link from "next/link";
+import SaleModePanel from "@/components/SaleModePanel";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
@@ -92,10 +93,15 @@ export default async function ProductPage({ params }: Props) {
     : 0;
   const conformCount = product.reviews.filter((r) => r.defectAsDescribed).length;
   const myReview = user ? product.reviews.find((r) => r.userId === user.id) : null;
-  const sellerWhatsApp = waLink(
-    product.seller.seller?.contactPhone,
-    `Bonjour, je vous contacte depuis Le Beau Défaut au sujet de « ${product.title} » (${product.reference}).`
-  );
+  const isHouseSale = product.saleMode === "MAISON";
+  // Sur une mise en relation, aucun numéro n'est affiché : l'échange reste dans la messagerie,
+  // c'est ce qui permet le séquestre et la réclamation.
+  const sellerWhatsApp = isHouseSale
+    ? waLink(
+        product.seller.seller?.contactPhone,
+        `Bonjour, je vous contacte depuis Le Beau Défaut au sujet de « ${product.title} » (${product.reference}).`
+      )
+    : null;
 
   return (
     <div className="mx-auto max-w-[1280px] px-4 py-8">
@@ -243,7 +249,7 @@ export default async function ProductPage({ params }: Props) {
 
               {sellerWhatsApp && (
                 <a href={sellerWhatsApp} target="_blank" rel="noreferrer" className="btn btn-outline w-full">
-                  <Icon name="phone" size={16} /> Écrire au vendeur sur WhatsApp
+                  <Icon name="phone" size={16} /> Écrire à l'équipe Le Beau Défaut
                 </a>
               )}
 
@@ -288,10 +294,12 @@ export default async function ProductPage({ params }: Props) {
             text={`${product.title} — ${money(product.price)} sur Le Beau Défaut`}
           />
 
+          <SaleModePanel saleMode={product.saleMode} supplierName={product.supplierName} />
+
           {/* Vendeur */}
           {product.seller.seller && (
             <div className="surface p-4">
-              <p className="label mb-2.5">Vendu par</p>
+              <p className="label mb-2.5">{isHouseSale ? "Notre boutique" : "Vendeur"}</p>
               <div className="flex items-center gap-3">
                 <Avatar
                   first={product.seller.seller.shopName}

@@ -14,6 +14,7 @@ export const cardSelect = {
   city: true,
   quartier: true,
   vertical: true,
+  saleMode: true,
   authenticity: true,
   quantity: true,
   isFlashDeal: true,

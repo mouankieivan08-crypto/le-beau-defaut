@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
-import { requireRole } from "@/lib/auth";
+import { requireSeller } from "@/lib/auth";
 import DashboardShell, { type NavItem } from "@/components/DashboardShell";
 
 export const metadata: Metadata = { title: { default: "Espace vendeur", template: "%s · Vendeur LBD" } };
 
 export default async function SellerLayout({ children }: { children: React.ReactNode }) {
-  const user = await requireRole(["VENDEUR", "ADMIN"], "/vendeur");
+  const user = await requireSeller("/vendeur");
 
   const [toShip, rejected, unreadThreads] = await Promise.all([
     prisma.order.count({

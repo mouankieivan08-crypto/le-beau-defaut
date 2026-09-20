@@ -1,9 +1,11 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { createPayoutsForOrder, releaseEscrowForOrder, refundEscrowForOrder } from "@/lib/escrow";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin, requireRole, hashPassword } from "@/lib/auth";
 import { slugify } from "@/lib/format";
+import { ESCROW_RELEASE_DAYS } from "@/lib/constants";
 
 type State = { error?: string; success?: string } | undefined;
 
@@ -280,26 +282,7 @@ export async function setOrderStatusAction(formData: FormData) {
 
     // À la livraison, les versements vendeurs deviennent exigibles.
     if (status === "LIVREE") {
-      const bySeller = new Map<string, number>();
-      for (const item of order.items) {
-        bySeller.set(item.sellerId, (bySeller.get(item.sellerId) ?? 0) + item.sellerAmount);
-      }
-      for (const [sellerUserId, amount] of bySeller) {
-        const profile = await tx.sellerProfile.findUnique({ where: { userId: sellerUserId } });
-        if (!profile) continue;
-        const already = await tx.payout.findFirst({ where: { orderId, sellerId: profile.id } });
-        if (already) continue;
-        const gross = order.items
-          .filter((i) => i.sellerId === sellerUserId)
-          .reduce((s, i) => s + i.lineTotal, 0);
-        await tx.payout.create({
-          data: { sellerId: profile.id, orderId, amount, commission: gross - amount, status: "EN_ATTENTE" },
-        });
-        await tx.sellerProfile.update({
-          where: { id: profile.id },
-          data: { totalSales: { increment: gross } },
-        });
-      }
+      await createPayoutsForOrder(tx, { id: orderId, items: order.items });
       await tx.delivery.updateMany({ where: { orderId }, data: { status: "LIVREE", deliveredAt: new Date() } });
     }
 
@@ -487,4 +470,46 @@ export async function resetUserPasswordAction(_prev: State, formData: FormData):
 
   revalidatePath("/", "layout");
   return { success: `Mot de passe provisoire de ${user.firstName} ${user.lastName} : ${temp}` };
+}
+
+/* ---------------------------- Séquestre ---------------------------- */
+
+/** Libère à la main l'argent retenu sur une commande (litige tranché, accord amiable…). */
+export async function releaseEscrowAction(formData: FormData) {
+  const admin = await requireAdmin();
+  const orderId = String(formData.get("orderId") || "");
+  const reason = String(formData.get("reason") || "").trim() || "Libéré par l'équipe Le Beau Défaut.";
+  if (!orderId) return;
+
+  await prisma.$transaction(async (tx) => {
+    await releaseEscrowForOrder(tx, orderId, reason, admin.id);
+  });
+  await prisma.auditLog.create({
+    data: { actorId: admin.id, action: "SEQUESTRE_LIBERE", entity: "Order", entityId: orderId, details: reason },
+  });
+  revalidatePath("/", "layout");
+}
+
+/** Libère d'un coup tout ce qui a dépassé le délai de réclamation. */
+export async function releaseDueEscrowsAction() {
+  const admin = await requireAdmin();
+  const limit = new Date();
+  limit.setDate(limit.getDate() - ESCROW_RELEASE_DAYS);
+
+  const due = await prisma.order.findMany({
+    where: {
+      escrowStatus: "SOUS_SEQUESTRE",
+      status: "LIVREE",
+      deliveredAt: { lte: limit },
+      claims: { none: { status: { in: ["OUVERTE", "EN_EXAMEN"] } } },
+    },
+    select: { id: true },
+  });
+
+  for (const order of due) {
+    await prisma.$transaction(async (tx) => {
+      await releaseEscrowForOrder(tx, order.id, `Délai de ${ESCROW_RELEASE_DAYS} jours écoulé sans réclamation.`, admin.id);
+    });
+  }
+  revalidatePath("/", "layout");
 }

@@ -5,6 +5,8 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser, requireUser } from "@/lib/auth";
 import { DEFAULT_COMMISSION_PCT } from "@/lib/constants";
+import { sanitizeMessage } from "@/lib/safe-message";
+import { releaseEscrowForOrder } from "@/lib/escrow";
 
 /* ---------------------------- Favoris ---------------------------- */
 
@@ -129,6 +131,12 @@ export async function checkoutAction(_prev: { error?: string } | undefined, form
   const total = subtotal + deliveryFee;
   const reference = await nextOrderReference();
 
+  // Ce qui relève d'une mise en relation est conservé par Le Beau Défaut jusqu'à la réception.
+  // Ce qui vient de notre propre stock ne passe pas par le séquestre : l'argent est déjà à nous.
+  const escrowAmount = items
+    .filter((i) => i.product.saleMode === "PARTICULIER")
+    .reduce((s, i) => s + i.product.price * i.quantity, 0);
+
   const order = await prisma.$transaction(async (tx) => {
     const created = await tx.order.create({
       data: {
@@ -140,6 +148,8 @@ export async function checkoutAction(_prev: { error?: string } | undefined, form
         subtotal,
         deliveryFee,
         total,
+        escrowAmount,
+        escrowStatus: escrowAmount > 0 ? "SOUS_SEQUESTRE" : "AUCUN",
         recipientName,
         recipientPhone,
         city,
@@ -346,7 +356,15 @@ export async function sendMessageAction(formData: FormData) {
   const member = await prisma.threadMember.findFirst({ where: { threadId, userId: user.id } });
   if (!member) return;
 
-  await prisma.message.create({ data: { threadId, senderId: user.id, body } });
+  // Les coordonnées ne sont masquées que sur les mises en relation entre particuliers :
+  // quand l'équipe Le Beau Défaut écrit au sujet de son propre stock, elle peut donner son numéro.
+  const fromTeam = user.role === "ADMIN" || user.seller?.isHouse === true;
+  const safe = fromTeam ? { body, filtered: false } : sanitizeMessage(body);
+  if (!safe.body) return;
+
+  await prisma.message.create({
+    data: { threadId, senderId: user.id, body: safe.body, wasFiltered: safe.filtered },
+  });
   await prisma.thread.update({ where: { id: threadId }, data: { updatedAt: new Date() } });
 
   const others = await prisma.threadMember.findMany({ where: { threadId, NOT: { userId: user.id } } });
@@ -355,7 +373,7 @@ export async function sendMessageAction(formData: FormData) {
       userId: m.userId,
       type: "MESSAGE",
       title: `Message de ${user.firstName}`,
-      body: body.slice(0, 120),
+      body: safe.body.slice(0, 120),
       link: `/messages/${threadId}`,
     })),
   });
@@ -369,5 +387,29 @@ export async function sendMessageAction(formData: FormData) {
 export async function markNotificationsReadAction() {
   const user = await requireUser();
   await prisma.notification.updateMany({ where: { userId: user.id, isRead: false }, data: { isRead: true } });
+  revalidatePath("/", "layout");
+}
+
+/* ---------------------------- Séquestre ---------------------------- */
+
+/**
+ * L'acheteur confirme avoir reçu son article conforme : l'argent part au vendeur.
+ * C'est le geste qui clôt une mise en relation.
+ */
+export async function confirmReceptionAction(formData: FormData) {
+  const user = await requireUser();
+  const orderId = String(formData.get("orderId") || "");
+  if (!orderId) return;
+
+  const order = await prisma.order.findFirst({
+    where: { id: orderId, buyerId: user.id },
+    select: { id: true, status: true, escrowStatus: true },
+  });
+  if (!order || order.status !== "LIVREE" || order.escrowStatus !== "SOUS_SEQUESTRE") return;
+
+  await prisma.$transaction(async (tx) => {
+    await releaseEscrowForOrder(tx, orderId, "Réception confirmée par l'acheteur.", user.id);
+  });
+
   revalidatePath("/", "layout");
 }

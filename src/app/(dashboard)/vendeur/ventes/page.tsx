@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
-import { requireRole } from "@/lib/auth";
+import { requireSeller } from "@/lib/auth";
 import { money, dateTimeFR } from "@/lib/format";
 import { ORDER_STATUS, DELIVERY_STATUS, paymentMethodLabel, CLAIM_STATUS, claimTypeLabel } from "@/lib/constants";
 import { setOrderStatusAction } from "@/lib/actions/admin";
@@ -19,7 +19,7 @@ const TABS = [
 ];
 
 export default async function SellerSalesPage({ searchParams }: { searchParams: Promise<{ filtre?: string }> }) {
-  const user = await requireRole(["VENDEUR", "ADMIN"], "/vendeur/ventes");
+  const user = await requireSeller("/vendeur/ventes");
   const { filtre = "" } = await searchParams;
 
   const statusIn: Record<string, string[]> = {

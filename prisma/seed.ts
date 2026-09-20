@@ -1008,29 +1008,35 @@ async function main() {
     },
   });
 
+  // Le fournisseur d'origine des articles maison : ce sont des entreprises qui nous
+  // vendent leur stock à petit défaut, pas des comptes de la plateforme.
+  const SUPPLIERS = ["Maison Mbemba Mobilier", "Showroom Côte Sauvage", "Luxe & Seconde Main"];
+
   const sellerDefs = [
     {
       email: "vendeur@lebeaudefaut.cg", phone: "066100001", first: "Gaston", last: "Mbemba",
-      shop: "Maison Mbemba Mobilier", type: "ENTREPRISE", city: "Brazzaville", address: "Avenue de la Paix, Poto-Poto",
-      desc: "Importateur et distributeur de mobilier depuis 2009. Nous confions à Le Beau Défaut nos fins de série, nos retours clients et le stock abîmé au transport.",
+      shop: "Mbemba Déco & Électro", type: "ENTREPRISE", city: "Brazzaville", address: "Avenue de la Paix, Poto-Poto",
+      desc: "Nous vendons dans le fourre-tout ce que nos clients nous rapportent : électroménager cabossé au transport, luminaires dépareillés, déco de fin de série.",
       commission: 15, status: "ACTIF", rccm: "CG-BZV-01-2009-B12-00417", niu: "M2009110004172A", momo: "066100001", op: "MTN",
     },
     {
       email: "cotesauvage@lebeaudefaut.cg", phone: "055200002", first: "Nadège", last: "Loubaki",
-      shop: "Showroom Côte Sauvage", type: "ENTREPRISE", city: "Pointe-Noire", address: "Boulevard Charles de Gaulle, Centre-ville",
-      desc: "Showroom de mobilier contemporain à Pointe-Noire. Modèles d'exposition, reprises de chantiers hôteliers et fins de collection.",
+      shop: "Côte Sauvage Seconde Main", type: "ENTREPRISE", city: "Pointe-Noire", address: "Boulevard Charles de Gaulle, Centre-ville",
+      desc: "Reprises de chantiers hôteliers et de bureaux à Pointe-Noire. Tout est vendu en l'état, le défaut expliqué.",
       commission: 15, status: "ACTIF", rccm: "CG-PNR-01-2015-B14-00892", niu: "M2015090008921P", momo: "055200002", op: "AIRTEL",
     },
     {
-      email: "luxe@lebeaudefaut.cg", phone: "066300003", first: "Christelle", last: "Okemba",
-      shop: "Luxe & Seconde Main", type: "DEPOT_VENTE", city: "Brazzaville", address: "Rue Mbaka, Centre-ville",
-      desc: "Dépôt-vente de maroquinerie de luxe. Chaque pièce est examinée (coutures, ferrures, numéros) avant dépôt, puis contrôlée à nouveau par Le Beau Défaut.",
-      commission: 20, status: "ACTIF", rccm: "CG-BZV-01-2019-A10-01563", niu: "P2019030015634C", momo: "066300003", op: "MTN",
+      // La boutique maison : c'est Le Beau Défaut qui vend son propre stock.
+      email: "maison@lebeaudefaut.cg", phone: "066300003", first: "Christelle", last: "Okemba",
+      shop: "Le Beau Défaut", type: "ENTREPRISE", city: "Brazzaville", address: "Rue Mbaka, Centre-ville",
+      desc: "Notre propre stock : mobilier et sacs de luxe rachetés aux entreprises, inspectés pièce par pièce, photographiés sous leur mauvais angle et revendus à leur juste prix.",
+      commission: 0, status: "ACTIF", rccm: "CG-BZV-01-2024-B12-02001", niu: "M2024010020015L", momo: "066300003", op: "MTN",
+      isHouse: true,
     },
     {
       email: "electroplus@lebeaudefaut.cg", phone: "064400004", first: "Arsène", last: "Ngoma",
       shop: "Électro Plus Congo", type: "ENTREPRISE", city: "Brazzaville", address: "Avenue des Trois Martyrs, Moungali",
-      desc: "Électroménager et électronique. Nous écoulons ici les produits cabossés au transport, les modèles d'exposition et les cartons abîmés.",
+      desc: "Électroménager et électronique : produits cabossés au transport, modèles d'exposition, cartons abîmés.",
       commission: 12, status: "ACTIF", rccm: "CG-BZV-01-2012-B12-00733", niu: "M2012070007336E", momo: "064400004", op: "MTN",
     },
     {
@@ -1041,7 +1047,7 @@ async function main() {
     },
   ];
 
-  const sellers: { userId: string; profileId: string; commission: number }[] = [];
+  const sellers: { userId: string; profileId: string; commission: number; isHouse: boolean }[] = [];
   for (const [i, s] of sellerDefs.entries()) {
     const user = await prisma.user.create({
       data: {
@@ -1051,15 +1057,16 @@ async function main() {
           create: {
             shopName: s.shop, shopSlug: slugify(s.shop), type: s.type, description: s.desc,
             rccm: s.rccm || null, niu: s.niu || null, contactPhone: s.phone, address: s.address,
-            city: s.city, commissionPct: s.commission, status: s.status,
+            city: s.city, commissionPct: s.commission, status: s.status, isHouse: s.isHouse ?? false,
             mobileMoney: s.momo, mobileMoneyOp: s.op, createdAt: daysAgo(100 - i * 12),
           },
         },
       },
       include: { seller: true },
     });
-    sellers.push({ userId: user.id, profileId: user.seller!.id, commission: s.commission });
+    sellers.push({ userId: user.id, profileId: user.seller!.id, commission: s.commission, isHouse: s.isHouse ?? false });
   }
+  const house = sellers.find((x) => x.isHouse)!;
 
   const courierDefs = [
     { email: "livreur@lebeaudefaut.cg", phone: "066700007", first: "Rodrigue", last: "Mabiala", vehicle: "CAMIONNETTE", plate: "BZ 4521 CG", zones: "Brazzaville", cap: 800, status: "DISPONIBLE" },
@@ -1115,7 +1122,10 @@ async function main() {
     counters[p.v]++;
     const reference = `LBD-${prefix[p.v]}-${String(counters[p.v]).padStart(5, "0")}`;
     const [fx, fy, fz] = p.focus ?? [0.5, 0.6, 2.6];
-    const seller = sellers[p.s];
+    // Mobilier et sacs de luxe : l'article nous appartient, la boutique maison le porte,
+    // et l'entreprise qui nous l'a vendu reste mentionnée comme fournisseur.
+    const houseItem = p.v !== "FOURRE_TOUT";
+    const seller = houseItem ? house : sellers[p.s];
     const status = p.status ?? "PUBLIE";
     const publishedAt = status === "PUBLIE" || status === "VENDU" ? daysAgo(p.age ?? 10, 9) : null;
     const cover = img(p.photo);
@@ -1127,6 +1137,8 @@ async function main() {
         title: p.title,
         description: p.desc,
         vertical: p.v,
+        saleMode: houseItem ? "MAISON" : "PARTICULIER",
+        supplierName: houseItem ? SUPPLIERS[p.s] ?? null : null,
         categoryId: catBySlug[p.cat],
         sellerId: seller.userId,
         priceOriginal: p.orig,
@@ -1212,6 +1224,7 @@ async function main() {
 
   // ---------------- Commandes
   console.log("→ Commandes, livraisons, versements…");
+  const sellerByUser = new Map(sellers.map((x) => [x.userId, x]));
   const buyable = created.filter((c) => c.seed.status !== "EN_ATTENTE");
   const sold = created.filter((c) => c.seed.status === "VENDU");
   const multi = created.filter((c) => !c.seed.status && (c.seed.qty ?? 1) > 1);
@@ -1278,7 +1291,7 @@ async function main() {
     const createdAt = daysAgo(plan.day, 8 + (orderCount % 10));
     const lines = plan.items.map((it) => {
       const qty = (it.seed.qty ?? 1) > 1 && rand() > 0.7 ? 2 : 1;
-      const commission = sellers[it.seed.s].commission;
+      const commission = sellerByUser.get(it.sellerUserId)?.commission ?? 15;
       const lineTotal = it.seed.price * qty;
       return {
         it, qty, commission, lineTotal,
@@ -1319,6 +1332,19 @@ async function main() {
     };
 
     const reference = `LBD-${createdAt.getFullYear()}-${String(orderCount).padStart(6, "0")}`;
+
+    // Ce qui vient d'un vendeur extérieur passe par le séquestre ; notre propre stock, non.
+    const escrowAmount = lines
+      .filter((l) => !sellerByUser.get(l.it.sellerUserId)?.isHouse)
+      .reduce((sum, l) => sum + l.lineTotal, 0);
+    const delivered = plan.status === "LIVREE";
+    const escrowReleased = delivered && plan.day > 12;
+    const escrowStatus =
+      escrowAmount === 0 || plan.status === "ANNULEE" || !paid
+        ? "AUCUN"
+        : escrowReleased
+          ? "LIBERE"
+          : "SOUS_SEQUESTRE";
     const order = await prisma.order.create({
       data: {
         reference,
@@ -1330,6 +1356,10 @@ async function main() {
         subtotal,
         deliveryFee,
         total: subtotal + deliveryFee,
+        escrowAmount: escrowStatus === "AUCUN" ? 0 : escrowAmount,
+        escrowStatus,
+        buyerConfirmedAt: escrowReleased && orderCount % 3 === 0 ? daysAgo(plan.day - 3) : null,
+        releasedAt: escrowReleased ? daysAgo(plan.day - 2) : null,
         recipientName: `${client.first} ${client.last}`,
         recipientPhone: client.phone,
         city: client.city,
@@ -1397,32 +1427,37 @@ async function main() {
     if (plan.status === "LIVREE") {
       deliveredOrders.push({ orderId: order.id, buyerId: client.id, productIds: lines.map((l) => l.it.id), day: plan.day });
 
-      // Versements vendeurs
-      const bySeller = new Map<number, { amount: number; gross: number }>();
+      // Versements : la boutique maison n'en reçoit pas (l'argent est déjà à nous),
+      // les vendeurs du fourre-tout sont payés à la sortie du séquestre.
+      const bySeller = new Map<string, { amount: number; gross: number }>();
       for (const l of lines) {
-        const cur = bySeller.get(l.it.seed.s) ?? { amount: 0, gross: 0 };
+        const cur = bySeller.get(l.it.sellerUserId) ?? { amount: 0, gross: 0 };
         cur.amount += l.sellerAmount;
         cur.gross += l.lineTotal;
-        bySeller.set(l.it.seed.s, cur);
+        bySeller.set(l.it.sellerUserId, cur);
       }
-      for (const [sIdx, v] of bySeller) {
-        const isPaid = plan.day > 12;
+      for (const [sellerUserId, v] of bySeller) {
+        const profile = sellerByUser.get(sellerUserId);
+        if (!profile) continue;
+        await prisma.sellerProfile.update({
+          where: { id: profile.profileId },
+          data: { totalSales: { increment: v.gross } },
+        });
+        if (profile.isHouse) continue;
+
+        const isPaid = escrowReleased && plan.day > 20;
         await prisma.payout.create({
           data: {
-            sellerId: sellers[sIdx].profileId,
+            sellerId: profile.profileId,
             orderId: order.id,
             amount: v.amount,
             commission: v.gross - v.amount,
-            status: isPaid ? "PAYE" : "EN_ATTENTE",
+            status: isPaid ? "PAYE" : escrowReleased ? "EN_ATTENTE" : "SEQUESTRE",
             method: "MOBILE_MONEY",
-            reference: isPaid ? `VRS-${reference.slice(-6)}-${sIdx}` : null,
+            reference: isPaid ? `VRS-${reference.slice(-6)}` : null,
             paidAt: isPaid ? daysAgo(plan.day - 4) : null,
             createdAt: daysAgo(plan.day - 2),
           },
-        });
-        await prisma.sellerProfile.update({
-          where: { id: sellers[sIdx].profileId },
-          data: { totalSales: { increment: v.gross } },
         });
       }
       if (courier) {
@@ -1642,11 +1677,11 @@ async function main() {
   };
   console.log("✔ Terminé :", totals);
   console.log(`\nComptes de démo (mot de passe : ${PASSWORD})`);
-  console.log("  Admin   : admin@lebeaudefaut.cg");
-  console.log("  Vendeur : vendeur@lebeaudefaut.cg   (mobilier)");
-  console.log("  Vendeur : luxe@lebeaudefaut.cg      (sacs de luxe)");
-  console.log("  Livreur : livreur@lebeaudefaut.cg");
-  console.log("  Client  : client@lebeaudefaut.cg");
+  console.log("  Acheteur         : client@lebeaudefaut.cg");
+  console.log("  Vendeur fourre-tout : vendeur@lebeaudefaut.cg");
+  console.log("  Boutique maison  : maison@lebeaudefaut.cg   (equipe)");
+  console.log("  Livreur          : livreur@lebeaudefaut.cg  (equipe)");
+  console.log("  Administration   : admin@lebeaudefaut.cg    (equipe, /acces-equipe)");
 }
 
 main()

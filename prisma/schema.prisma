@@ -72,6 +72,7 @@ model SellerProfile {
   rating        Float    @default(0)
   ratingCount   Int      @default(0)
   totalSales    Int      @default(0)
+  isHouse       Boolean  @default(false) // boutique maison : Le Beau Défaut vend en son nom propre
   mobileMoney   String? // numéro de versement
   mobileMoneyOp String? // MTN | AIRTEL
   createdAt     DateTime @default(now())
@@ -148,6 +149,10 @@ model Product {
   description String
 
   vertical   String // MOBILIER | SACS | FOURRE_TOUT
+  // MAISON = l'article appartient à Le Beau Défaut, contact direct avec l'équipe.
+  // PARTICULIER = simple mise en relation, paiement sous séquestre, aucun contact direct.
+  saleMode     String  @default("PARTICULIER")
+  supplierName String? // fournisseur d'origine des articles maison (entreprise de mobilier…)
   categoryId String
   category   Category @relation(fields: [categoryId], references: [id])
 
@@ -299,6 +304,13 @@ model Order {
   quartier       String
   landmark       String?
   notes          String?
+
+  // Séquestre : l'argent d'une vente entre particuliers est conservé par Le Beau Défaut
+  // jusqu'à la confirmation de réception (ou automatiquement après le délai de réclamation).
+  escrowStatus     String    @default("AUCUN") // AUCUN | SOUS_SEQUESTRE | LIBERE | REMBOURSE
+  escrowAmount     Int       @default(0)
+  buyerConfirmedAt DateTime?
+  releasedAt       DateTime?
 
   cancelReason String?
   paidAt       DateTime?
@@ -483,8 +495,9 @@ model Message {
   thread    Thread   @relation(fields: [threadId], references: [id], onDelete: Cascade)
   senderId  String
   sender    User     @relation("MessageSender", fields: [senderId], references: [id], onDelete: Cascade)
-  body      String
-  createdAt DateTime @default(now())
+  body        String
+  wasFiltered Boolean  @default(false) // un numéro ou une adresse a été masqué
+  createdAt   DateTime @default(now())
 
   @@index([threadId])
 }

@@ -304,3 +304,85 @@ export const TONE_CLASSES: Record<string, string> = {
   danger: "bg-[var(--color-grade-c-bg)] text-[var(--color-danger)]",
   info: "bg-[#e7eef3] text-[var(--color-info)]",
 };
+
+// ---------------------- LES DEUX CIRCUITS DE VENTE ----------------------
+
+/**
+ * Le Beau Défaut fonctionne sur deux circuits bien distincts :
+ *
+ *  · MAISON       — le mobilier et les sacs de luxe nous appartiennent. Nous les
+ *                   achetons aux entreprises, nous les remettons en lumière, nous
+ *                   les vendons. L'acheteur parle directement à notre équipe.
+ *  · PARTICULIER  — le fourre-tout est une place de marché : nous mettons en
+ *                   relation un vendeur et un acheteur. L'argent est conservé par
+ *                   Le Beau Défaut jusqu'à la livraison (séquestre) et les échanges
+ *                   restent sur la plateforme.
+ */
+export const SALE_MODES = {
+  MAISON: {
+    key: "MAISON",
+    label: "Vendu par Le Beau Défaut",
+    short: "Notre stock",
+    description: "Cet article nous appartient. Nous l'avons inspecté, photographié et nous l'expédions nous-mêmes.",
+    tone: "gold",
+  },
+  PARTICULIER: {
+    key: "PARTICULIER",
+    label: "Mise en relation sécurisée",
+    short: "Entre particuliers",
+    description:
+      "Le Beau Défaut met en relation le vendeur et l'acheteur. Votre paiement est conservé par nos soins et n'est versé au vendeur qu'une fois l'article reçu.",
+    tone: "info",
+  },
+} as const;
+
+export type SaleModeKey = keyof typeof SALE_MODES;
+
+/** Les univers que Le Beau Défaut vend en son nom propre. */
+export const HOUSE_VERTICALS = ["MOBILIER", "SACS"] as const;
+
+/** Le circuit découle de l'univers : mobilier et sacs sont à nous, le fourre-tout est ouvert. */
+export function saleModeForVertical(vertical: string): SaleModeKey {
+  return (HOUSE_VERTICALS as readonly string[]).includes(vertical) ? "MAISON" : "PARTICULIER";
+}
+
+export function saleModeOf(key: string) {
+  return SALE_MODES[key as SaleModeKey] ?? SALE_MODES.PARTICULIER;
+}
+
+/** Univers qu'un vendeur extérieur peut proposer. */
+export const OPEN_VERTICALS = ["FOURRE_TOUT"] as const;
+
+// ---------------------- SÉQUESTRE ----------------------
+
+export const ESCROW_STATUS: Record<string, { label: string; tone: string; description: string }> = {
+  AUCUN: {
+    label: "Sans séquestre",
+    tone: "neutral",
+    description: "Article vendu par Le Beau Défaut : pas d'intermédiaire à protéger.",
+  },
+  SOUS_SEQUESTRE: {
+    label: "Argent conservé",
+    tone: "info",
+    description: "Le Beau Défaut conserve le paiement. Le vendeur ne touche rien tant que vous n'avez pas reçu l'article.",
+  },
+  LIBERE: {
+    label: "Versé au vendeur",
+    tone: "success",
+    description: "Réception confirmée : la somme a été versée au vendeur, commission déduite.",
+  },
+  REMBOURSE: {
+    label: "Remboursé à l'acheteur",
+    tone: "danger",
+    description: "La somme a été rendue à l'acheteur.",
+  },
+};
+
+/** Délai au bout duquel l'argent part au vendeur sans confirmation de l'acheteur. */
+export const ESCROW_RELEASE_DAYS = 3;
+
+/** Adresse discrète de connexion de l'équipe (jamais affichée au public). */
+export const TEAM_ACCESS_PATH = "/acces-equipe";
+
+/** Identifiant de la boutique maison. */
+export const HOUSE_SHOP_SLUG = "le-beau-defaut";

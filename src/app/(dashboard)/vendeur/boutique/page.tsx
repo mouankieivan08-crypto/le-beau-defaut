@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { requireRole } from "@/lib/auth";
+import { requireSeller } from "@/lib/auth";
 import { CITIES, SELLER_STATUS } from "@/lib/constants";
 import { updateShopAction } from "@/lib/actions/seller";
 import ActionForm from "@/components/ActionForm";
@@ -11,7 +11,7 @@ import PhotoInput from "@/components/PhotoInput";
 export const metadata: Metadata = { title: "Ma boutique" };
 
 export default async function ShopPage() {
-  const user = await requireRole(["VENDEUR", "ADMIN"], "/vendeur/boutique");
+  const user = await requireSeller("/vendeur/boutique");
   const shop = user.seller;
 
   if (!shop) {

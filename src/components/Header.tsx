@@ -133,6 +133,27 @@ export default async function Header() {
                     <Link href="/compte/commandes" className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm hover:bg-[var(--color-cream-deep)]">
                       <Icon name="package" size={15} /> Mes commandes
                     </Link>
+
+                    {/* Un seul compte, deux espaces : on achète et on vend sans se déconnecter. */}
+                    <div className="border-t border-[var(--color-sand)] my-1 pt-1">
+                      {user.seller || user.role === "ADMIN" ? (
+                        <>
+                          <Link href="/compte" className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm hover:bg-[var(--color-cream-deep)]">
+                            <Icon name="cart" size={15} /> Espace achat
+                          </Link>
+                          <Link href="/vendeur" className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm hover:bg-[var(--color-cream-deep)]">
+                            <Icon name="tag" size={15} /> Espace vente
+                            {user.seller?.status === "EN_ATTENTE" && (
+                              <span className="ml-auto text-[10px] text-[var(--color-gold-dark)]">à valider</span>
+                            )}
+                          </Link>
+                        </>
+                      ) : (
+                        <Link href="/devenir-vendeur" className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-[var(--color-gold-dark)] hover:bg-[var(--color-gold-pale)]">
+                          <Icon name="tag" size={15} /> Ouvrir une boutique
+                        </Link>
+                      )}
+                    </div>
                     <Link href="/messages" className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm hover:bg-[var(--color-cream-deep)]">
                       <Icon name="message" size={15} /> Messages
                     </Link>
@@ -158,7 +179,7 @@ export default async function Header() {
               </div>
             )}
 
-            <MobileMenu isLoggedIn={!!user} role={user?.role ?? null} />
+            <MobileMenu isLoggedIn={!!user} role={user?.role ?? null} canSell={Boolean(user?.seller) || user?.role === "ADMIN"} />
           </div>
         </div>
       </div>

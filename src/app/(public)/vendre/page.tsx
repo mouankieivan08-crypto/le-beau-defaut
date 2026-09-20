@@ -1,24 +1,30 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
-import { money } from "@/lib/format";
+import { money, waLink } from "@/lib/format";
 import Icon, { type IconName } from "@/components/Icon";
 import { Breadcrumb, GradeBadge } from "@/components/ui";
 
 export const metadata: Metadata = {
-  title: "Vendre votre stock",
-  description: "Entreprises de mobilier, showrooms, dépôts-ventes : écoulez vos articles à petit défaut avec Le Beau Défaut.",
+  title: "Vendre avec nous",
+  description: "Nous rachetons votre mobilier et vos sacs de luxe à petit défaut. Pour tout le reste, ouvrez une boutique dans le fourre-tout : paiement sous séquestre, versé après la livraison.",
 };
 
 const STEPS: { icon: IconName; title: string; text: string }[] = [
-  { icon: "home", title: "Ouvrez votre boutique", text: "Inscription gratuite. Nous vérifions votre RCCM et votre NIU sous 24 h ouvrées." },
+  { icon: "home", title: "Ouvrez votre boutique", text: "Gratuit, depuis votre compte habituel. Nous vérifions votre boutique sous 24 h ouvrées." },
   { icon: "camera", title: "Photographiez le défaut", text: "Une vue d'ensemble, un gros plan du défaut. Le formulaire vous guide pour le grade et le prix." },
   { icon: "check-circle", title: "Nous validons", text: "Notre équipe vérifie la cohérence défaut / photos / remise, puis publie l'annonce." },
   { icon: "truck", title: "Nous livrons", text: "Nos livreurs récupèrent l'article chez vous et encaissent si le client paie en espèces." },
-  { icon: "wallet", title: "Vous êtes payé", text: "Versement Mobile Money après chaque livraison, commission déduite. Aucun frais fixe." },
+  { icon: "wallet", title: "Vous êtes payé", text: "L'acheteur paie Le Beau Défaut, qui vous verse la somme dès la réception confirmée — au plus tard 3 jours après la livraison." },
 ];
 
 export default async function SellPage() {
+  const contact = await prisma.setting.findUnique({ where: { key: "contact.whatsapp" } });
+  const lotLink = waLink(
+    contact?.value,
+    "Bonjour, j'ai du mobilier (ou des sacs) à petit défaut à vous proposer. Voici ce que j'ai :"
+  );
+
   const [sellers, sold, gmv] = await Promise.all([
     prisma.sellerProfile.count({ where: { status: "ACTIF" } }),
     prisma.orderItem.aggregate({ where: { order: { status: "LIVREE" } }, _sum: { quantity: true } }),
@@ -31,24 +37,47 @@ export default async function SellPage() {
 
       <section className="grid grid-cols-1 lg:grid-cols-[1.2fr_1fr] gap-10 items-center mb-16">
         <div>
-          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--color-gold-deep)] mb-2">Pour les professionnels</p>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--color-gold-deep)] mb-2">Vendre avec nous</p>
           <h1 className="font-display text-[40px] sm:text-[48px] font-bold leading-[1.05]">
-            Votre stock abîmé
+            Deux façons
             <br />
-            vaut plus que vous ne pensez.
+            de vendre votre défaut.
           </h1>
           <p className="text-[16px] text-[var(--color-ink-soft)] mt-5 leading-relaxed max-w-xl">
-            Un canapé griffé au déchargement du conteneur, une table de showroom, un lot de chaises en fin de série : ces
-            articles immobilisent votre trésorerie et votre surface de dépôt. Nous les mettons devant des acheteurs qui
-            cherchent précisément ça.
+            Le mobilier et les sacs de luxe, nous vous les <strong>rachetons</strong> : c&apos;est ensuite notre
+            affaire de les revendre. Pour tout le reste, ouvrez une boutique dans le <strong>fourre-tout</strong> et
+            vendez vous-même — nous encaissons pour vous et vous payons après la livraison.
           </p>
-          <div className="flex flex-wrap gap-3 mt-7">
-            <Link href="/inscription?type=vendeur" className="btn btn-gold btn-lg">
-              Ouvrir ma boutique gratuitement
-            </Link>
-            <Link href="/le-defaut" className="btn btn-outline btn-lg">
-              Voir la grille du défaut
-            </Link>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-7">
+            <div className="surface p-4 border-[var(--color-gold)]/50">
+              <p className="text-sm font-semibold flex items-center gap-2 mb-1">
+                <Icon name="sparkle" size={15} className="text-[var(--color-gold-dark)]" /> Mobilier, sacs de luxe
+              </p>
+              <p className="text-xs text-[var(--color-ink-muted)] mb-3">
+                Entreprise, showroom, importateur : nous venons voir le lot et vous faisons une offre ferme.
+              </p>
+              {lotLink ? (
+                <a href={lotLink} target="_blank" rel="noreferrer" className="btn btn-gold btn-sm w-full">
+                  Proposer mon lot
+                </a>
+              ) : (
+                <Link href="/aide" className="btn btn-gold btn-sm w-full">
+                  Nous contacter
+                </Link>
+              )}
+            </div>
+            <div className="surface p-4">
+              <p className="text-sm font-semibold flex items-center gap-2 mb-1">
+                <Icon name="box" size={15} className="text-[var(--color-gold-dark)]" /> Tout le reste
+              </p>
+              <p className="text-xs text-[var(--color-ink-muted)] mb-3">
+                Déco, électroménager, luminaires… Vous publiez, nous sécurisons le paiement.
+              </p>
+              <Link href="/devenir-vendeur" className="btn btn-primary btn-sm w-full">
+                Ouvrir ma boutique
+              </Link>
+            </div>
           </div>
         </div>
 
@@ -126,7 +155,7 @@ export default async function SellPage() {
       <section className="rounded-[18px] bg-[var(--color-ink)] text-[var(--color-cream)] p-10 text-center">
         <p className="font-script text-gilded text-3xl">Un défaut n&apos;est pas une perte</p>
         <h2 className="font-display text-[30px] font-bold mt-2">C&apos;est une vente à trouver.</h2>
-        <Link href="/inscription?type=vendeur" className="btn btn-gold btn-lg mt-6">
+        <Link href="/devenir-vendeur" className="btn btn-gold btn-lg mt-6">
           Commencer maintenant
         </Link>
       </section>

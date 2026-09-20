@@ -8,15 +8,21 @@ import { CITIES } from "@/lib/constants";
 import Icon from "./Icon";
 import { Alert } from "./ui";
 
+// Comptes de démonstration montrés au public : uniquement les deux profils du site.
 const DEMO_ACCOUNTS = [
-  { label: "Client", email: "client@lebeaudefaut.cg" },
-  { label: "Vendeur mobilier", email: "vendeur@lebeaudefaut.cg" },
-  { label: "Vendeur luxe", email: "luxe@lebeaudefaut.cg" },
-  { label: "Livreur", email: "livreur@lebeaudefaut.cg" },
-  { label: "Admin", email: "admin@lebeaudefaut.cg" },
+  { label: "Acheteur", email: "client@lebeaudefaut.cg" },
+  { label: "Vendeur fourre-tout", email: "vendeur@lebeaudefaut.cg" },
 ];
 
-export function LoginForm({ next }: { next?: string }) {
+// Réservés à la page d'accès de l'équipe, qui n'est liée nulle part sur le site.
+const TEAM_ACCOUNTS = [
+  { label: "Administration", email: "admin@lebeaudefaut.cg" },
+  { label: "Boutique maison", email: "maison@lebeaudefaut.cg" },
+  { label: "Livreur", email: "livreur@lebeaudefaut.cg" },
+];
+
+export function LoginForm({ next, team = false }: { next?: string; team?: boolean }) {
+  const accounts = team ? TEAM_ACCOUNTS : DEMO_ACCOUNTS;
   const [state, onSubmit, pending] = useStickyAction(loginAction, undefined);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -86,9 +92,9 @@ export function LoginForm({ next }: { next?: string }) {
       {/* Accès rapide aux comptes de démonstration (mode vitrine uniquement) */}
       {process.env.NEXT_PUBLIC_DEMO === "1" && (
       <div className="mt-8 pt-6 border-t border-[var(--color-sand)]">
-        <p className="label text-center mb-3">Comptes de démonstration</p>
+        <p className="label text-center mb-3">{team ? "Accès de l'équipe" : "Essayer sans créer de compte"}</p>
         <div className="flex flex-wrap justify-center gap-1.5">
-          {DEMO_ACCOUNTS.map((a) => (
+          {accounts.map((a) => (
             <button
               key={a.email}
               type="button"
@@ -120,33 +126,55 @@ export function RegisterForm({ defaultType = "CLIENT" }: { defaultType?: "CLIENT
       {state?.error && <Alert tone="danger">{state.error}</Alert>}
 
       <input type="hidden" name="accountType" value={type} />
-      <div className="grid grid-cols-2 gap-2 p-1 rounded-xl bg-[var(--color-cream-deep)]">
-        {(
-          [
-            { key: "CLIENT", label: "J'achète", icon: "cart" },
-            { key: "VENDEUR", label: "Je vends", icon: "tag" },
-          ] as const
-        ).map((t) => (
-          <button
-            key={t.key}
-            type="button"
-            onClick={() => setType(t.key)}
-            className={`flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium transition-all ${
-              type === t.key
-                ? "bg-[var(--color-linen)] shadow-sm text-[var(--color-ink)]"
-                : "text-[var(--color-ink-muted)] hover:text-[var(--color-ink)]"
-            }`}
-          >
-            <Icon name={t.icon} size={15} /> {t.label}
-          </button>
-        ))}
-      </div>
+      <fieldset>
+        <legend className="label mb-2">Qui êtes-vous ?</legend>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          {(
+            [
+              {
+                key: "CLIENT",
+                label: "J'achète",
+                icon: "cart",
+                hint: "Meubles, sacs, bonnes affaires — livrés chez vous.",
+              },
+              {
+                key: "VENDEUR",
+                label: "Je vends",
+                icon: "tag",
+                hint: "Vos articles dans le fourre-tout, paiement garanti.",
+              },
+            ] as const
+          ).map((t) => (
+            <button
+              key={t.key}
+              type="button"
+              onClick={() => setType(t.key)}
+              aria-pressed={type === t.key}
+              className={`flex flex-col items-start gap-1 p-3 rounded-xl border text-left transition-all ${
+                type === t.key
+                  ? "border-[var(--color-gold-dark)] bg-[var(--color-gold-pale)] text-[var(--color-ink)]"
+                  : "border-[var(--color-sand)] bg-[var(--color-linen)] text-[var(--color-ink-soft)] hover:bg-[var(--color-cream-deep)]"
+              }`}
+            >
+              <span className="flex items-center gap-2 text-sm font-semibold">
+                <Icon name={t.icon} size={16} /> {t.label}
+              </span>
+              <span className="text-[11px] text-[var(--color-ink-muted)]">{t.hint}</span>
+            </button>
+          ))}
+        </div>
+        <p className="text-[11px] text-[var(--color-ink-muted)] mt-2">
+          Ce choix n'enferme personne : un acheteur peut ouvrir une boutique plus tard, un vendeur achète
+          comme tout le monde. Le compte est le même.
+        </p>
+      </fieldset>
 
       {type === "VENDEUR" && (
         <>
           <Alert tone="info">
-            Entreprise de mobilier, showroom, dépôt-vente ou particulier : votre boutique sera activée par
-            notre équipe après vérification (sous 24 h ouvrées).
+            Vous vendrez dans le <strong>fourre-tout</strong> : les acheteurs vous paient via Le Beau Défaut,
+            qui vous reverse après la livraison. Le mobilier et les sacs de luxe, eux, nous les achetons avant
+            de les revendre — dites-le nous et nous viendrons voir votre lot.
           </Alert>
           <div>
             <label className="label" htmlFor="shopName">

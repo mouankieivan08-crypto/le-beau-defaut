@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
-import { requireRole } from "@/lib/auth";
+import { requireSeller } from "@/lib/auth";
 import ProductForm from "@/components/ProductForm";
 import Icon from "@/components/Icon";
 import { PageHeader, Alert } from "@/components/ui";
@@ -9,7 +9,7 @@ import { PageHeader, Alert } from "@/components/ui";
 export const metadata: Metadata = { title: "Nouvelle annonce" };
 
 export default async function NewListingPage() {
-  const user = await requireRole(["VENDEUR", "ADMIN"], "/vendeur/annonces/nouvelle");
+  const user = await requireSeller("/vendeur/annonces/nouvelle");
   const categories = await prisma.category.findMany({
     where: { isActive: true },
     select: { id: true, name: true, vertical: true },

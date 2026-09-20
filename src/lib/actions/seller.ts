@@ -4,10 +4,10 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
-import { requireRole } from "@/lib/auth";
+import { requireSeller, requireUser } from "@/lib/auth";
 import { slugify, discountPct } from "@/lib/format";
 import { resolveImage, saveImages } from "@/lib/upload";
-import { gradeOf } from "@/lib/constants";
+import { gradeOf, saleModeForVertical } from "@/lib/constants";
 
 type State = { error?: string; success?: string } | undefined;
 
@@ -84,7 +84,7 @@ function readDefects(formData: FormData) {
 }
 
 export async function createProductAction(_prev: State, formData: FormData): Promise<State> {
-  const user = await requireRole(["VENDEUR", "ADMIN"], "/vendeur/annonces/nouvelle");
+  const user = await requireSeller("/vendeur/annonces/nouvelle");
   const seller = await prisma.sellerProfile.findUnique({ where: { userId: user.id } });
   if (user.role === "VENDEUR" && seller?.status !== "ACTIF") {
     return { error: "Votre boutique doit être validée par un administrateur avant de publier." };
@@ -94,6 +94,16 @@ export async function createProductAction(_prev: State, formData: FormData): Pro
   const parsed = productSchema.safeParse(base);
   if (!parsed.success) return { error: parsed.error.issues[0].message };
   const d = parsed.data;
+
+  // Le mobilier et les sacs de luxe appartiennent à Le Beau Défaut : seule la boutique
+  // maison peut les mettre en ligne. Les vendeurs extérieurs publient dans le fourre-tout.
+  const isHouse = user.role === "ADMIN" || seller?.isHouse === true;
+  if (!isHouse && saleModeForVertical(d.vertical) === "MAISON") {
+    return {
+      error:
+        "Le mobilier et les sacs de luxe sont achetés puis revendus par Le Beau Défaut. Proposez votre article dans le fourre-tout, ou écrivez-nous pour nous vendre votre lot.",
+    };
+  }
 
   if (d.price >= d.priceOriginal) {
     return { error: "Le prix Le Beau Défaut doit être inférieur au prix d'origine." };
@@ -150,6 +160,8 @@ export async function createProductAction(_prev: State, formData: FormData): Pro
       title: d.title,
       description: d.description,
       vertical: d.vertical,
+      saleMode: saleModeForVertical(d.vertical),
+      supplierName: isHouse ? String(formData.get("supplierName") || "").trim() || null : null,
       categoryId: d.categoryId,
       sellerId: user.id,
       priceOriginal: d.priceOriginal,
@@ -198,7 +210,7 @@ export async function createProductAction(_prev: State, formData: FormData): Pro
 }
 
 export async function updateProductAction(_prev: State, formData: FormData): Promise<State> {
-  const user = await requireRole(["VENDEUR", "ADMIN"]);
+  const user = await requireSeller();
   const id = String(formData.get("productId") || "");
 
   const existing = await prisma.product.findUnique({ where: { id } });
@@ -230,6 +242,7 @@ export async function updateProductAction(_prev: State, formData: FormData): Pro
       title: d.title,
       description: d.description,
       vertical: d.vertical,
+      saleMode: saleModeForVertical(d.vertical),
       categoryId: d.categoryId,
       priceOriginal: d.priceOriginal,
       price: d.price,
@@ -284,7 +297,7 @@ export async function updateProductAction(_prev: State, formData: FormData): Pro
 }
 
 export async function deleteProductImageAction(formData: FormData) {
-  const user = await requireRole(["VENDEUR", "ADMIN"]);
+  const user = await requireSeller();
   const imageId = String(formData.get("imageId") || "");
   const image = await prisma.productImage.findUnique({ where: { id: imageId }, include: { product: true } });
   if (!image) return;
@@ -295,7 +308,7 @@ export async function deleteProductImageAction(formData: FormData) {
 }
 
 export async function changeProductStatusAction(formData: FormData) {
-  const user = await requireRole(["VENDEUR", "ADMIN"]);
+  const user = await requireSeller();
   const id = String(formData.get("productId") || "");
   const status = String(formData.get("status") || "");
   if (!["BROUILLON", "EN_ATTENTE", "ARCHIVE"].includes(status)) return;
@@ -309,7 +322,7 @@ export async function changeProductStatusAction(formData: FormData) {
 }
 
 export async function deleteProductAction(formData: FormData) {
-  const user = await requireRole(["VENDEUR", "ADMIN"]);
+  const user = await requireSeller();
   const id = String(formData.get("productId") || "");
   const product = await prisma.product.findUnique({
     where: { id },
@@ -340,7 +353,7 @@ const shopSchema = z.object({
 });
 
 export async function updateShopAction(_prev: State, formData: FormData): Promise<State> {
-  const user = await requireRole(["VENDEUR", "ADMIN"], "/vendeur/boutique");
+  const user = await requireSeller("/vendeur/boutique");
   const parsed = shopSchema.safeParse({
     shopName: String(formData.get("shopName") || "").trim(),
     description: String(formData.get("description") || "").trim(),
@@ -363,4 +376,70 @@ export async function updateShopAction(_prev: State, formData: FormData): Promis
 
   revalidatePath("/", "layout");
   return { success: "Boutique mise à jour." };
+}
+
+/* ---------------------------- Ouvrir une boutique ---------------------------- */
+
+/**
+ * N'importe quel compte peut se mettre à vendre sans cesser d'acheter.
+ * On crée sa boutique, l'équipe la valide, et l'espace vente s'ouvre à côté de l'espace achat.
+ */
+export async function becomeSellerAction(_prev: State, formData: FormData): Promise<State> {
+  const user = await requireUser("/devenir-vendeur");
+  if (user.seller) return { error: "Vous avez déjà une boutique." };
+
+  const shopName = String(formData.get("shopName") || "").trim();
+  const type = String(formData.get("type") || "PARTICULIER");
+  const city = String(formData.get("city") || "Brazzaville");
+  const contactPhone = String(formData.get("contactPhone") || "").trim();
+  const description = String(formData.get("description") || "").trim();
+  const mobileMoney = String(formData.get("mobileMoney") || "").trim();
+  const mobileMoneyOp = String(formData.get("mobileMoneyOp") || "") || null;
+
+  if (shopName.length < 2) return { error: "Donnez un nom à votre boutique." };
+  if (contactPhone.replace(/\D/g, "").length < 9) return { error: "Numéro de téléphone invalide." };
+
+  let shopSlug = slugify(shopName);
+  if (await prisma.sellerProfile.findUnique({ where: { shopSlug } })) {
+    shopSlug = `${shopSlug}-${Date.now().toString(36).slice(-4)}`;
+  }
+
+  await prisma.sellerProfile.create({
+    data: {
+      userId: user.id,
+      shopName,
+      shopSlug,
+      type,
+      city,
+      contactPhone,
+      description: description || null,
+      mobileMoney: mobileMoney || null,
+      mobileMoneyOp,
+      status: "EN_ATTENTE",
+    },
+  });
+
+  const admins = await prisma.user.findMany({ where: { role: "ADMIN" }, select: { id: true } });
+  await prisma.notification.createMany({
+    data: admins.map((a) => ({
+      userId: a.id,
+      type: "SYSTEME",
+      title: "Nouvelle boutique à activer",
+      body: `${shopName} (${city}) demande à vendre sur le fourre-tout.`,
+      link: "/admin/vendeurs?statut=EN_ATTENTE",
+    })),
+  });
+
+  await prisma.notification.create({
+    data: {
+      userId: user.id,
+      type: "SYSTEME",
+      title: "Boutique enregistrée",
+      body: "Nous vérifions votre boutique. Vous pourrez publier dès son activation.",
+      link: "/vendeur",
+    },
+  });
+
+  revalidatePath("/", "layout");
+  return { success: "Boutique enregistrée. Notre équipe la vérifie, en général sous 24 h ouvrées." };
 }

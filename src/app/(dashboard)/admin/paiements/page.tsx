@@ -139,7 +139,9 @@ export default async function AdminPayoutsPage({ searchParams }: { searchParams:
                     {money(p.amount)}
                   </td>
                   <td>
-                    <Badge tone={p.status === "PAYE" ? "success" : "warning"}>{p.status === "PAYE" ? "Versé" : "À verser"}</Badge>
+                    <Badge tone={p.status === "PAYE" ? "success" : p.status === "SEQUESTRE" ? "info" : p.status === "ANNULE" ? "danger" : "warning"}>
+                      {p.status === "PAYE" ? "Versé" : p.status === "SEQUESTRE" ? "Sous séquestre" : p.status === "ANNULE" ? "Annulé" : "À verser"}
+                    </Badge>
                     {p.paidAt && <p className="text-[11px] text-[var(--color-ink-muted)] mt-0.5">{dateFR(p.paidAt)}</p>}
                     {p.reference && <p className="text-[11px] text-[var(--color-ink-muted)] font-mono">{p.reference}</p>}
                   </td>

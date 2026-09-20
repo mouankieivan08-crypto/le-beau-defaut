@@ -17,6 +17,8 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     prisma.claim.count({ where: { status: { in: ["OUVERTE", "EN_EXAMEN"] } } }),
   ]);
 
+  const heldOrders = await prisma.order.count({ where: { escrowStatus: "SOUS_SEQUESTRE" } });
+
   const nav: NavItem[] = [
     { href: "/admin", label: "Vue d'ensemble", icon: "chart", exact: true },
     { href: "/admin/annonces", label: "Annonces", icon: "tag", badge: pendingProducts + pendingAuth },
@@ -25,6 +27,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     { href: "/admin/reclamations", label: "Réclamations", icon: "shield", badge: openClaims },
     { href: "/admin/vendeurs", label: "Vendeurs", icon: "wallet", badge: pendingSellers },
     { href: "/admin/utilisateurs", label: "Utilisateurs", icon: "users" },
+    { href: "/admin/sequestre", label: "Séquestre", icon: "shield", badge: heldOrders },
     { href: "/admin/paiements", label: "Versements", icon: "wallet", badge: pendingPayouts },
     { href: "/admin/categories", label: "Catégories", icon: "grid" },
     { href: "/admin/parametres", label: "Paramètres", icon: "settings" },

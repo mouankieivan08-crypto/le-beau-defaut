@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { refundEscrowForOrder, releaseEscrowForOrder } from "@/lib/escrow";
 import { prisma } from "@/lib/prisma";
 import { requireUser, requireAdmin } from "@/lib/auth";
 import { saveImage } from "@/lib/upload";
@@ -119,6 +120,15 @@ export async function resolveClaimAction(_prev: State, formData: FormData): Prom
         where: { id: claim.orderId },
         data: { status: "REMBOURSEE", paymentStatus: "REMBOURSE" },
       });
+    }
+
+    // Réclamation acceptée avec remboursement : l'argent retenu ne part pas au vendeur.
+    if (status === "ACCEPTEE" && refundAmount > 0) {
+      await refundEscrowForOrder(tx, claim.orderId);
+    }
+    // Réclamation écartée : le séquestre reprend son cours normal.
+    if (status === "REFUSEE") {
+      await releaseEscrowForOrder(tx, claim.orderId, "Réclamation examinée et écartée.");
     }
 
     if (["ACCEPTEE", "REFUSEE"].includes(status)) {

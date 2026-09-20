@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
-import { requireRole } from "@/lib/auth";
+import { requireSeller } from "@/lib/auth";
 import { money, moneyCompact, relativeFR } from "@/lib/format";
 import { weeklySeries, daysAgo, deltaPct, LIVE_ORDER } from "@/lib/stats";
 import { ORDER_STATUS } from "@/lib/constants";
@@ -9,7 +9,7 @@ import Icon from "@/components/Icon";
 import { Stat, Card, Badge, Alert, PageHeader, GradeBadge, Rating, EmptyState } from "@/components/ui";
 
 export default async function SellerDashboard() {
-  const user = await requireRole(["VENDEUR", "ADMIN"], "/vendeur");
+  const user = await requireSeller("/vendeur");
   const shop = user.seller;
 
   const d30 = daysAgo(30);

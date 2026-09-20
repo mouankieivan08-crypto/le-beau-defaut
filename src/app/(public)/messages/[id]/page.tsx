@@ -67,6 +67,12 @@ export default async function ThreadPage({ params }: { params: Promise<{ id: str
         </header>
 
         <div className="flex-1 p-4 sm:p-6 flex flex-col gap-3 bg-[var(--color-cream)]/50">
+          <p className="mx-auto max-w-md text-center text-[11px] text-[var(--color-ink-muted)] bg-[var(--color-linen)] border border-[var(--color-sand)] rounded-xl px-3 py-2">
+            <Icon name="shield" size={12} className="inline align-[-2px] mr-1 text-[var(--color-gold-dark)]" />
+            Les numéros, adresses et liens sont masqués. Restez ici : c&apos;est ce qui vous permet d&apos;être
+            remboursé si l&apos;article ne correspond pas.
+          </p>
+
           {thread.messages.map((m) => {
             const mine = m.senderId === user.id;
             return (
@@ -79,6 +85,11 @@ export default async function ThreadPage({ params }: { params: Promise<{ id: str
                   }`}
                 >
                   <p className="text-sm whitespace-pre-line leading-relaxed">{m.body}</p>
+                  {m.wasFiltered && (
+                    <p className={`text-[10px] mt-1 flex items-center gap-1 ${mine ? "text-[var(--color-cream)]/70" : "text-[var(--color-gold-dark)]"}`}>
+                      <Icon name="shield" size={10} /> Coordonnées retirées par Le Beau Défaut
+                    </p>
+                  )}
                   <p className={`text-[10px] mt-1 ${mine ? "text-[var(--color-cream)]/55" : "text-[var(--color-ink-muted)]"}`}>
                     {dateTimeFR(m.createdAt)}
                   </p>
@@ -94,7 +105,7 @@ export default async function ThreadPage({ params }: { params: Promise<{ id: str
             name="body"
             rows={2}
             required
-            placeholder="Votre message…"
+            placeholder="Votre message… (inutile de donner votre numéro, il sera masqué)"
             className="field resize-none"
             aria-label="Votre message"
           />

@@ -9,6 +9,26 @@ export const metadata: Metadata = { title: "Aide & livraison" };
 
 const FAQ: { q: string; a: string }[] = [
   {
+    q: "Qui me vend l'article : Le Beau Défaut ou un particulier ?",
+    a: "Les deux existent, et c'est écrit sur chaque annonce. Le mobilier et les sacs de luxe nous appartiennent : nous les rachetons aux entreprises, nous les inspectons et nous les vendons nous-mêmes (mention « Notre stock »). Le fourre-tout est une place de marché : l'article appartient à un vendeur, nous mettons en relation et nous sécurisons le paiement.",
+  },
+  {
+    q: "Dans le fourre-tout, comment mon argent est-il protégé ?",
+    a: "Vous payez Le Beau Défaut, pas le vendeur. Nous conservons la somme jusqu'à la livraison. Vous confirmez la réception d'un clic et le vendeur est payé ; sans nouvelles de votre part, il l'est automatiquement 3 jours après la livraison. Si l'article ne correspond pas, ouvrez une réclamation dans ces 3 jours : l'argent reste bloqué le temps que nous tranchions.",
+  },
+  {
+    q: "Pourquoi mon numéro a-t-il été masqué dans la messagerie ?",
+    a: "Parce que c'est ce qui vous protège. Une vente conclue par téléphone échappe au séquestre et à la réclamation : si l'article est faux ou n'arrive jamais, personne ne peut vous rembourser. Les numéros, adresses e-mail et liens sont donc retirés automatiquement des conversations entre particuliers.",
+  },
+  {
+    q: "Puis-je acheter et vendre avec le même compte ?",
+    a: "Oui. Depuis votre compte, « Ouvrir une boutique » ajoute un espace vente à côté de votre espace achat. Vous passez de l'un à l'autre par le menu de votre profil, sans vous déconnecter.",
+  },
+  {
+    q: "J'ai du mobilier ou des sacs de luxe à vendre. Comment faire ?",
+    a: "Ces deux rayons ne sont pas ouverts aux vendeurs extérieurs : nous achetons le lot, puis nous le revendons nous-mêmes. Écrivez-nous depuis la page « Vendre avec nous » ; nous venons voir les pièces et nous vous faisons une offre.",
+  },
+  {
     q: "Le défaut sera-t-il vraiment celui de la photo ?",
     a: "Oui. Chaque défaut est photographié, situé et noté avant publication, et notre équipe vérifie l'annonce. Si vous recevez un article avec un défaut non annoncé, signalez-le sous 3 jours : nous le reprenons et vous remboursons.",
   },

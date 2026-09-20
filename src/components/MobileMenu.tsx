@@ -6,7 +6,15 @@ import Icon from "./Icon";
 import Logo from "./Logo";
 import { VERTICAL_LIST, homeForRole } from "@/lib/constants";
 
-export default function MobileMenu({ isLoggedIn, role }: { isLoggedIn: boolean; role: string | null }) {
+export default function MobileMenu({
+  isLoggedIn,
+  role,
+  canSell = false,
+}: {
+  isLoggedIn: boolean;
+  role: string | null;
+  canSell?: boolean;
+}) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -93,6 +101,23 @@ export default function MobileMenu({ isLoggedIn, role }: { isLoggedIn: boolean; 
                   >
                     <Icon name="package" size={16} /> Mes commandes
                   </Link>
+                  {canSell ? (
+                    <Link
+                      href="/vendeur"
+                      onClick={() => setOpen(false)}
+                      className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg hover:bg-[var(--color-cream-deep)] text-sm font-medium"
+                    >
+                      <Icon name="tag" size={16} /> Espace vente
+                    </Link>
+                  ) : (
+                    <Link
+                      href="/devenir-vendeur"
+                      onClick={() => setOpen(false)}
+                      className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg hover:bg-[var(--color-gold-pale)] text-sm font-medium text-[var(--color-gold-dark)]"
+                    >
+                      <Icon name="tag" size={16} /> Ouvrir une boutique
+                    </Link>
+                  )}
                   <Link
                     href="/compte/favoris"
                     onClick={() => setOpen(false)}
