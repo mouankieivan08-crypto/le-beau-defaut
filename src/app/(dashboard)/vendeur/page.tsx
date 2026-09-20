@@ -29,7 +29,7 @@ export default async function SellerDashboard() {
       select: { sellerAmount: true, order: { select: { createdAt: true } } },
     }),
     shop
-      ? prisma.payout.aggregate({ where: { sellerId: shop.id, status: "EN_ATTENTE" }, _sum: { amount: true }, _count: true })
+      ? prisma.payout.aggregate({ where: { sellerId: shop.id, status: { in: ["EN_ATTENTE", "SEQUESTRE"] } }, _sum: { amount: true }, _count: true })
       : null,
     prisma.product.groupBy({ by: ["status"], where: { sellerId: user.id }, _count: true }),
     prisma.product.aggregate({ where: { sellerId: user.id }, _sum: { views: true } }),
@@ -123,7 +123,7 @@ export default async function SellerDashboard() {
         <Stat
           label="À percevoir"
           value={money(payoutsDue?._sum.amount ?? 0)}
-          hint={`${payoutsDue?._count ?? 0} versement(s) en attente`}
+          hint={shop?.isHouse ? "Boutique maison : pas de versement" : `${payoutsDue?._count ?? 0} vente(s) livrée(s), séquestre compris`}
           icon="wallet"
           href="/vendeur/paiements"
         />

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ESCROW_RELEASE_DAYS } from "@/lib/constants";
 import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import { requireSeller } from "@/lib/auth";
@@ -20,7 +21,7 @@ export default async function SellerPayoutsPage() {
     );
   }
 
-  const [payouts, pending, paid, inTransit] = await Promise.all([
+  const [payouts, pending, paid, inTransit, held] = await Promise.all([
     prisma.payout.findMany({
       where: { sellerId: shop.id },
       include: { order: { select: { reference: true, deliveredAt: true } } },
@@ -32,11 +33,17 @@ export default async function SellerPayoutsPage() {
       where: { sellerId: user.id, order: { status: { in: ["PAYEE", "CONFIRMEE", "EN_PREPARATION", "EN_LIVRAISON"] } } },
       _sum: { sellerAmount: true },
     }),
+    prisma.payout.aggregate({ where: { sellerId: shop.id, status: "SEQUESTRE" }, _sum: { amount: true }, _count: true }),
   ]);
 
   return (
     <>
-      <PageHeader title="Versements" subtitle="Vous êtes payé par Mobile Money après chaque livraison réussie." />
+      <PageHeader
+        title="Versements"
+        subtitle={shop.isHouse
+          ? "Boutique maison : les ventes de notre propre stock n'ouvrent pas de versement."
+          : `L'acheteur paie Le Beau Défaut. L'argent vous est versé dès qu'il confirme la réception, au plus tard ${ESCROW_RELEASE_DAYS} jours après la livraison.`}
+      />
 
       {!shop.mobileMoney && (
         <div className="mb-5">
@@ -49,9 +56,15 @@ export default async function SellerPayoutsPage() {
         </div>
       )}
 
-      <div className="grid grid-cols-2 xl:grid-cols-4 gap-3 mb-6">
-        <Stat label="En cours de livraison" value={money(inTransit._sum.sellerAmount ?? 0)} hint="Versé après livraison" icon="truck" />
-        <Stat label="À recevoir" value={money(pending._sum.amount ?? 0)} hint="Sous 48 h ouvrées" icon="wallet" tone="gold" />
+      <div className="grid grid-cols-2 xl:grid-cols-5 gap-3 mb-6">
+        <Stat label="En cours de livraison" value={money(inTransit._sum.sellerAmount ?? 0)} hint="L'acheteur n'a pas encore reçu" icon="truck" />
+        <Stat
+          label="Sous séquestre"
+          value={money(held._sum.amount ?? 0)}
+          hint={`${held._count} vente(s) livrée(s), en attente de confirmation`}
+          icon="shield"
+        />
+        <Stat label="À recevoir" value={money(pending._sum.amount ?? 0)} hint="Débloqué, envoi sous 48 h ouvrées" icon="wallet" tone="gold" />
         <Stat label="Déjà reçu" value={money(paid._sum.amount ?? 0)} icon="check-circle" tone="success" />
         <Stat
           label="Compte de versement"
@@ -88,7 +101,9 @@ export default async function SellerPayoutsPage() {
                     {money(p.amount)}
                   </td>
                   <td>
-                    <Badge tone={p.status === "PAYE" ? "success" : "warning"}>{p.status === "PAYE" ? "Reçu" : "En attente"}</Badge>
+                    <Badge tone={p.status === "PAYE" ? "success" : p.status === "SEQUESTRE" ? "info" : p.status === "ANNULE" ? "danger" : "warning"}>
+                      {p.status === "PAYE" ? "Reçu" : p.status === "SEQUESTRE" ? "Sous séquestre" : p.status === "ANNULE" ? "Remboursé à l'acheteur" : "Débloqué"}
+                    </Badge>
                     {p.paidAt && (
                       <span className="text-[11px] text-[var(--color-ink-muted)] ml-2">
                         {dateFR(p.paidAt)} {p.reference && `· ${p.reference}`}
