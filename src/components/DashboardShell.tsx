@@ -44,6 +44,14 @@ export default function DashboardShell({
         >
           <Icon name="home" size={16} /> Voir la boutique
         </Link>
+        {role === "VENDEUR" && (
+          <Link
+            href="/compte"
+            className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-[var(--color-cream)]/70 hover:bg-white/5 hover:text-[var(--color-cream)] mb-2"
+          >
+            <Icon name="cart" size={16} /> Mon espace achat
+          </Link>
+        )}
         <div className="flex items-center gap-2.5 px-2">
           <Avatar first={user.firstName} last={user.lastName} url={user.avatarUrl} size={34} />
           <div className="min-w-0 flex-1">

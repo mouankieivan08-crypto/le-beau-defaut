@@ -16,8 +16,9 @@ export default function AccountNav({
   user,
 }: {
   active: string;
-  user: { firstName: string; lastName: string; email: string; avatarUrl: string | null; role: string };
+  user: { firstName: string; lastName: string; email: string; avatarUrl: string | null; role: string; seller?: unknown | null };
 }) {
+  const sells = user.role === "ADMIN" || Boolean(user.seller);
   return (
     <aside className="surface p-3 lg:sticky lg:top-[136px]">
       <div className="flex items-center gap-3 px-2 py-3 mb-2 border-b border-[var(--color-sand)]">
@@ -48,6 +49,12 @@ export default function AccountNav({
             </Link>
           );
         })}
+        <Link
+          href={sells ? "/vendeur" : "/devenir-vendeur"}
+          className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm whitespace-nowrap transition-colors text-[var(--color-gold-dark)] hover:bg-[var(--color-gold-pale)] lg:mt-2 lg:border-t lg:border-[var(--color-sand)] lg:rounded-none lg:pt-3"
+        >
+          <Icon name="tag" size={16} /> {sells ? "Mon espace vente" : "Ouvrir une boutique"}
+        </Link>
       </nav>
 
       {user.role !== "CLIENT" && (
@@ -69,7 +76,7 @@ export function AccountLayout({
   children,
 }: {
   active: string;
-  user: { firstName: string; lastName: string; email: string; avatarUrl: string | null; role: string };
+  user: { firstName: string; lastName: string; email: string; avatarUrl: string | null; role: string; seller?: unknown | null };
   children: React.ReactNode;
 }) {
   return (
