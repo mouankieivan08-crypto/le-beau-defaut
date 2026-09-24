@@ -2,7 +2,7 @@
 
 > *Les petits défauts font de grandes économies.*
 
-Marketplace congolaise du **mobilier à petit défaut**, avec deux rayons voisins : les **sacs de luxe** (authentifiés) et le **fourre-tout**. Les entreprises de mobilier y écoulent leur stock abîmé ou en fin de série ; chaque défaut est photographié, situé, noté, et la remise en découle.
+Marketplace de **Brazzaville** (Congo) du **mobilier à petit défaut**, avec deux rayons voisins : les **sacs de luxe** (authentifiés) et le **fourre-tout**. Les entreprises de mobilier y écoulent leur stock abîmé ou en fin de série ; chaque défaut est photographié, situé, noté, et la remise en découle.
 
 ---
 
@@ -96,13 +96,46 @@ Commande → paiement (validé par l'admin pour Mobile Money, encaissé par le l
 
 ---
 
+## Chercher un article
+
+Le catalogue se filtre sur dix critères, chacun affichant le nombre d'articles concernés :
+
+| Critère | Détail |
+|---|---|
+| Recherche | titre, description, défaut, marque, référence — insensible à la casse |
+| Univers | mobilier, sacs de luxe, fourre-tout |
+| Qui vend | notre stock, ou un vendeur du fourre-tout |
+| Le défaut | grade A, B ou C |
+| Catégorie | les 18 catégories |
+| Budget | bornes libres, plus cinq tranches d'un clic |
+| Remise | au moins 20, 30, 40, 50 ou 60 % |
+| Marque | les marques réellement présentes |
+| Quartier | les quartiers de Brazzaville où se trouve l'article |
+| Options | livrable à domicile, prix négociable, sac authentifié |
+
+Un critère ne se compte jamais lui-même : choisir le grade B laisse voir combien d'articles
+existent en A et en C. Sur téléphone, le panneau se replie derrière un bouton qui annonce
+le nombre de filtres actifs.
+
+## Sécurité des comptes
+
+- Mots de passe : 8 caractères minimum, refus des suites de chiffres, des mots de passe trop
+  courants et de ceux qui contiennent le nom ou l'e-mail. Empreintes `bcrypt`.
+- Essais répétés freinés : 8 échecs de connexion par e-mail ou par adresse IP sur 15 minutes,
+  5 inscriptions par heure et par adresse (`AuthAttempt`, purge automatique après 24 h).
+- Réponse à temps constant sur un e-mail inconnu : impossible de deviner quels comptes existent.
+- Session signée (`jose`) dans un cookie `httpOnly`, `secure`, `sameSite=lax`, valable 30 jours.
+- Chaque page et chaque action serveur revérifient le rôle ; un vendeur n'agit que sur ses annonces.
+- En-têtes HTTP : `X-Content-Type-Options`, `Referrer-Policy`, `X-Frame-Options`,
+  `Permissions-Policy`, `Strict-Transport-Security`.
+
 ## Architecture
 
 | Couche | Choix |
 |---|---|
 | Framework | **Next.js 15** (App Router, Server Components, Server Actions) |
 | Langage | TypeScript strict |
-| Base de données | **Prisma** + PostgreSQL (Supabase) |
+| Base de données | **Prisma** + PostgreSQL hébergé chez **Supabase** (projet `sjlcofycsfzcrlljzjwn`) |
 | Authentification | Session JWT signée (`jose`) en cookie httpOnly, mots de passe `bcrypt` |
 | Style | Tailwind CSS v4 + jetons de marque dans `src/app/globals.css` |
 | Graphiques | SVG maison, sans dépendance (`src/components/Charts.tsx`) |
