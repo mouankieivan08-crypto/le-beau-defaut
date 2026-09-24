@@ -249,7 +249,9 @@ export const AUTHENTICITY: Record<string, { label: string; tone: string }> = {
 
 // ---------------------- GÉOGRAPHIE ----------------------
 
-export const CITIES = ["Brazzaville", "Pointe-Noire", "Dolisie", "Nkayi", "Ouesso", "Owando"] as const;
+// Le Beau Défaut ne livre que Brazzaville pour l'instant. Ajouter une ville ici suffit
+// à l'ouvrir partout : commande, boutique, filtres, zones de livraison.
+export const CITIES = ["Brazzaville"] as const;
 
 export const QUARTIERS: Record<string, string[]> = {
   Brazzaville: [
@@ -264,19 +266,6 @@ export const QUARTIERS: Record<string, string[]> = {
     "Centre-ville",
     "Plateau des 15 ans",
   ],
-  "Pointe-Noire": [
-    "Loandjili",
-    "Tié-Tié",
-    "Mvou-Mvou",
-    "Lumumba",
-    "Ngoyo",
-    "Mongo-Mpoukou",
-    "Centre-ville",
-  ],
-  Dolisie: ["Centre", "Mbounda", "Nkouikou"],
-  Nkayi: ["Centre", "Quartier 1", "Quartier 2"],
-  Ouesso: ["Centre", "Mbindjo"],
-  Owando: ["Centre", "Mananga"],
 };
 
 export const VEHICLES: Record<string, { label: string; capacity: number }> = {
@@ -295,6 +284,8 @@ export const BRAND = {
   short: "LBD",
   tagline: "Les petits défauts font de grandes économies",
   pillars: ["Mobilier", "Décoration", "Qualité", "Prix raisonnable"],
+  email: "lebeaudefaut01@gmail.com",
+  city: "Brazzaville",
 };
 
 export const TONE_CLASSES: Record<string, string> = {

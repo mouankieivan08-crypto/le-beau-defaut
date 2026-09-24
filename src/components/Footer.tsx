@@ -38,11 +38,14 @@ export default function Footer() {
                 <a href="tel:+242000000000" className="hover:text-[var(--color-gold-light)] transition-colors" aria-label="Téléphone">
                   <Icon name="phone" size={17} />
                 </a>
-                <a href="mailto:contact@lebeaudefaut.cg" className="hover:text-[var(--color-gold-light)] transition-colors" aria-label="E-mail">
-                  <Icon name="mail" size={17} />
+                <a
+                  href={`mailto:${BRAND.email}`}
+                  className="inline-flex items-center gap-1.5 text-xs hover:text-[var(--color-gold-light)] transition-colors"
+                >
+                  <Icon name="mail" size={15} /> {BRAND.email}
                 </a>
                 <span className="inline-flex items-center gap-1.5 text-xs">
-                  <Icon name="pin" size={15} /> Brazzaville · Pointe-Noire
+                  <Icon name="pin" size={15} /> Brazzaville
                 </span>
               </div>
             </div>

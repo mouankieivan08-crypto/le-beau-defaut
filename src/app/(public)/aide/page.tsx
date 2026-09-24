@@ -38,7 +38,7 @@ const FAQ: { q: string; a: string }[] = [
   },
   {
     q: "Combien coûte la livraison et combien de temps prend-elle ?",
-    a: "Le tarif dépend du quartier (voir le tableau ci-dessous). Comptez 24 à 72 h à Brazzaville et Pointe-Noire. Le livreur vous appelle avant de passer.",
+    a: "Le tarif dépend du quartier (voir le tableau ci-dessous). Comptez 24 à 72 h dans Brazzaville. Le livreur vous appelle avant de passer.",
   },
   {
     q: "Le livreur monte-t-il les meubles ?",

@@ -43,9 +43,20 @@ export type CatalogueParams = {
   categorie?: string;
   grade?: string;
   ville?: string;
+  quartier?: string;
+  /** MAISON = vendu par Le Beau Défaut · PARTICULIER = mise en relation */
+  circuit?: string;
+  marque?: string;
+  boutique?: string;
   prixMin?: string;
   prixMax?: string;
   remiseMin?: string;
+  /** « 1 » pour n'afficher que les sacs authentifiés par nos soins */
+  authentifie?: string;
+  /** « 1 » pour n'afficher que les articles au prix négociable */
+  negociable?: string;
+  /** « 1 » pour écarter les articles à retirer sur place */
+  livrable?: string;
   tri?: string;
   page?: string;
 };
@@ -74,7 +85,14 @@ export function buildProductWhere(params: CatalogueParams): Prisma.ProductWhereI
   if (params.vertical) where.vertical = params.vertical;
   if (params.grade) where.defectGrade = params.grade;
   if (params.ville) where.city = params.ville;
+  if (params.quartier) where.quartier = params.quartier;
+  if (params.circuit) where.saleMode = params.circuit;
+  if (params.marque) where.brand = params.marque;
+  if (params.boutique) where.seller = { seller: { shopSlug: params.boutique } };
   if (params.categorie) where.category = { slug: params.categorie };
+  if (params.authentifie === "1") where.authenticity = "AUTHENTIFIE_LBD";
+  if (params.negociable === "1") where.negotiable = true;
+  if (params.livrable === "1") where.pickupOnly = false;
 
   const min = Number(params.prixMin);
   const max = Number(params.prixMax);
@@ -117,15 +135,47 @@ export async function searchProducts(params: CatalogueParams) {
   return { items, total, page, pages: Math.max(1, Math.ceil(total / PAGE_SIZE)) };
 }
 
-/** Compteurs utilisés par les filtres du catalogue. */
+/**
+ * Compteurs affichés à côté de chaque filtre.
+ *
+ * Un critère ne se compte jamais lui-même : sinon, cocher « grade B » ferait tomber
+ * les autres grades à zéro et l'acheteur ne saurait plus ce qu'il rate.
+ */
 export async function facets(params: CatalogueParams) {
-  const base = buildProductWhere({ ...params, grade: undefined, ville: undefined });
-  const [byGrade, byCity] = await Promise.all([
-    prisma.product.groupBy({ by: ["defectGrade"], where: base, _count: true }),
-    prisma.product.groupBy({ by: ["city"], where: base, _count: true }),
-  ]);
+  const sansGrade = buildProductWhere({ ...params, grade: undefined });
+  const sansQuartier = buildProductWhere({ ...params, quartier: undefined });
+  const sansCircuit = buildProductWhere({ ...params, circuit: undefined });
+  const sansMarque = buildProductWhere({ ...params, marque: undefined });
+  const sansUnivers = buildProductWhere({ ...params, vertical: undefined, categorie: undefined });
+  const sansOptions = buildProductWhere({ ...params, authentifie: undefined, negociable: undefined, livrable: undefined });
+
+  const [byGrade, byCity, byQuartier, byCircuit, byBrand, byVertical, authCount, negoCount, deliverCount] =
+    await Promise.all([
+      prisma.product.groupBy({ by: ["defectGrade"], where: sansGrade, _count: true }),
+      prisma.product.groupBy({ by: ["city"], where: sansQuartier, _count: true }),
+      prisma.product.groupBy({ by: ["quartier"], where: sansQuartier, _count: true }),
+      prisma.product.groupBy({ by: ["saleMode"], where: sansCircuit, _count: true }),
+      prisma.product.groupBy({ by: ["brand"], where: sansMarque, _count: true, orderBy: { _count: { brand: "desc" } }, take: 18 }),
+      prisma.product.groupBy({ by: ["vertical"], where: sansUnivers, _count: true }),
+      prisma.product.count({ where: { ...sansOptions, authenticity: "AUTHENTIFIE_LBD" } }),
+      prisma.product.count({ where: { ...sansOptions, negotiable: true } }),
+      prisma.product.count({ where: { ...sansOptions, pickupOnly: false } }),
+    ]);
+
   return {
     grades: Object.fromEntries(byGrade.map((g) => [g.defectGrade, g._count])) as Record<string, number>,
     cities: byCity.map((c) => ({ city: c.city, count: c._count })).sort((a, b) => b.count - a.count),
+    quartiers: byQuartier
+      .filter((q) => q.quartier)
+      .map((q) => ({ quartier: q.quartier as string, count: q._count }))
+      .sort((a, b) => b.count - a.count),
+    circuits: Object.fromEntries(byCircuit.map((c) => [c.saleMode, c._count])) as Record<string, number>,
+    brands: byBrand
+      .filter((b) => b.brand)
+      .map((b) => ({ brand: b.brand as string, count: b._count }))
+      .sort((a, b) => b.count - a.count || a.brand!.localeCompare(b.brand!)),
+    verticals: Object.fromEntries(byVertical.map((v) => [v.vertical, v._count])) as Record<string, number>,
+    options: { authentifie: authCount, negociable: negoCount, livrable: deliverCount },
   };
 }
+

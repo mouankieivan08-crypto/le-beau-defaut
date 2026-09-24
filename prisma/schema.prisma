@@ -548,3 +548,17 @@ model DeliveryZone {
 
   @@unique([city, name])
 }
+
+/// Tentatives de connexion et d'inscription : sert uniquement à freiner les attaques
+/// par essais répétés. Les lignes de plus de 24 h peuvent être purgées sans risque.
+model AuthAttempt {
+  id        String   @id @default(cuid())
+  kind      String   @default("CONNEXION") // CONNEXION | INSCRIPTION
+  email     String?
+  ip        String?
+  success   Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([email, createdAt])
+  @@index([ip, createdAt])
+}

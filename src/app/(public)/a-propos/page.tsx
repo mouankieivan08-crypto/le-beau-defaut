@@ -10,7 +10,7 @@ const VALUES: { icon: IconName; title: string; text: string }[] = [
   { icon: "eye", title: "Transparence", text: "On montre le défaut avant le reste. Un acheteur bien informé ne revient jamais déçu." },
   { icon: "tag", title: "Juste prix", text: "La remise découle du défaut, pas de l'humeur du vendeur. La grille est la même pour tous." },
   { icon: "refresh", title: "Seconde chance", text: "Chaque meuble revendu, c'est un meuble qui ne finit pas au rebut ni au fond d'un dépôt." },
-  { icon: "users", title: "Local", text: "Des entreprises congolaises, des livreurs de Brazzaville et Pointe-Noire, des acheteurs d'ici." },
+  { icon: "users", title: "Local", text: "Des entreprises congolaises, des livreurs de Brazzaville, des acheteurs d'ici." },
 ];
 
 export default function AboutPage() {

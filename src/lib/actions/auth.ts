@@ -7,6 +7,7 @@ import { prisma } from "@/lib/prisma";
 import { createSession, destroySession, hashPassword, verifyPassword, getCurrentUser } from "@/lib/auth";
 import { homeForRole, DEFAULT_COMMISSION_PCT } from "@/lib/constants";
 import { slugify } from "@/lib/format";
+import { checkAuthLimit, recordAuthAttempt, passwordProblem, normalizePhone } from "@/lib/rate-limit";
 
 export type FormState = { error?: string; success?: string } | undefined;
 
@@ -22,12 +23,27 @@ export async function loginAction(_prev: FormState, formData: FormData): Promise
   });
   if (!parsed.success) return { error: parsed.error.issues[0].message };
 
+  const limite = await checkAuthLimit("CONNEXION", parsed.data.email);
+  if (limite.blocked) {
+    return {
+      error: `Trop de tentatives. Réessayez dans ${limite.retryInMinutes} minutes, ou faites réinitialiser votre mot de passe par l'équipe.`,
+    };
+  }
+
   const user = await prisma.user.findUnique({ where: { email: parsed.data.email } });
-  if (!user || !(await verifyPassword(parsed.data.password, user.passwordHash))) {
+
+  // Sur un e-mail inconnu, on compare quand même contre une empreinte factice :
+  // sans cela, la rapidité de la réponse dirait à un curieux quels comptes existent.
+  const hash = user?.passwordHash ?? "$2a$10$invalidinvalidinvalidinvalidinvalidinvalidinvalidinvalidiu";
+  const motDePasseOk = await verifyPassword(parsed.data.password, hash);
+
+  if (!user || !motDePasseOk) {
+    await recordAuthAttempt("CONNEXION", false, parsed.data.email);
     return { error: "E-mail ou mot de passe incorrect." };
   }
   if (!user.isActive) return { error: "Ce compte a été désactivé. Contactez l'assistance." };
 
+  await recordAuthAttempt("CONNEXION", true, parsed.data.email);
   await prisma.user.update({ where: { id: user.id }, data: { lastLoginAt: new Date() } });
   await createSession({
     userId: user.id,
@@ -77,7 +93,15 @@ export async function registerAction(_prev: FormState, formData: FormData): Prom
 
   const parsed = registerSchema.safeParse(raw);
   if (!parsed.success) return { error: parsed.error.issues[0].message };
-  const d = parsed.data;
+  const d = { ...parsed.data, phone: normalizePhone(parsed.data.phone) };
+
+  const limite = await checkAuthLimit("INSCRIPTION");
+  if (limite.blocked) {
+    return { error: "Trop de comptes créés depuis cet appareil. Réessayez dans une heure." };
+  }
+
+  const faiblesse = passwordProblem(d.password, [d.firstName, d.lastName, d.email.split("@")[0]]);
+  if (faiblesse) return { error: faiblesse };
 
   if (await prisma.user.findUnique({ where: { email: d.email } })) {
     return { error: "Un compte existe déjà avec cette adresse e-mail." };
@@ -85,6 +109,7 @@ export async function registerAction(_prev: FormState, formData: FormData): Prom
   if (await prisma.user.findFirst({ where: { phone: d.phone } })) {
     return { error: "Ce numéro de téléphone est déjà utilisé." };
   }
+  await recordAuthAttempt("INSCRIPTION", false);
 
   const user = await prisma.user.create({
     data: {

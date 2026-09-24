@@ -5,7 +5,17 @@ import { searchProducts, facets, favoriteIds, SORT_LABELS, type CatalogueParams 
 import { GRADE_LIST, VERTICAL_LIST, CITIES } from '@/lib/constants';
 import ProductCard, { ProductGrid } from '@/components/ProductCard';
 import Icon from '@/components/Icon';
+import FilterDrawer from '@/components/FilterDrawer';
 import { EmptyState, GradeBadge, Breadcrumb } from '@/components/ui';
+
+/** Tranches de prix proposées d'un clic, calées sur les prix congolais. */
+const PRICE_STEPS = [
+  { label: "< 25 k", min: "", max: "25000" },
+  { label: "25–75 k", min: "25000", max: "75000" },
+  { label: "75–200 k", min: "75000", max: "200000" },
+  { label: "200–500 k", min: "200000", max: "500000" },
+  { label: "> 500 k", min: "500000", max: "" },
+];
 
 export default async function CatalogueView({
   params,
@@ -47,14 +57,31 @@ export default async function CatalogueView({
 
   const activeFilters = [
     params.q && { label: `« ${params.q} »`, href: url({ q: "" }) },
+    params.circuit && {
+      label: params.circuit === "MAISON" ? "Vendu par Le Beau Défaut" : "Entre particuliers",
+      href: url({ circuit: "" }),
+    },
     params.grade && { label: `Grade ${params.grade}`, href: url({ grade: "" }) },
-    params.ville && { label: params.ville, href: url({ ville: "" }) },
     params.categorie && {
       label: categories.find((c) => c.slug === params.categorie)?.name ?? params.categorie,
       href: url({ categorie: "" }),
     },
-    params.prixMax && { label: `≤ ${params.prixMax} F`, href: url({ prixMin: "", prixMax: "" }) },
+    params.marque && { label: params.marque, href: url({ marque: "" }) },
+    params.quartier && { label: params.quartier, href: url({ quartier: "" }) },
+    params.ville && { label: params.ville, href: url({ ville: "" }) },
+    (params.prixMin || params.prixMax) && {
+      label:
+        params.prixMin && params.prixMax
+          ? `${params.prixMin} – ${params.prixMax} F`
+          : params.prixMax
+            ? `≤ ${params.prixMax} F`
+            : `≥ ${params.prixMin} F`,
+      href: url({ prixMin: "", prixMax: "" }),
+    },
     params.remiseMin && { label: `Remise ≥ ${params.remiseMin} %`, href: url({ remiseMin: "" }) },
+    params.authentifie === "1" && { label: "Authentifié LBD", href: url({ authentifie: "" }) },
+    params.negociable === "1" && { label: "Prix négociable", href: url({ negociable: "" }) },
+    params.livrable === "1" && { label: "Livrable à domicile", href: url({ livrable: "" }) },
   ].filter(Boolean) as { label: string; href: string }[];
 
   return (
@@ -79,7 +106,7 @@ export default async function CatalogueView({
 
       <div className="grid grid-cols-1 lg:grid-cols-[264px_1fr] gap-7 items-start">
         {/* ---------------- Filtres ---------------- */}
-        <aside className="surface p-5 lg:sticky lg:top-[136px]">
+        <FilterDrawer count={activeFilters.length}>
           <form action={basePath} className="flex flex-col gap-5">
             {params.vertical && basePath === "/catalogue" && (
               <input type="hidden" name="vertical" value={params.vertical} />
@@ -95,7 +122,7 @@ export default async function CatalogueView({
                   id="q"
                   name="q"
                   defaultValue={params.q ?? ""}
-                  placeholder="Canapé, Louis Vuitton…"
+                  placeholder="Canapé, Louis Vuitton, frigo…"
                   className="field pl-8"
                 />
                 <Icon
@@ -116,6 +143,7 @@ export default async function CatalogueView({
                       name="vertical"
                       value={v.key}
                       label={v.label}
+                      count={f.verticals[v.key]}
                       checked={params.vertical === v.key}
                     />
                   ))}
@@ -123,27 +151,45 @@ export default async function CatalogueView({
               </FilterBlock>
             )}
 
-            <FilterBlock title="Grade du défaut">
-              <div className="flex flex-col gap-1.5">
+            <FilterBlock title="Qui vend">
+              <div className="flex flex-col gap-1">
+                <FilterRadio name="circuit" value="" label="Peu importe" checked={!params.circuit} />
+                <FilterRadio
+                  name="circuit"
+                  value="MAISON"
+                  label="Le Beau Défaut"
+                  hint="Notre stock, notre garantie"
+                  count={f.circuits.MAISON}
+                  checked={params.circuit === "MAISON"}
+                />
+                <FilterRadio
+                  name="circuit"
+                  value="PARTICULIER"
+                  label="Vendeurs du fourre-tout"
+                  hint="Paiement sous séquestre"
+                  count={f.circuits.PARTICULIER}
+                  checked={params.circuit === "PARTICULIER"}
+                />
+              </div>
+            </FilterBlock>
+
+            <FilterBlock title="Le défaut">
+              <div className="flex flex-col gap-1">
                 <FilterRadio name="grade" value="" label="Tous les grades" checked={!params.grade} />
                 {GRADE_LIST.map((g) => (
-                  <label
-                    key={g.key}
-                    className="flex items-center gap-2.5 cursor-pointer py-0.5 group"
-                    title={g.description}
-                  >
+                  <label key={g.key} className="flex items-center gap-2 py-1 cursor-pointer group">
                     <input
                       type="radio"
                       name="grade"
                       value={g.key}
                       defaultChecked={params.grade === g.key}
-                      className="accent-[var(--color-gold)]"
+                      className="accent-[var(--color-gold-dark)]"
                     />
                     <GradeBadge grade={g.key} size="sm" />
-                    <span className="text-sm group-hover:text-[var(--color-gold-dark)] transition-colors flex-1">
-                      {g.name}
+                    <span className="text-sm text-[var(--color-ink-soft)] group-hover:text-[var(--color-ink)] truncate">
+                      {g.label}
                     </span>
-                    <span className="text-[11px] text-[var(--color-ink-muted)]">{f.grades[g.key] ?? 0}</span>
+                    <span className="text-[11px] text-[var(--color-ink-muted)] ml-auto">{f.grades[g.key] ?? 0}</span>
                   </label>
                 ))}
               </div>
@@ -184,6 +230,21 @@ export default async function CatalogueView({
                   className="field"
                 />
               </div>
+              <div className="flex flex-wrap gap-1.5 mt-2">
+                {PRICE_STEPS.map((b) => (
+                  <Link
+                    key={b.label}
+                    href={url({ prixMin: b.min, prixMax: b.max })}
+                    className={`chip !text-[11px] ${
+                      (params.prixMin ?? "") === b.min && (params.prixMax ?? "") === b.max
+                        ? "bg-[var(--color-ink)] text-[var(--color-cream)]"
+                        : "bg-[var(--color-cream-deep)] text-[var(--color-ink-soft)] hover:bg-[var(--color-sand)]"
+                    }`}
+                  >
+                    {b.label}
+                  </Link>
+                ))}
+              </div>
             </FilterBlock>
 
             <FilterBlock title="Remise minimale">
@@ -197,28 +258,80 @@ export default async function CatalogueView({
               </select>
             </FilterBlock>
 
-            <FilterBlock title="Ville">
-              <select name="ville" defaultValue={params.ville ?? ""} className="field">
-                <option value="">Toutes les villes</option>
-                {(f.cities.length ? f.cities.map((c) => c.city) : [...CITIES]).map((c) => (
-                  <option key={c} value={c}>
-                    {c}
-                    {f.cities.find((x) => x.city === c) ? ` (${f.cities.find((x) => x.city === c)!.count})` : ""}
-                  </option>
-                ))}
-              </select>
+            {f.brands.length > 1 && (
+              <FilterBlock title="Marque">
+                <select name="marque" defaultValue={params.marque ?? ""} className="field">
+                  <option value="">Toutes les marques</option>
+                  {f.brands.map((b) => (
+                    <option key={b.brand} value={b.brand}>
+                      {b.brand} ({b.count})
+                    </option>
+                  ))}
+                </select>
+              </FilterBlock>
+            )}
+
+            {f.quartiers.length > 1 && (
+              <FilterBlock title="Quartier de l&apos;article">
+                <select name="quartier" defaultValue={params.quartier ?? ""} className="field">
+                  <option value="">Tout Brazzaville</option>
+                  {f.quartiers.map((qt) => (
+                    <option key={qt.quartier} value={qt.quartier}>
+                      {qt.quartier} ({qt.count})
+                    </option>
+                  ))}
+                </select>
+              </FilterBlock>
+            )}
+
+            {CITIES.length > 1 && (
+              <FilterBlock title="Ville">
+                <select name="ville" defaultValue={params.ville ?? ""} className="field">
+                  <option value="">Toutes les villes</option>
+                  {f.cities.map((c) => (
+                    <option key={c.city} value={c.city}>
+                      {c.city} ({c.count})
+                    </option>
+                  ))}
+                </select>
+              </FilterBlock>
+            )}
+
+            <FilterBlock title="Options">
+              <div className="flex flex-col gap-1">
+                <FilterCheck
+                  name="livrable"
+                  label="Livrable à domicile"
+                  count={f.options.livrable}
+                  checked={params.livrable === "1"}
+                />
+                <FilterCheck
+                  name="negociable"
+                  label="Prix négociable"
+                  count={f.options.negociable}
+                  checked={params.negociable === "1"}
+                />
+                {(params.vertical === "SACS" || f.options.authentifie > 0) && (
+                  <FilterCheck
+                    name="authentifie"
+                    label="Sac authentifié par nos soins"
+                    count={f.options.authentifie}
+                    checked={params.authentifie === "1"}
+                  />
+                )}
+              </div>
             </FilterBlock>
 
             <div className="flex gap-2 pt-1">
               <button className="btn btn-primary flex-1">
-                <Icon name="filter" size={14} /> Filtrer
+                <Icon name="filter" size={14} /> Voir les {total} article{total > 1 ? "s" : ""}
               </button>
               <Link href={basePath} className="btn btn-ghost" title="Réinitialiser">
                 <Icon name="refresh" size={15} />
               </Link>
             </div>
           </form>
-        </aside>
+        </FilterDrawer>
 
         {/* ---------------- Résultats ---------------- */}
         <div>
@@ -339,17 +452,48 @@ function FilterRadio({
   name,
   value,
   label,
+  hint,
+  count,
   checked,
 }: {
   name: string;
   value: string;
   label: string;
+  /** Une ligne d'explication sous le libellé, quand le critère mérite un mot. */
+  hint?: string;
+  /** Nombre d'articles concernés : l'acheteur voit ce qu'il gagne ou perd à cocher. */
+  count?: number;
+  checked: boolean;
+}) {
+  return (
+    <label className="flex items-start gap-2.5 cursor-pointer py-0.5 text-sm hover:text-[var(--color-gold-dark)] transition-colors">
+      <input type="radio" name={name} value={value} defaultChecked={checked} className="accent-[var(--color-gold)] mt-1" />
+      <span className="min-w-0 flex-1">
+        {label}
+        {hint && <span className="block text-[11px] text-[var(--color-ink-muted)] leading-tight">{hint}</span>}
+      </span>
+      {count != null && <span className="text-[11px] text-[var(--color-ink-muted)] shrink-0">{count}</span>}
+    </label>
+  );
+}
+
+/** Option à cocher : « livrable », « négociable »… Absente de l'URL quand elle n'est pas cochée. */
+function FilterCheck({
+  name,
+  label,
+  count,
+  checked,
+}: {
+  name: string;
+  label: string;
+  count?: number;
   checked: boolean;
 }) {
   return (
     <label className="flex items-center gap-2.5 cursor-pointer py-0.5 text-sm hover:text-[var(--color-gold-dark)] transition-colors">
-      <input type="radio" name={name} value={value} defaultChecked={checked} className="accent-[var(--color-gold)]" />
-      {label}
+      <input type="checkbox" name={name} value="1" defaultChecked={checked} className="accent-[var(--color-gold)]" />
+      <span className="min-w-0 flex-1">{label}</span>
+      {count != null && <span className="text-[11px] text-[var(--color-ink-muted)] shrink-0">{count}</span>}
     </label>
   );
 }

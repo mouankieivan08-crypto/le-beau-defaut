@@ -17,7 +17,7 @@ export const metadata: Metadata = {
     "sacs de luxe Congo",
     "déstockage mobilier",
     "Le Beau Défaut",
-    "seconde main Pointe-Noire",
+    "seconde main Brazzaville",
   ],
   openGraph: {
     title: `${BRAND.name} — ${BRAND.tagline}`,

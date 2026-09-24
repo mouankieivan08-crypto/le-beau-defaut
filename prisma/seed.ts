@@ -137,11 +137,11 @@ const PRODUCTS: ProductSeed[] = [
     orig: 980000, price: 490000, grade: "C",
     summary: "Accroc de 4 cm au dos du canapé et plateau de table basse rayé.",
     defects: [
-      { type: "ACCROC", zone: "Dos du canapé, côté gauche", sev: 4, desc: "Accroc net dans le tissu, dos au mur il ne se voit pas.", repairable: true, note: "Un tapissier le reprend pour environ 15 000 FCFA à Pointe-Noire." },
+      { type: "ACCROC", zone: "Dos du canapé, côté gauche", sev: 4, desc: "Accroc net dans le tissu, dos au mur il ne se voit pas.", repairable: true, note: "Un tapissier le reprend pour environ 15 000 FCFA à Brazzaville." },
       { type: "RAYURE", zone: "Plateau de la table basse", sev: 3, desc: "Plusieurs rayures fines dans le sens du bois." },
     ],
     material: "Tissu polyester, chêne", color: "Gris chiné", dims: "Canapé L200 x P85 cm · Table 110 x 55 cm", weight: 70,
-    city: "Pointe-Noire", quartier: "Centre-ville",
+    city: "Brazzaville", quartier: "Centre-ville",
   },
   {
     v: "MOBILIER", cat: "canapes", s: 1, age: 14,
@@ -155,7 +155,7 @@ const PRODUCTS: ProductSeed[] = [
       { type: "PIECE_MANQUANTE", zone: "Coussins déco", sev: 1, desc: "3 coussins sur 4 fournis." },
     ],
     material: "Tissu aspect lin", color: "Beige", dims: "L270 x P170 x H80 cm", weight: 105,
-    city: "Pointe-Noire", quartier: "Centre-ville", pickupOnly: true,
+    city: "Brazzaville", quartier: "Centre-ville", pickupOnly: true,
   },
   {
     v: "MOBILIER", cat: "canapes", s: 0, age: 20,
@@ -181,7 +181,7 @@ const PRODUCTS: ProductSeed[] = [
       { type: "BOSSE", zone: "Pied arrière gauche", sev: 2, desc: "Enfoncement de 1 cm dans le bois, choc pendant le déchargement du conteneur." },
     ],
     material: "Tissu bouclette, chêne", color: "Terracotta", dims: "L215 x P90 x H85 cm", weight: 60,
-    city: "Pointe-Noire", quartier: "Centre-ville",
+    city: "Brazzaville", quartier: "Centre-ville",
   },
   {
     v: "MOBILIER", cat: "fauteuils", s: 0, featured: true, age: 4,
@@ -208,7 +208,7 @@ const PRODUCTS: ProductSeed[] = [
       { type: "PIECE_MANQUANTE", zone: "Dossier, 3e rangée de capitons", sev: 1, desc: "Un bouton détaché.", repairable: true, note: "Le bouton est fourni dans un sachet." },
     ],
     material: "Tissu velours ras, hêtre", color: "Ivoire", dims: "L68 x P70 x H86 cm", weight: 12,
-    city: "Pointe-Noire", quartier: "Centre-ville",
+    city: "Brazzaville", quartier: "Centre-ville",
   },
   {
     v: "MOBILIER", cat: "fauteuils", s: 1, flash: true, age: 6,
@@ -221,7 +221,7 @@ const PRODUCTS: ProductSeed[] = [
       { type: "USURE", zone: "Accoudoirs des deux fauteuils", sev: 4, desc: "Tissu lustré et bouloché là où les clients posaient les mains pendant deux ans d'exposition." },
     ],
     material: "Tissu chenille, hêtre", color: "Anthracite", dims: "L80 x P78 x H76 cm (l'unité)", weight: 30,
-    city: "Pointe-Noire", quartier: "Centre-ville", negotiable: true,
+    city: "Brazzaville", quartier: "Centre-ville", negotiable: true,
   },
   {
     v: "MOBILIER", cat: "fauteuils", s: 0, age: 16,
@@ -247,7 +247,7 @@ const PRODUCTS: ProductSeed[] = [
       { type: "AUTRE", zone: "Pied pivotant", sev: 2, desc: "La rotation accroche légèrement sur un quart de tour.", repairable: true, note: "Un peu de graisse au silicone suffit en général." },
     ],
     material: "Tissu, acier chromé", color: "Gris chiné", dims: "L70 x P68 x H82 cm", weight: 14, qty: 2,
-    city: "Pointe-Noire", quartier: "Centre-ville",
+    city: "Brazzaville", quartier: "Centre-ville",
   },
   {
     v: "MOBILIER", cat: "chaises-tabourets", s: 0, age: 12,
@@ -292,7 +292,7 @@ const PRODUCTS: ProductSeed[] = [
   {
     v: "MOBILIER", cat: "chaises-tabourets", s: 1, age: 30,
     title: "Chaises bistrot en bois vintage (reprise restaurant)",
-    desc: "Chaises en bois massif reprises à la fermeture d'un restaurant de Pointe-Noire. Solides, avec du vécu. Vendues à l'unité.",
+    desc: "Chaises en bois massif reprises à la fermeture d'un restaurant de Brazzaville. Solides, avec du vécu. Vendues à l'unité.",
     photo: "1549497538-303791108f95", focus: [0.4, 0.55, 2.4],
     orig: 65000, price: 29000, grade: "C",
     summary: "Vernis écaillé et assise patinée par l'usage.",
@@ -300,7 +300,7 @@ const PRODUCTS: ProductSeed[] = [
       { type: "USURE", zone: "Assise et dossier", sev: 4, desc: "Vernis parti par endroits, marques d'usage. Aucune chaise ne branle." },
     ],
     material: "Hêtre massif", color: "Noyer", dims: "L42 x P45 x H84 cm", weight: 5, qty: 6,
-    city: "Pointe-Noire", quartier: "Centre-ville",
+    city: "Brazzaville", quartier: "Centre-ville",
   },
   {
     v: "MOBILIER", cat: "chaises-tabourets", s: 1, age: 13,
@@ -314,7 +314,7 @@ const PRODUCTS: ProductSeed[] = [
       { type: "DECOLORATION", zone: "Coque (2 exemplaires sur 10)", sev: 1, desc: "Blanc cassé plutôt que blanc pur." },
     ],
     material: "Polypropylène, hêtre", color: "Blanc", dims: "L46 x P54 x H81 cm", weight: 4, qty: 10,
-    city: "Pointe-Noire", quartier: "Centre-ville",
+    city: "Brazzaville", quartier: "Centre-ville",
   },
   {
     v: "MOBILIER", cat: "chaises-tabourets", s: 1, featured: true, age: 8,
@@ -328,7 +328,7 @@ const PRODUCTS: ProductSeed[] = [
       { type: "EMBALLAGE_ABIME", zone: "Cartons", sev: 1, desc: "Cartons ouverts par le premier client." },
     ],
     material: "Velours, acier doré", color: "Vert bouteille", dims: "L50 x P56 x H80 cm", weight: 36,
-    city: "Pointe-Noire", quartier: "Centre-ville",
+    city: "Brazzaville", quartier: "Centre-ville",
   },
   {
     v: "MOBILIER", cat: "tables", s: 0, age: 10, pickupOnly: true,
@@ -355,7 +355,7 @@ const PRODUCTS: ProductSeed[] = [
       { type: "ECLAT", zone: "Rebord du plateau", sev: 3, desc: "Éclat de 1,5 cm sur la tranche du marbre." },
     ],
     material: "Marbre, acier laqué", color: "Blanc", dims: "Ø80 x H75 cm", weight: 32,
-    city: "Pointe-Noire", quartier: "Centre-ville",
+    city: "Brazzaville", quartier: "Centre-ville",
   },
   {
     v: "MOBILIER", cat: "tables", s: 0, age: 27,
@@ -395,7 +395,7 @@ const PRODUCTS: ProductSeed[] = [
       { type: "RAYURE", zone: "Dos de la tête de lit", sev: 1, desc: "Invisible une fois le lit contre le mur." },
     ],
     material: "Tissu, MDF, pin", color: "Noir", dims: "Couchage 160 x 200 cm", weight: 64,
-    city: "Pointe-Noire", quartier: "Centre-ville",
+    city: "Brazzaville", quartier: "Centre-ville",
   },
   {
     v: "MOBILIER", cat: "lits-literie", s: 1, age: 21,
@@ -408,7 +408,7 @@ const PRODUCTS: ProductSeed[] = [
       { type: "DEMONTE", zone: "Cadre", sev: 1, desc: "Aucune marque, visserie complète." },
     ],
     material: "Chêne massif, lin", color: "Chêne naturel", dims: "Couchage 160 x 200 cm", weight: 55,
-    city: "Pointe-Noire", quartier: "Centre-ville",
+    city: "Brazzaville", quartier: "Centre-ville",
   },
   {
     v: "MOBILIER", cat: "rangements", s: 0, age: 17,
@@ -476,7 +476,7 @@ const PRODUCTS: ProductSeed[] = [
       { type: "AUTRE", zone: "Plan de travail", sev: 2, desc: "Découpé pour le showroom, à adapter à votre pièce." },
     ],
     material: "Laqué, quartz reconstitué", color: "Blanc / gris", dims: "Linéaire 420 cm · Îlot 240 x 100 cm", weight: 380,
-    city: "Pointe-Noire", quartier: "Centre-ville",
+    city: "Brazzaville", quartier: "Centre-ville",
   },
   {
     v: "MOBILIER", cat: "cuisine-salle-de-bain", s: 1, age: 1, status: "EN_ATTENTE",
@@ -490,7 +490,7 @@ const PRODUCTS: ProductSeed[] = [
       { type: "RAYURE", zone: "Miroir", sev: 2, desc: "Rayure de 8 cm en bas à droite." },
     ],
     material: "Céramique, chêne", color: "Blanc / chêne", dims: "L140 x P50 x H85 cm", weight: 70,
-    city: "Pointe-Noire", quartier: "Centre-ville",
+    city: "Brazzaville", quartier: "Centre-ville",
   },
   {
     v: "MOBILIER", cat: "chaises-tabourets", s: 0, age: 0, status: "EN_ATTENTE",
@@ -722,7 +722,7 @@ const PRODUCTS: ProductSeed[] = [
       { type: "ECLAT", zone: "Pied", sev: 2, desc: "Éclat de peinture de 1 cm." },
     ],
     material: "Acier peint", color: "Anthracite", dims: "H55 cm", weight: 2.2, qty: 5,
-    city: "Pointe-Noire", quartier: "Centre-ville",
+    city: "Brazzaville", quartier: "Centre-ville",
   },
   {
     v: "FOURRE_TOUT", cat: "luminaires", s: 0, age: 19,
@@ -748,7 +748,7 @@ const PRODUCTS: ProductSeed[] = [
       { type: "ECLAT", zone: "2 cadres sur 14", sev: 3, desc: "Verres fêlés dans l'angle ; les baguettes sont intactes." },
     ],
     material: "Bois, verre", color: "Assortis", weight: 6,
-    city: "Pointe-Noire", quartier: "Centre-ville",
+    city: "Brazzaville", quartier: "Centre-ville",
   },
   {
     v: "FOURRE_TOUT", cat: "decoration", s: 0, age: 24,
@@ -774,7 +774,7 @@ const PRODUCTS: ProductSeed[] = [
       { type: "TACHE", zone: "Frange côté court", sev: 2, desc: "Frange grisée sur 15 cm." },
     ],
     material: "Laine", color: "Crème / gris", dims: "200 x 290 cm", weight: 14,
-    city: "Pointe-Noire", quartier: "Centre-ville",
+    city: "Brazzaville", quartier: "Centre-ville",
   },
   {
     v: "FOURRE_TOUT", cat: "decoration", s: 0, age: 6,
@@ -854,7 +854,7 @@ const SOLD: ProductSeed[] = [
     orig: 1600000, price: 990000, grade: "B",
     summary: "Accroc sur un coussin et légère décoloration côté fenêtre.",
     defects: [{ type: "DECOLORATION", zone: "Accoudoir droit", sev: 3, desc: "Tissu pâli par le soleil." }],
-    city: "Pointe-Noire", quartier: "Centre-ville",
+    city: "Brazzaville", quartier: "Centre-ville",
   },
   {
     v: "MOBILIER", cat: "bureau", s: 0, age: 52, status: "VENDU", qty: 0,
@@ -884,7 +884,7 @@ const SOLD: ProductSeed[] = [
     orig: 860000, price: 560000, grade: "B",
     summary: "Latte fendue remplacée et tête de lit tachée.",
     defects: [{ type: "TACHE", zone: "Tête de lit", sev: 2, desc: "Tache claire de 5 cm." }],
-    city: "Pointe-Noire", quartier: "Centre-ville",
+    city: "Brazzaville", quartier: "Centre-ville",
   },
 ];
 
@@ -920,13 +920,6 @@ const ZONES: [string, string, number, number][] = [
   ["Brazzaville", "Talangaï", 3500, 48],
   ["Brazzaville", "Mfilou", 4000, 48],
   ["Brazzaville", "Djiri", 5000, 72],
-  ["Pointe-Noire", "Centre-ville", 2000, 24],
-  ["Pointe-Noire", "Lumumba", 2500, 24],
-  ["Pointe-Noire", "Mvou-Mvou", 2500, 36],
-  ["Pointe-Noire", "Tié-Tié", 3000, 36],
-  ["Pointe-Noire", "Loandjili", 3500, 48],
-  ["Pointe-Noire", "Mongo-Mpoukou", 4000, 48],
-  ["Pointe-Noire", "Ngoyo", 4500, 72],
   ["Dolisie", "Centre", 5000, 96],
 ];
 
@@ -969,7 +962,7 @@ async function main() {
     ["site.tagline", "Les petits défauts font de grandes économies", "Signature"],
     ["contact.phone", "+242 06 000 00 00", "Téléphone du service client"],
     ["contact.whatsapp", "+242 05 000 00 00", "WhatsApp"],
-    ["contact.email", "contact@lebeaudefaut.cg", "E-mail de contact"],
+    ["contact.email", "lebeaudefaut01@gmail.com", "E-mail de contact"],
     ["commission.default", "15", "Commission par défaut (%)"],
     ["commission.sacs", "20", "Commission sacs de luxe (%)"],
     ["delivery.defaultFee", "3000", "Frais de livraison hors zone (FCFA)"],
@@ -1012,7 +1005,7 @@ async function main() {
 
   // Le fournisseur d'origine des articles maison : ce sont des entreprises qui nous
   // vendent leur stock à petit défaut, pas des comptes de la plateforme.
-  const SUPPLIERS = ["Maison Mbemba Mobilier", "Showroom Côte Sauvage", "Luxe & Seconde Main"];
+  const SUPPLIERS = ["Maison Mbemba Mobilier", "Showroom Kintélé", "Luxe & Seconde Main"];
 
   const sellerDefs = [
     {
@@ -1023,8 +1016,8 @@ async function main() {
     },
     {
       email: "cotesauvage@lebeaudefaut.cg", phone: "055200002", first: "Nadège", last: "Loubaki",
-      shop: "Côte Sauvage Seconde Main", type: "ENTREPRISE", city: "Pointe-Noire", address: "Boulevard Charles de Gaulle, Centre-ville",
-      desc: "Reprises de chantiers hôteliers et de bureaux à Pointe-Noire. Tout est vendu en l'état, le défaut expliqué.",
+      shop: "Loubaki Seconde Main", type: "ENTREPRISE", city: "Brazzaville", address: "Avenue de la Tsiémé, Talangaï",
+      desc: "Reprises de chantiers hôteliers et de bureaux à Brazzaville. Tout est vendu en l'état, le défaut expliqué.",
       commission: 15, status: "ACTIF", rccm: "CG-PNR-01-2015-B14-00892", niu: "M2015090008921P", momo: "055200002", op: "AIRTEL",
     },
     {
@@ -1073,7 +1066,7 @@ async function main() {
   const courierDefs = [
     { email: "livreur@lebeaudefaut.cg", phone: "066700007", first: "Rodrigue", last: "Mabiala", vehicle: "CAMIONNETTE", plate: "BZ 4521 CG", zones: "Brazzaville", cap: 800, status: "DISPONIBLE" },
     { email: "fiacre.ibara@lebeaudefaut.cg", phone: "055800008", first: "Fiacre", last: "Ibara", vehicle: "MOTO", plate: "BZ 1187 MT", zones: "Brazzaville", cap: 25, status: "EN_COURSE" },
-    { email: "junior.tchicaya@lebeaudefaut.cg", phone: "066900009", first: "Junior", last: "Tchicaya", vehicle: "CAMIONNETTE", plate: "PN 7730 CG", zones: "Pointe-Noire", cap: 800, status: "DISPONIBLE" },
+    { email: "junior.tchicaya@lebeaudefaut.cg", phone: "066900009", first: "Junior", last: "Tchicaya", vehicle: "CAMIONNETTE", plate: "BZ 7730 CG", zones: "Brazzaville", cap: 800, status: "DISPONIBLE" },
   ];
   const couriers: { userId: string; profileId: string; city: string }[] = [];
   for (const [i, c] of courierDefs.entries()) {
@@ -1093,10 +1086,10 @@ async function main() {
   const clientDefs = [
     { email: "client@lebeaudefaut.cg", phone: "061010101", first: "Grâce", last: "Moukoko", city: "Brazzaville", q: "Bacongo", landmark: "Derrière la paroisse Saint-Pierre Claver" },
     { email: "herve.samba@exemple.cg", phone: "061020202", first: "Hervé", last: "Samba", city: "Brazzaville", q: "Talangaï", landmark: "Arrêt Mazala, portail bleu" },
-    { email: "merveille.ondongo@exemple.cg", phone: "055030303", first: "Merveille", last: "Ondongo", city: "Pointe-Noire", q: "Loandjili", landmark: "Près du marché Liberté" },
+    { email: "merveille.ondongo@exemple.cg", phone: "055030303", first: "Merveille", last: "Ondongo", city: "Brazzaville", q: "Mfilou", landmark: "Près du marché Liberté" },
     { email: "dieudonne.kimbembe@exemple.cg", phone: "061040404", first: "Dieudonné", last: "Kimbembe", city: "Brazzaville", q: "Ouenzé", landmark: "Face à la pharmacie Mikalou" },
     { email: "stella.bouanga@exemple.cg", phone: "064050505", first: "Stella", last: "Bouanga", city: "Brazzaville", q: "Moungali", landmark: "Immeuble à côté de la boulangerie" },
-    { email: "patrick.makaya@exemple.cg", phone: "055060606", first: "Patrick", last: "Makaya", city: "Pointe-Noire", q: "Tié-Tié", landmark: "Rond-point Kassaï" },
+    { email: "patrick.makaya@exemple.cg", phone: "055060606", first: "Patrick", last: "Makaya", city: "Brazzaville", q: "Ouenzé", landmark: "Rond-point Kassaï" },
     { email: "ornella.miakassissa@exemple.cg", phone: "066070707", first: "Ornella", last: "Miakassissa", city: "Brazzaville", q: "Centre-ville", landmark: "Résidence du Plateau, 3e étage" },
   ];
   const clients: { id: string; first: string; last: string; phone: string; city: string; q: string; landmark: string }[] = [];
