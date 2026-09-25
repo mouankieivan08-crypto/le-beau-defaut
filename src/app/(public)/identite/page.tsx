@@ -34,7 +34,8 @@ export default function IdentityPage() {
         </p>
         <h1 className="font-display text-[40px] font-bold leading-tight">Identité visuelle</h1>
         <p className="text-[15px] text-[var(--color-ink-soft)] mt-2 max-w-2xl leading-relaxed">
-          Tout part du monogramme : trois lettres qui se chevauchent sans se gêner, comme un meuble dont le
+          Tout part du monogramme : trois capitales brunes dans un cercle resté ouvert, traversées par un
+          coup de pinceau doré. Le cercle n'est pas fermé et le trait déborde — un défaut assumé, comme un meuble dont le
           défaut ne change rien à l&apos;élégance. L&apos;ivoire sert de toile, le brun signe, l&apos;or
           souligne — jamais plus d&apos;un élément doré par zone.
         </p>

@@ -190,4 +190,24 @@ Ces points sont **volontairement simplifiés** dans cette version :
 
 ## Identité visuelle
 
-Le logo a été reconstruit en vectoriel à partir du visuel fourni : monogramme **LBD** en cascade (L encre, B or, D encre), étoile à quatre branches, filet doré, signature manuscrite. Voir la page **`/identite`** de l'application et `docs/DESIGN.md`.
+Monogramme **LBD** en capitales brunes (#6B5647) dans un cercle laissé ouvert, traversé par un
+coup de pinceau doré, filet et signature « Le Beau Défaut » en petites capitales.
+
+Tout le dessin tient dans un seul fichier — `src/lib/logo-geometry.ts` — lu à la fois par le
+composant React (`src/components/Logo.tsx`) et par le script d'export :
+
+```bash
+npx tsx scripts/export-brand.mts
+```
+
+Cette commande régénère, à partir de la même géométrie :
+
+| Fichier | Usage |
+|---|---|
+| `public/brand/*.svg` et `*.png` | monogramme, logo horizontal, logo complet (fond clair et sombre) |
+| `src/app/icon.svg` | favicon de l'onglet |
+| `public/favicon.ico` | favicon 16/32/48 px pour les navigateurs et les aperçus de lien |
+| `src/app/apple-icon.png` | icône de l'écran d'accueil iPhone (180 px) |
+| `public/icons/icon-192.png`, `icon-512.png`, `maskable-512.png` | installation Android / PWA |
+
+Charte complète et téléchargements sur la page **`/identite`** de l'application.
