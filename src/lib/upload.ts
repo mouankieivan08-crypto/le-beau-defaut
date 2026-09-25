@@ -20,6 +20,7 @@ async function uploadToSupabase(name: string, buffer: Buffer, type: string): Pro
     method: "POST",
     headers: {
       Authorization: `Bearer ${REMOTE_KEY}`,
+      apikey: REMOTE_KEY as string,
       "Content-Type": type,
       "Cache-Control": "public, max-age=31536000, immutable",
       "x-upsert": "true",
