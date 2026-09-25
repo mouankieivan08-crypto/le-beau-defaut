@@ -10,11 +10,12 @@ export const metadata: Metadata = {
 };
 
 const PALETTE = [
+  { name: "Brun LBD", hex: "#6B5647", token: "--color-brand", use: "Le monogramme, les titres de marque", dark: true },
   { name: "Encre", hex: "#14110E", token: "--color-ink", use: "Textes, boutons principaux, fonds sombres", dark: true },
   { name: "Ivoire", hex: "#FAF5EC", token: "--color-cream", use: "Fond de page — la toile du logo" },
   { name: "Lin", hex: "#FFFDF8", token: "--color-linen", use: "Cartes et surfaces" },
   { name: "Sable", hex: "#E9DCC6", token: "--color-sand", use: "Filets, bordures, séparateurs" },
-  { name: "Or", hex: "#B8913C", token: "--color-gold", use: "Le « B », filets, étoile — décor uniquement", dark: true },
+  { name: "Or", hex: "#B8913C", token: "--color-gold", use: "Le coup de pinceau, les filets — décor uniquement", dark: true },
   { name: "Or profond", hex: "#7D5E1F", token: "--color-gold-deep", use: "Or lisible en texte et boutons dorés (AA)", dark: true },
   { name: "Or pâle", hex: "#F0E2BE", token: "--color-gold-pale", use: "Pastilles, fonds d'icônes" },
   { name: "Blush", hex: "#D8A594", token: "--color-blush", use: "Accent chaleureux, avec parcimonie" },
@@ -34,7 +35,7 @@ export default function IdentityPage() {
         <h1 className="font-display text-[40px] font-bold leading-tight">Identité visuelle</h1>
         <p className="text-[15px] text-[var(--color-ink-soft)] mt-2 max-w-2xl leading-relaxed">
           Tout part du monogramme : trois lettres qui se chevauchent sans se gêner, comme un meuble dont le
-          défaut ne change rien à l&apos;élégance. L&apos;ivoire sert de toile, l&apos;encre structure, l&apos;or
+          défaut ne change rien à l&apos;élégance. L&apos;ivoire sert de toile, le brun signe, l&apos;or
           souligne — jamais plus d&apos;un élément doré par zone.
         </p>
       </header>
@@ -65,13 +66,13 @@ export default function IdentityPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mt-5">
           <Rule icon="check-circle" title="Zone de protection">
-            Laisser autour du logo un espace libre au moins égal à la hauteur du « B ».
+            Laisser autour du logo un espace libre au moins égal au rayon du cercle.
           </Rule>
           <Rule icon="check-circle" title="Taille minimale">
-            Monogramme : 24 px à l&apos;écran, 8 mm en impression. En dessous, utiliser le « B » seul.
+            Monogramme : 24 px à l&apos;écran, 8 mm en impression. En dessous, retirer le cercle et ne garder que les lettres.
           </Rule>
           <Rule icon="alert" title="À éviter" danger>
-            Recolorer les lettres, étirer, ajouter une ombre, ou poser le logo sur une photo chargée.
+            Recolorer les lettres, étirer, refermer le cercle, ajouter une ombre, ou poser le logo sur une photo chargée.
           </Rule>
         </div>
 
@@ -97,10 +98,10 @@ export default function IdentityPage() {
             <div>
               <p className="font-semibold text-sm">Dégradé or du monogramme</p>
               <p className="text-xs text-[var(--color-ink-muted)]">
-                Réservé au logo, à l&apos;étoile et aux titres signature. Jamais en fond de bouton ou de texte courant.
+                Réservé au coup de pinceau du monogramme et aux titres signature. Jamais en fond de bouton ni en texte courant.
               </p>
             </div>
-            <code className="text-[11px] text-[var(--color-ink-muted)] font-mono">#8C6A24 → #C9A227 → #F0DCA0</code>
+            <code className="text-[11px] text-[var(--color-ink-muted)] font-mono">#A97F22 → #D8B24A → #F2E0A6</code>
           </div>
         </div>
 

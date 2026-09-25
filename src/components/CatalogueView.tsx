@@ -107,6 +107,23 @@ export default async function CatalogueView({
       <div className="grid grid-cols-1 lg:grid-cols-[264px_1fr] gap-7 items-start">
         {/* ---------------- Filtres ---------------- */}
         <FilterDrawer count={activeFilters.length}>
+          <div className="flex items-center justify-between gap-2 pb-3 mb-4 border-b border-[var(--color-sand)]">
+            <p className="font-display text-base font-bold flex items-center gap-2">
+              <Icon name="filter" size={15} className="text-[var(--color-gold-dark)]" />
+              Filtrer
+              {activeFilters.length > 0 && (
+                <span className="h-5 min-w-5 px-1.5 rounded-full bg-[var(--color-ink)] text-[var(--color-cream)] text-[10px] font-bold grid place-items-center">
+                  {activeFilters.length}
+                </span>
+              )}
+            </p>
+            {activeFilters.length > 0 && (
+              <Link href={basePath} className="text-xs text-[var(--color-ink-muted)] underline hover:text-[var(--color-ink)]">
+                Tout effacer
+              </Link>
+            )}
+          </div>
+
           <form action={basePath} className="flex flex-col gap-5">
             {params.vertical && basePath === "/catalogue" && (
               <input type="hidden" name="vertical" value={params.vertical} />
@@ -177,16 +194,16 @@ export default async function CatalogueView({
               <div className="flex flex-col gap-1">
                 <FilterRadio name="grade" value="" label="Tous les grades" checked={!params.grade} />
                 {GRADE_LIST.map((g) => (
-                  <label key={g.key} className="flex items-center gap-2 py-1 cursor-pointer group">
+                  <label key={g.key} className="flex items-start gap-2.5 cursor-pointer rounded-lg px-2 py-2 text-sm transition-colors hover:bg-[var(--color-cream-deep)] has-[:checked]:bg-[var(--color-gold-pale)] has-[:checked]:font-semibold has-[:checked]:text-[var(--color-gold-dark)] items-center">
                     <input
                       type="radio"
                       name="grade"
                       value={g.key}
                       defaultChecked={params.grade === g.key}
-                      className="accent-[var(--color-gold-dark)]"
+                      className="accent-[var(--color-gold-dark)] h-4 w-4"
                     />
                     <GradeBadge grade={g.key} size="sm" />
-                    <span className="text-sm text-[var(--color-ink-soft)] group-hover:text-[var(--color-ink)] truncate">
+                    <span className="truncate">
                       {g.label}
                     </span>
                     <span className="text-[11px] text-[var(--color-ink-muted)] ml-auto">{f.grades[g.key] ?? 0}</span>
@@ -322,7 +339,7 @@ export default async function CatalogueView({
               </div>
             </FilterBlock>
 
-            <div className="flex gap-2 pt-1">
+            <div className="flex gap-2 pt-2 sticky bottom-0 bg-[var(--color-linen)] lg:static">
               <button className="btn btn-primary flex-1">
                 <Icon name="filter" size={14} /> Voir les {total} article{total > 1 ? "s" : ""}
               </button>
@@ -442,7 +459,7 @@ function pageUrl(basePath: string, params: CatalogueParams, page: number) {
 function FilterBlock({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div>
-      <p className="label">{title}</p>
+      <p className="text-[11px] font-bold uppercase tracking-[0.1em] text-[var(--color-brand)] mb-2">{title}</p>
       {children}
     </div>
   );
@@ -466,8 +483,8 @@ function FilterRadio({
   checked: boolean;
 }) {
   return (
-    <label className="flex items-start gap-2.5 cursor-pointer py-0.5 text-sm hover:text-[var(--color-gold-dark)] transition-colors">
-      <input type="radio" name={name} value={value} defaultChecked={checked} className="accent-[var(--color-gold)] mt-1" />
+    <label className="flex items-start gap-2.5 cursor-pointer rounded-lg px-2 py-2 text-sm transition-colors hover:bg-[var(--color-cream-deep)] has-[:checked]:bg-[var(--color-gold-pale)] has-[:checked]:font-semibold has-[:checked]:text-[var(--color-gold-dark)]">
+      <input type="radio" name={name} value={value} defaultChecked={checked} className="accent-[var(--color-gold-dark)] mt-0.5 h-4 w-4" />
       <span className="min-w-0 flex-1">
         {label}
         {hint && <span className="block text-[11px] text-[var(--color-ink-muted)] leading-tight">{hint}</span>}
@@ -490,8 +507,8 @@ function FilterCheck({
   checked: boolean;
 }) {
   return (
-    <label className="flex items-center gap-2.5 cursor-pointer py-0.5 text-sm hover:text-[var(--color-gold-dark)] transition-colors">
-      <input type="checkbox" name={name} value="1" defaultChecked={checked} className="accent-[var(--color-gold)]" />
+    <label className="flex items-start gap-2.5 cursor-pointer rounded-lg px-2 py-2 text-sm transition-colors hover:bg-[var(--color-cream-deep)] has-[:checked]:bg-[var(--color-gold-pale)] has-[:checked]:font-semibold has-[:checked]:text-[var(--color-gold-dark)] items-center">
+      <input type="checkbox" name={name} value="1" defaultChecked={checked} className="accent-[var(--color-gold-dark)] h-4 w-4" />
       <span className="min-w-0 flex-1">{label}</span>
       {count != null && <span className="text-[11px] text-[var(--color-ink-muted)] shrink-0">{count}</span>}
     </label>

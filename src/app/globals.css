@@ -12,6 +12,11 @@
   --color-sand: #e9dcc6;
   --color-linen: #fffdf8;
 
+  /* --- Brun de marque (le monogramme LBD) --- */
+  --color-brand: #6b5647;
+  --color-brand-soft: #8a7565;
+  --color-brand-pale: #c9b9ae;
+
   /* --- Encre --- */
   --color-ink: #14110e;
   --color-ink-soft: #3b342c;
