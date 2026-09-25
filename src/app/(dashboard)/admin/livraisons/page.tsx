@@ -1,4 +1,5 @@
 import Link from "next/link";
+import ResponsiveTable from "@/components/ResponsiveTable";
 import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/auth";
@@ -82,7 +83,7 @@ export default async function AdminDeliveriesPage({ searchParams }: { searchPara
           {deliveries.length === 0 ? (
             <EmptyState icon="truck" title="Rien à afficher" message="Aucune livraison dans cet état." />
           ) : (
-            <div className="surface overflow-x-auto">
+            <ResponsiveTable>
               <table className="table-lbd">
                 <thead>
                   <tr>
@@ -159,7 +160,7 @@ export default async function AdminDeliveriesPage({ searchParams }: { searchPara
                   })}
                 </tbody>
               </table>
-            </div>
+            </ResponsiveTable>
           )}
         </div>
 

@@ -38,10 +38,10 @@ export default async function Header() {
         <div className="flex h-[68px] items-center gap-4">
           <Link href="/" className="shrink-0" aria-label="Le Beau Défaut — accueil">
             <span className="hidden sm:block">
-              <Logo size={40} variant="full" />
+              <Logo size={46} variant="full" />
             </span>
             <span className="sm:hidden">
-              <Logo size={36} variant="mark" />
+              <Logo size={42} variant="mark" />
             </span>
           </Link>
 

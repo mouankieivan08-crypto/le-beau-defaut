@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import ResponsiveTable from "@/components/ResponsiveTable";
 import { prisma } from "@/lib/prisma";
 import { requireRole } from "@/lib/auth";
 import { money, dateTimeFR } from "@/lib/format";
@@ -65,7 +66,7 @@ export default async function CourierHistoryPage() {
       {history.length === 0 ? (
         <EmptyState icon="list" title="Pas encore de course terminée" />
       ) : (
-        <div className="surface overflow-x-auto">
+        <ResponsiveTable>
           <table className="table-lbd">
             <thead>
               <tr>
@@ -95,7 +96,7 @@ export default async function CourierHistoryPage() {
               ))}
             </tbody>
           </table>
-        </div>
+        </ResponsiveTable>
       )}
     </div>
   );

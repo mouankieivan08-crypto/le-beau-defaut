@@ -1,4 +1,5 @@
 import Link from "next/link";
+import ResponsiveTable from "@/components/ResponsiveTable";
 import type { Metadata } from "next";
 import type { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
@@ -128,7 +129,7 @@ export default async function AdminProductsPage({
           message={statut === "EN_ATTENTE" ? "Toutes les annonces ont été traitées." : undefined}
         />
       ) : (
-        <div className="surface overflow-x-auto">
+        <ResponsiveTable>
           <table className="table-lbd">
             <thead>
               <tr>
@@ -243,7 +244,7 @@ export default async function AdminProductsPage({
               })}
             </tbody>
           </table>
-        </div>
+        </ResponsiveTable>
       )}
 
       {pages > 1 && (

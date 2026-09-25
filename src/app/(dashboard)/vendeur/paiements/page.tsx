@@ -1,4 +1,5 @@
 import Link from "next/link";
+import ResponsiveTable from "@/components/ResponsiveTable";
 import { ESCROW_RELEASE_DAYS } from "@/lib/constants";
 import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
@@ -78,7 +79,7 @@ export default async function SellerPayoutsPage() {
       {payouts.length === 0 ? (
         <EmptyState icon="wallet" title="Aucun versement pour l'instant" message="Votre premier versement apparaîtra après votre première livraison." />
       ) : (
-        <div className="surface overflow-x-auto">
+        <ResponsiveTable>
           <table className="table-lbd">
             <thead>
               <tr>
@@ -114,7 +115,7 @@ export default async function SellerPayoutsPage() {
               ))}
             </tbody>
           </table>
-        </div>
+        </ResponsiveTable>
       )}
     </>
   );

@@ -27,7 +27,7 @@ export default function DashboardShell({
     <div className="flex flex-col h-full">
       <div className="px-5 pt-5 pb-4">
         <Link href="/" className="block" aria-label="Retour au site">
-          <Logo size={38} variant="full" onDark />
+          <Logo size={42} variant="full" onDark />
         </Link>
         <p className="mt-4 text-[10px] font-bold uppercase tracking-[0.18em] text-[var(--color-gold-light)]">
           {roleLabel}

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import ResponsiveTable from "@/components/ResponsiveTable";
 import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/auth";
@@ -101,7 +102,7 @@ export default async function AdminPayoutsPage({ searchParams }: { searchParams:
       {payouts.length === 0 ? (
         <EmptyState icon="wallet" title="Aucun versement" message="Tout est à jour." />
       ) : (
-        <div className="surface overflow-x-auto">
+        <ResponsiveTable>
           <table className="table-lbd">
             <thead>
               <tr>
@@ -160,7 +161,7 @@ export default async function AdminPayoutsPage({ searchParams }: { searchParams:
               ))}
             </tbody>
           </table>
-        </div>
+        </ResponsiveTable>
       )}
     </>
   );

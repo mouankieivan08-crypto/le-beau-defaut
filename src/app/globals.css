@@ -352,3 +352,63 @@
     display: none !important;
   }
 }
+
+@layer components {
+  /**
+   * Tableaux en fiches sur téléphone.
+   *
+   * Sous 640 px, chaque ligne devient une carte : l'intitulé de la colonne passe
+   * à gauche, la valeur à droite. Plus besoin de faire glisser pour lire une commande.
+   */
+  @media (max-width: 639px) {
+    .table-card {
+      overflow-x: visible;
+      background: transparent;
+      border: 0;
+      box-shadow: none;
+      padding: 0;
+    }
+    .table-card table,
+    .table-card tbody,
+    .table-card tr,
+    .table-card td {
+      display: block;
+      width: 100%;
+    }
+    .table-card thead {
+      display: none;
+    }
+    .table-card tr {
+      background: var(--color-linen);
+      border: 1px solid var(--color-sand);
+      border-radius: 14px;
+      padding: 10px 14px;
+      margin-bottom: 10px;
+    }
+    .table-card td {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 5px 0 !important;
+      border: 0 !important;
+      text-align: right !important;
+      white-space: normal !important;
+      max-width: none !important;
+      min-width: 0 !important;
+    }
+    .table-card td::before {
+      content: attr(data-label);
+      flex: 0 0 auto;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--color-ink-muted);
+      text-align: left;
+    }
+    .table-card td > * {
+      margin-left: auto;
+    }
+  }
+}
