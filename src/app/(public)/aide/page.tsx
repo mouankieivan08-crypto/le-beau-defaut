@@ -9,6 +9,10 @@ export const metadata: Metadata = { title: "Aide & livraison" };
 
 const FAQ: { q: string; a: string }[] = [
   {
+    q: "Le paiement est-il automatique ?",
+    a: "Non, et c'est volontaire pour l'instant. Vous faites un dépôt sur notre numéro Mobile Money, vous nous envoyez la preuve par WhatsApp, et notre équipe confirme la commande à la main. Aucun prélèvement automatique n'est possible depuis votre compte.",
+  },
+  {
     q: "Qui me vend l'article : Le Beau Défaut ou un particulier ?",
     a: "Les deux existent, et c'est écrit sur chaque annonce. Le mobilier et les sacs de luxe nous appartiennent : nous les rachetons aux entreprises, nous les inspectons et nous les vendons nous-mêmes (mention « Notre stock »). Le fourre-tout est une place de marché : l'article appartient à un vendeur, nous mettons en relation et nous sécurisons le paiement.",
   },
@@ -34,7 +38,7 @@ const FAQ: { q: string; a: string }[] = [
   },
   {
     q: "Comment payer ?",
-    a: "Par MTN Mobile Money ou Airtel Money au moment de la commande, ou en espèces au livreur. Les entreprises peuvent payer par virement.",
+    a: "Par dépôt Mobile Money sur le numéro de Le Beau Défaut (affiché au moment de la commande, avec un bouton pour le copier), puis vous nous envoyez la capture du dépôt par WhatsApp et nous confirmons. Sinon, en espèces à la livraison, ou sur place au moment du retrait. Les entreprises peuvent payer par virement.",
   },
   {
     q: "Combien coûte la livraison et combien de temps prend-elle ?",

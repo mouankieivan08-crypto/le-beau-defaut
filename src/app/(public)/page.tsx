@@ -71,7 +71,7 @@ export default async function HomePage() {
             <p className="text-[15px] text-[var(--color-ink-soft)] mt-6 max-w-lg leading-relaxed">
               Les entreprises de mobilier du Congo ont du stock invendable pour un rien : une rayure, une
               fin de série, un carton abîmé. Nous le reprenons, nous photographions le défaut, nous le
-              décrivons — et vous l&apos;achetez {avgDiscount > 0 ? `${avgDiscount} %` : "bien"} moins cher.
+              décrivons — et le prix en tient compte.
             </p>
 
             <div className="flex flex-wrap items-center gap-3 mt-8">
@@ -83,14 +83,6 @@ export default async function HomePage() {
               </Link>
             </div>
 
-            <dl className="flex flex-wrap gap-x-9 gap-y-4 mt-10">
-              <HeroStat label="Articles en ligne" value={String(total)} />
-              <HeroStat label="Remise moyenne" value={`−${avgDiscount} %`} />
-              <HeroStat
-                label="À partir de"
-                value={cheapest._min.price ? moneyCompact(cheapest._min.price) + " F" : "—"}
-              />
-            </dl>
           </div>
 
           {/* Arc doré — signature du visuel de marque */}

@@ -177,15 +177,52 @@ export const DELIVERY_STATUS: Record<string, { label: string; tone: string }> = 
   ECHEC: { label: "Échec de livraison", tone: "danger" },
 };
 
-export const PAYMENT_METHODS = [
-  { key: "MOBILE_MONEY_MTN", label: "MTN Mobile Money", hint: "Paiement à la validation" },
-  { key: "MOBILE_MONEY_AIRTEL", label: "Airtel Money", hint: "Paiement à la validation" },
-  { key: "ESPECES_LIVRAISON", label: "Espèces à la livraison", hint: "Vous payez le livreur" },
-  { key: "VIREMENT", label: "Virement bancaire", hint: "Pour les entreprises" },
+/**
+ * Nos numéros de dépôt Mobile Money.
+ *
+ * Le paiement n'est pas automatisé : l'acheteur dépose sur l'un de ces numéros,
+ * puis nous envoie la preuve par WhatsApp. Nous confirmons à la main.
+ */
+export const DEPOSIT_NUMBERS = [
+  { operator: "MTN MoMo", raw: "065018183", display: "06 501 81 83", holder: "Le Beau Défaut" },
+  { operator: "Airtel Money", raw: "055411248", display: "05 541 12 48", holder: "Le Beau Défaut" },
 ] as const;
 
+/** Numéro qui reçoit les preuves de paiement sur WhatsApp. */
+export const SUPPORT_WHATSAPP = DEPOSIT_NUMBERS[0].raw;
+
+export const PAYMENT_METHODS = [
+  {
+    key: "DEPOT_MOBILE_MONEY",
+    label: "Dépôt Mobile Money",
+    hint: "Vous déposez sur notre numéro, puis vous envoyez la preuve par WhatsApp.",
+  },
+  {
+    key: "ESPECES_SUR_PLACE",
+    label: "Paiement sur place",
+    hint: "Vous réglez en espèces au point de retrait convenu avec notre équipe.",
+  },
+  {
+    key: "ESPECES_LIVRAISON",
+    label: "Espèces à la livraison",
+    hint: "Vous payez le livreur au moment de la remise.",
+  },
+] as const;
+
+/** Anciens libellés : les commandes déjà passées doivent rester lisibles. */
+const LEGACY_PAYMENT_LABELS: Record<string, string> = {
+  MOBILE_MONEY_MTN: "Dépôt MTN MoMo",
+  MOBILE_MONEY_AIRTEL: "Dépôt Airtel Money",
+  VIREMENT: "Virement bancaire",
+};
+
 export function paymentMethodLabel(key: string) {
-  return PAYMENT_METHODS.find((p) => p.key === key)?.label ?? key;
+  return PAYMENT_METHODS.find((p) => p.key === key)?.label ?? LEGACY_PAYMENT_LABELS[key] ?? key;
+}
+
+/** Les paiements que l'acheteur règle lui-même avant la livraison. */
+export function isDeposit(key: string) {
+  return key === "DEPOT_MOBILE_MONEY" || key === "MOBILE_MONEY_MTN" || key === "MOBILE_MONEY_AIRTEL";
 }
 
 export const PAYMENT_STATUS: Record<string, { label: string; tone: string }> = {
@@ -284,7 +321,7 @@ export const BRAND = {
   short: "LBD",
   tagline: "Les petits défauts font de grandes économies",
   pillars: ["Mobilier", "Décoration", "Qualité", "Prix raisonnable"],
-  email: "lebeaudefaut01@gmail.com",
+  email: "beaudefaut@gmail.com",
   city: "Brazzaville",
 };
 

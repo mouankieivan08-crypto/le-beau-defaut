@@ -960,9 +960,9 @@ async function main() {
   const settings: [string, string, string][] = [
     ["site.name", "Le Beau Défaut", "Nom de la plateforme"],
     ["site.tagline", "Les petits défauts font de grandes économies", "Signature"],
-    ["contact.phone", "+242 06 000 00 00", "Téléphone du service client"],
-    ["contact.whatsapp", "+242 05 000 00 00", "WhatsApp"],
-    ["contact.email", "lebeaudefaut01@gmail.com", "E-mail de contact"],
+    ["contact.phone", "065018183", "Téléphone du service client"],
+    ["contact.whatsapp", "065018183", "WhatsApp"],
+    ["contact.email", "beaudefaut@gmail.com", "E-mail de contact"],
     ["commission.default", "15", "Commission par défaut (%)"],
     ["commission.sacs", "20", "Commission sacs de luxe (%)"],
     ["delivery.defaultFee", "3000", "Frais de livraison hors zone (FCFA)"],
@@ -1235,7 +1235,7 @@ async function main() {
     "EN_ATTENTE_PAIEMENT", "EN_ATTENTE_PAIEMENT",
     "ANNULEE", "ANNULEE",
   ];
-  const methods = ["MOBILE_MONEY_MTN", "MOBILE_MONEY_AIRTEL", "ESPECES_LIVRAISON", "ESPECES_LIVRAISON", "MOBILE_MONEY_MTN", "VIREMENT"];
+  const methods = ["DEPOT_MOBILE_MONEY", "ESPECES_LIVRAISON", "ESPECES_SUR_PLACE", "ESPECES_LIVRAISON", "DEPOT_MOBILE_MONEY", "DEPOT_MOBILE_MONEY"];
 
   const plans: Plan[] = [];
   let soldIdx = 0;
@@ -1259,7 +1259,7 @@ async function main() {
       status,
       client: i === 0 || i % 5 === 0 ? 0 : 1 + (i % (clients.length - 1)),
       items,
-      method: status === "EN_ATTENTE_PAIEMENT" ? pick(["MOBILE_MONEY_MTN", "MOBILE_MONEY_AIRTEL"]) : pick(methods),
+      method: status === "EN_ATTENTE_PAIEMENT" ? "DEPOT_MOBILE_MONEY" : pick(methods),
     });
   });
   // La cliente de démo a toujours au moins une commande en cours
@@ -1299,7 +1299,7 @@ async function main() {
     const deliveryFee = plan.items.every((i) => i.seed.pickupOnly) ? 0 : zone?.[2] ?? 3000;
 
     // Étapes franchies
-    const cash = plan.method === "ESPECES_LIVRAISON";
+    const cash = plan.method === "ESPECES_LIVRAISON" || plan.method === "ESPECES_SUR_PLACE";
     let steps: string[];
     if (plan.status === "ANNULEE") steps = ["EN_ATTENTE_PAIEMENT", "ANNULEE"];
     else {

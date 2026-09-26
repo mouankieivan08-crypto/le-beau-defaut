@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { useStickyAction } from "@/lib/use-sticky-action";
 import { checkoutAction } from "@/lib/actions/shop";
 import { PAYMENT_METHODS, QUARTIERS, CITIES } from "@/lib/constants";
+import PaymentDeposit from "./PaymentDeposit";
 import { money } from "@/lib/format";
 import Icon from "./Icon";
 import { Alert, GradeBadge } from "./ui";
@@ -197,11 +198,26 @@ export default function CheckoutForm({
             ))}
           </div>
 
-          {method.startsWith("MOBILE_MONEY") && (
+          {method === "DEPOT_MOBILE_MONEY" && (
             <div className="mt-4">
-              <Alert tone="info" title="Comment ça se passe">
-                Après validation, vous recevez une demande de paiement sur votre téléphone. Confirmez-la avec
-                votre code secret. La commande est préparée dès réception du paiement.
+              <PaymentDeposit amount={total} compact />
+            </div>
+          )}
+
+          {method === "ESPECES_SUR_PLACE" && (
+            <div className="mt-4">
+              <Alert tone="info" title="Paiement sur place">
+                Notre équipe vous appelle pour convenir du lieu et de l&apos;heure du retrait. Vous réglez en
+                espèces en récupérant l&apos;article — rien n&apos;est prélevé avant.
+              </Alert>
+            </div>
+          )}
+
+          {method === "ESPECES_LIVRAISON" && (
+            <div className="mt-4">
+              <Alert tone="info" title="Espèces à la livraison">
+                Vous payez le livreur au moment de la remise, après avoir vu l&apos;article et son défaut.
+                Prévoyez l&apos;appoint si possible.
               </Alert>
             </div>
           )}

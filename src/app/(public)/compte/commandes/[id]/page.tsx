@@ -1,4 +1,5 @@
 import Link from "next/link";
+import PaymentDeposit from "@/components/PaymentDeposit";
 import EscrowPanel from "@/components/EscrowPanel";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
@@ -14,6 +15,7 @@ import {
   CLAIM_STATUS,
   claimTypeLabel,
   claimResolutionLabel,
+  isDeposit,
 } from "@/lib/constants";
 import { cancelOrderAction } from "@/lib/actions/shop";
 import { AccountLayout } from "@/components/AccountNav";
@@ -96,10 +98,15 @@ export default async function OrderDetailPage({
 
       {order.status === "EN_ATTENTE_PAIEMENT" && (
         <div className="mb-5">
-          <Alert tone="warning" title="Paiement en attente">
-            Composez le code de paiement {order.paymentMethod === "MOBILE_MONEY_MTN" ? "MTN MoMo" : "Airtel Money"} ou
-            validez la notification reçue. Référence à indiquer : <strong className="font-mono">{order.reference}</strong>.
-          </Alert>
+          {isDeposit(order.paymentMethod) ? (
+            <PaymentDeposit reference={order.reference} amount={order.total} />
+          ) : (
+            <Alert tone="warning" title="Paiement en attente">
+              {order.paymentMethod === "ESPECES_SUR_PLACE"
+                ? "Notre équipe vous contacte pour convenir du retrait. Vous réglez en espèces sur place."
+                : "Vous réglez en espèces au livreur, au moment de la remise."}
+            </Alert>
+          )}
         </div>
       )}
       {order.cancelReason && (

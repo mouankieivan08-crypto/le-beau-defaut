@@ -76,6 +76,12 @@ export default function Footer() {
               <FooterLink href="/aide">Aide & livraison</FooterLink>
               <FooterLink href="/identite">Identité visuelle</FooterLink>
             </FooterCol>
+
+            <FooterCol title="Informations">
+              <FooterLink href="/conditions">Conditions de vente</FooterLink>
+              <FooterLink href="/confidentialite">Confidentialité & cookies</FooterLink>
+              <FooterLink href="/mentions-legales">Mentions légales</FooterLink>
+            </FooterCol>
           </div>
 
           <div className="rule-gold my-8 opacity-40" />

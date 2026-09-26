@@ -98,6 +98,11 @@ export async function createProductAction(_prev: State, formData: FormData): Pro
   // Le mobilier et les sacs de luxe appartiennent à Le Beau Défaut : seule la boutique
   // maison peut les mettre en ligne. Les vendeurs extérieurs publient dans le fourre-tout.
   const isHouse = user.role === "ADMIN" || seller?.isHouse === true;
+
+  // Un administrateur n'a pas de boutique à lui : ce qu'il publie appartient à la
+  // boutique maison, celle sous laquelle Le Beau Défaut vend son propre stock.
+  const houseShop = user.role === "ADMIN" && !seller ? await prisma.sellerProfile.findFirst({ where: { isHouse: true } }) : null;
+  const ownerId = houseShop?.userId ?? user.id;
   if (!isHouse && saleModeForVertical(d.vertical) === "MAISON") {
     return {
       error:
@@ -163,7 +168,7 @@ export async function createProductAction(_prev: State, formData: FormData): Pro
       saleMode: saleModeForVertical(d.vertical),
       supplierName: isHouse ? String(formData.get("supplierName") || "").trim() || null : null,
       categoryId: d.categoryId,
-      sellerId: user.id,
+      sellerId: ownerId,
       priceOriginal: d.priceOriginal,
       price: d.price,
       discountPct: pct,
@@ -173,7 +178,8 @@ export async function createProductAction(_prev: State, formData: FormData): Pro
       city: d.city,
       ...extras,
       authenticity: d.vertical === "SACS" ? "NON_VERIFIE" : "NON_APPLICABLE",
-      status: asDraft ? "BROUILLON" : "EN_ATTENTE",
+      status: asDraft ? "BROUILLON" : user.role === "ADMIN" ? "PUBLIE" : "EN_ATTENTE",
+      publishedAt: !asDraft && user.role === "ADMIN" ? new Date() : null,
       images: {
         create: [
           { url: coverUrl, isCover: true, position: 0, alt: d.title },
@@ -206,7 +212,12 @@ export async function createProductAction(_prev: State, formData: FormData): Pro
   }
 
   revalidatePath("/", "layout");
-  redirect(`/vendeur/annonces?cree=${product.reference}`);
+  // L'équipe retourne dans son espace, le vendeur dans le sien.
+  redirect(
+    user.role === "ADMIN"
+      ? `/admin/annonces?statut=PUBLIE&cree=${product.reference}`
+      : `/vendeur/annonces?cree=${product.reference}`
+  );
 }
 
 export async function updateProductAction(_prev: State, formData: FormData): Promise<State> {

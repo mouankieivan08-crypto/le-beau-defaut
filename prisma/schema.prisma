@@ -48,6 +48,7 @@ model User {
   addresses     Address[]
   claims        Claim[]        @relation("ClaimBuyer")
   claimsHandled Claim[]        @relation("ClaimHandler")
+  passwordResets PasswordReset[]
 
   @@index([role])
   @@index([createdAt])
@@ -561,4 +562,20 @@ model AuthAttempt {
 
   @@index([email, createdAt])
   @@index([ip, createdAt])
+}
+
+/// Demande de réinitialisation de mot de passe.
+/// Le lien est à usage unique et expire : même transmis par WhatsApp, il ne traîne pas.
+model PasswordReset {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token     String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  sentAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId])
+  @@index([expiresAt])
 }

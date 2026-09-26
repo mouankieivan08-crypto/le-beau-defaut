@@ -81,6 +81,15 @@ export function LoginForm({ next, team = false }: { next?: string; team?: boolea
           {pending ? "Connexion…" : "Se connecter"}
         </button>
 
+        <p className="text-sm text-center">
+          <Link
+            href="/mot-de-passe-oublie"
+            className="text-[var(--color-ink-muted)] underline underline-offset-2 hover:text-[var(--color-ink)]"
+          >
+            Mot de passe oublié ?
+          </Link>
+        </p>
+
         {!team && (
         <p className="text-sm text-center text-[var(--color-ink-muted)]">
           Pas encore de compte ?{" "}

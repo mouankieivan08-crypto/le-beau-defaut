@@ -49,7 +49,7 @@ export default function MobileMenu({
   const panneau = (
     <div className="fixed inset-0 z-[60] lg:hidden" role="dialog" aria-modal="true" aria-label="Menu">
       <div className="absolute inset-0 bg-[var(--color-ink)]/45 backdrop-blur-sm" onClick={fermer} />
-      <nav className="absolute right-0 top-0 h-full w-[85%] max-w-sm bg-[var(--color-cream)] shadow-2xl flex flex-col animate-fade-up overflow-y-auto overscroll-contain">
+      <nav className="absolute right-0 top-0 max-h-full w-[85%] max-w-sm bg-[var(--color-cream)] shadow-2xl rounded-bl-2xl flex flex-col animate-fade-up overflow-y-auto overscroll-contain">
         <div className="flex items-center justify-between p-4 border-b border-[var(--color-sand)] sticky top-0 bg-[var(--color-cream)] z-10">
           <Logo size={34} variant="full" />
           <button onClick={fermer} className="btn btn-ghost !px-2" aria-label="Fermer le menu">
@@ -66,7 +66,7 @@ export default function MobileMenu({
           />
         </form>
 
-        <div className="px-3 pb-3 flex flex-col gap-0.5">
+        <div className="px-3 pb-4 flex flex-col gap-0.5">
           <p className="label px-3 pt-2 pb-1">Nos univers</p>
           {VERTICAL_LIST.map((v) => (
             <Link

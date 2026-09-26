@@ -51,7 +51,8 @@ export type IconName =
   | "arrow-left"
   | "refresh"
   | "download"
-  | "info";
+  | "info"
+  | "copy";
 
 const P: Record<IconName, string> = {
   armchair:
@@ -106,6 +107,7 @@ const P: Record<IconName, string> = {
   "arrow-left": "M20 12H4m6-6-6 6 6 6",
   refresh: "M20 11a8 8 0 1 0-1.5 5.5M20 5v6h-6",
   download: "M12 4v12m0 0 4.5-4.5M12 16l-4.5-4.5M4 18v2h16v-2",
+  copy: "M9 9V5.5A1.5 1.5 0 0 1 10.5 4h8A1.5 1.5 0 0 1 20 5.5v8a1.5 1.5 0 0 1-1.5 1.5H15M5.5 9h8A1.5 1.5 0 0 1 15 10.5v8A1.5 1.5 0 0 1 13.5 20h-8A1.5 1.5 0 0 1 4 18.5v-8A1.5 1.5 0 0 1 5.5 9Z",
   info: "M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Zm0-9v5m0-8h.01",
 };
 

@@ -17,16 +17,22 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     prisma.claim.count({ where: { status: { in: ["OUVERTE", "EN_EXAMEN"] } } }),
   ]);
 
+  const resetsEnAttente = await prisma.passwordReset.count({
+    where: { usedAt: null, expiresAt: { gt: new Date() } },
+  });
+
   const heldOrders = await prisma.order.count({ where: { escrowStatus: "SOUS_SEQUESTRE" } });
 
   const nav: NavItem[] = [
     { href: "/admin", label: "Vue d'ensemble", icon: "chart", exact: true },
     { href: "/admin/annonces", label: "Annonces", icon: "tag", badge: pendingProducts + pendingAuth },
+    { href: "/admin/annonces/nouvelle", label: "Publier un article", icon: "plus" },
     { href: "/admin/commandes", label: "Commandes", icon: "package" },
     { href: "/admin/livraisons", label: "Livraisons", icon: "truck", badge: toAssign },
     { href: "/admin/reclamations", label: "Réclamations", icon: "shield", badge: openClaims },
     { href: "/admin/vendeurs", label: "Vendeurs", icon: "wallet", badge: pendingSellers },
     { href: "/admin/utilisateurs", label: "Utilisateurs", icon: "users" },
+    { href: "/admin/reinitialisations", label: "Mots de passe", icon: "shield", badge: resetsEnAttente },
     { href: "/admin/sequestre", label: "Séquestre", icon: "shield", badge: heldOrders },
     { href: "/admin/paiements", label: "Versements", icon: "wallet", badge: pendingPayouts },
     { href: "/admin/categories", label: "Catégories", icon: "grid" },

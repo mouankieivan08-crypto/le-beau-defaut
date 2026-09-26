@@ -1,0 +1,145 @@
+import Link from "next/link";
+import type { Metadata } from "next";
+import { BRAND, CLAIM_WINDOW_DAYS, DEFAULT_COMMISSION_PCT, ESCROW_RELEASE_DAYS } from "@/lib/constants";
+import { LegalShell, LegalSection } from "@/components/Legal";
+
+export const metadata: Metadata = {
+  title: "Conditions d'utilisation et de vente",
+  description: "Les règles du jeu sur Le Beau Défaut : le défaut annoncé, le paiement, la livraison, les réclamations.",
+};
+
+export default function TermsPage() {
+  return (
+    <LegalShell
+      title="Conditions d'utilisation et de vente"
+      updated="26 septembre 2026"
+      intro="Le contrat entre vous et Le Beau Défaut, écrit pour être lu : ce que nous promettons, ce que nous attendons, et ce qui se passe quand ça se passe mal."
+    >
+      <LegalSection title="1. Ce qu'est Le Beau Défaut">
+        <p>
+          Une place de marché de {BRAND.city} qui assume le défaut. Chaque article porte un petit défaut,
+          photographié, situé et noté — c&apos;est ce qui justifie son prix.
+        </p>
+        <p>
+          <strong>Mobilier et sacs de luxe :</strong> les articles nous appartiennent, nous en sommes le vendeur.
+        </p>
+        <p>
+          <strong>Fourre-tout :</strong> l&apos;article appartient à un vendeur inscrit. Nous mettons en relation,
+          nous sécurisons le paiement, mais le vendeur reste responsable de son article.
+        </p>
+      </LegalSection>
+
+      <LegalSection title="2. Votre compte">
+        <p>
+          Il faut avoir 18 ans, donner des informations exactes et garder son mot de passe pour soi. Un compte
+          sert à acheter, et à vendre dès que vous ouvrez une boutique.
+        </p>
+        <p>
+          Nous pouvons suspendre un compte qui publie de fausses annonces, dissimule un défaut, cherche à sortir
+          la transaction de la plateforme, ou harcèle un autre membre.
+        </p>
+      </LegalSection>
+
+      <LegalSection title="3. La règle du défaut">
+        <p>
+          Toute annonce indique le défaut : son type, sa zone, sa gravité, et au moins une photo qui le montre. Le
+          grade (A, B ou C) impose une remise minimale, vérifiée automatiquement.
+        </p>
+        <p>
+          Cacher un défaut, c&apos;est le retrait de l&apos;annonce ; recommencer, c&apos;est la fermeture de la
+          boutique. <Link href="/le-defaut" className="underline underline-offset-2">Voir la grille</Link>.
+        </p>
+      </LegalSection>
+
+      <LegalSection title="4. Prix et paiement">
+        <p>
+          Les prix sont en francs CFA (XAF), toutes taxes comprises quand elles s&apos;appliquent. Les frais de
+          livraison dépendent du quartier et s&apos;affichent avant la validation.
+        </p>
+        <p>
+          Le paiement n&apos;est pas automatisé : vous déposez le montant sur notre numéro Mobile Money, puis vous
+          nous envoyez la preuve par WhatsApp. Vous pouvez aussi régler en espèces à la livraison, ou sur place au
+          retrait. Aucun prélèvement automatique n&apos;est possible depuis votre compte.
+        </p>
+        <p>
+          Une commande n&apos;est confirmée qu&apos;une fois le paiement vérifié par notre équipe, ou au moment de
+          la remise pour les paiements en espèces.
+        </p>
+      </LegalSection>
+
+      <LegalSection title="5. Le séquestre, pour les ventes entre particuliers">
+        <p>
+          Sur le fourre-tout, votre argent est conservé par Le Beau Défaut et n&apos;est pas versé au vendeur tant
+          que vous n&apos;avez pas reçu l&apos;article. Vous confirmez la réception d&apos;un bouton ; sans réponse
+          de votre part, le versement part automatiquement {ESCROW_RELEASE_DAYS} jours après la livraison.
+        </p>
+        <p>
+          Si vous ouvrez une réclamation dans ce délai, l&apos;argent reste bloqué le temps que nous tranchions.
+        </p>
+      </LegalSection>
+
+      <LegalSection title="6. Livraison et retrait">
+        <p>
+          Nous livrons dans Brazzaville. Le délai dépend du quartier et est indiqué avant la commande. Le livreur
+          appelle avant de passer.
+        </p>
+        <p>
+          Certains articles sont à retirer sur place : l&apos;annonce le précise, et notre équipe convient du lieu
+          et de l&apos;heure avec vous.
+        </p>
+      </LegalSection>
+
+      <LegalSection title="7. Réclamations et remboursements">
+        <p>
+          Si l&apos;article reçu ne correspond pas à l&apos;annonce — défaut non annoncé, article différent, casse
+          au transport, pièce manquante, non-livraison — vous avez <strong>{CLAIM_WINDOW_DAYS} jours</strong> après
+          la livraison pour ouvrir une réclamation depuis votre commande, photo à l&apos;appui.
+        </p>
+        <p>
+          Nous tranchons : remboursement total ou partiel, reprise de l&apos;article, geste commercial, ou refus
+          motivé. Un défaut annoncé et visible sur les photos ne donne pas droit à remboursement : c&apos;est le
+          principe même de la maison.
+        </p>
+      </LegalSection>
+
+      <LegalSection title="8. Si vous vendez">
+        <p>
+          Vous publiez dans le fourre-tout, vous décrivez honnêtement le défaut, et vous préparez l&apos;article
+          dès la commande. Notre commission est de {DEFAULT_COMMISSION_PCT} % du prix de vente, prélevée uniquement
+          quand la vente aboutit ; publier ne coûte rien.
+        </p>
+        <p>
+          Les échanges restent sur la plateforme. Une vente conclue en dehors vous prive du séquestre — et nous
+          prive de notre commission : c&apos;est un motif de fermeture de boutique.
+        </p>
+        <p>
+          Sont interdits : la contrefaçon, les produits volés, les armes, les médicaments, les animaux, et tout ce
+          que la loi congolaise interdit de vendre.
+        </p>
+      </LegalSection>
+
+      <LegalSection title="9. Responsabilité">
+        <p>
+          Pour nos propres articles, nous répondons de la conformité de ce qui est livré. Pour le fourre-tout,
+          notre responsabilité est celle d&apos;un intermédiaire : nous sécurisons le paiement et arbitrons les
+          litiges, sans garantir l&apos;article lui-même.
+        </p>
+        <p>
+          Le site peut être momentanément indisponible pour maintenance ; nous faisons au mieux pour que cela reste
+          rare et court.
+        </p>
+      </LegalSection>
+
+      <LegalSection title="10. Modification et droit applicable">
+        <p>
+          Ces conditions peuvent évoluer ; la date de mise à jour figure en haut de page. Les commandes en cours
+          restent régies par la version acceptée au moment de l&apos;achat.
+        </p>
+        <p>
+          Droit applicable : celui de la République du Congo. En cas de désaccord, nous cherchons d&apos;abord une
+          solution amiable — écrivez-nous à <strong>{BRAND.email}</strong>.
+        </p>
+      </LegalSection>
+    </LegalShell>
+  );
+}
