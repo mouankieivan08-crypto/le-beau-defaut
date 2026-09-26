@@ -92,9 +92,17 @@ Les règles vivent dans `src/lib/constants.ts` (`GRADES`, `DEFECT_TYPES`).
 - **Administrateur** — indicateurs et graphiques, modération avec contrôle automatique de conformité, authentification des sacs, **réclamations**, commandes, assignation des livreurs, tarifs par quartier, vendeurs et commissions, utilisateurs et rôles (dont réinitialisation de mot de passe), versements, catégories, paramètres, journal d'activité, **exports Excel** (commandes, versements, annonces).
 
 ### Le circuit de l'argent
-Commande → paiement (validé par l'admin pour Mobile Money, encaissé par le livreur pour les espèces) → livraison → **versement vendeur créé automatiquement** (commission déduite) → l'admin marque le versement comme envoyé.
+Le paiement **n'est pas automatisé**, et l'application ne le laisse jamais croire.
 
----
+1. L'acheteur choisit **dépôt Mobile Money**, **espèces à la livraison** ou **paiement sur place**.
+2. Pour un dépôt, la commande affiche les deux numéros de Le Beau Défaut — **06 501 81 83** (MTN MoMo) et
+   **05 541 12 48** (Airtel Money) — avec un bouton pour copier le numéro sans risque d'erreur.
+3. L'acheteur dépose, puis clique sur **« J'ai payé — envoyer la preuve »** : WhatsApp s'ouvre avec un
+   message prérempli (référence et montant) auquel il joint la capture du dépôt.
+4. L'équipe vérifie le dépôt et marque la commande payée depuis l'administration.
+5. Livraison → **versement vendeur créé** (commission déduite), sous séquestre pour le fourre-tout.
+
+Les numéros vivent dans `DEPOSIT_NUMBERS` (`src/lib/constants.ts`).
 
 ## Chercher un article
 
@@ -166,6 +174,19 @@ Le logo, l'identité et la grille du défaut sont aussi visibles dans l'applicat
 Chaque page et chaque action serveur vérifient le rôle de l'utilisateur (`requireRole`). Un vendeur ne peut agir que sur ses propres annonces et commandes.
 
 ---
+
+## Comptes et pages légales
+
+**Mot de passe oublié** — aucun e-mail ne part encore du site, le parcours est donc semi-automatique,
+comme le paiement : `/mot-de-passe-oublie` enregistre la demande et prévient l'équipe ; celle-ci vérifie
+l'identité, puis envoie depuis `/admin/reinitialisations` un lien **à usage unique valable deux heures**
+(bouton « copier » ou envoi WhatsApp direct). Le jour où un service d'envoi est branché, seul le mode de
+transmission change.
+
+**Pages légales** — `/mentions-legales`, `/confidentialite` (données et cookies) et `/conditions`
+(conditions d'utilisation et de vente). Un bandeau explique qu'un seul cookie est déposé, celui de
+connexion : ni traceur, ni mesure d'audience, rien à accepter. Les informations d'immatriculation
+(RCCM, NIU, siège) restent à compléter dans `src/app/(public)/mentions-legales/page.tsx`.
 
 ## Mise en ligne
 
