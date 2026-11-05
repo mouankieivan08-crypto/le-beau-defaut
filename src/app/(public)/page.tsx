@@ -12,7 +12,7 @@ import { SectionTitle, GradeBadge, Badge } from "@/components/ui";
 export default async function HomePage() {
   const user = await getCurrentUser();
 
-  const [featured, flash, latest, bags, counts, cheapest] = await Promise.all([
+  const [featured, flash, latest, counts, cheapest] = await Promise.all([
     prisma.product.findMany({
       where: { ...PUBLISHED, isFeatured: true },
       select: cardSelect,
@@ -30,12 +30,6 @@ export default async function HomePage() {
       select: cardSelect,
       orderBy: { publishedAt: "desc" },
       take: 8,
-    }),
-    prisma.product.findMany({
-      where: { ...PUBLISHED, vertical: "SACS" },
-      select: cardSelect,
-      orderBy: { publishedAt: "desc" },
-      take: 4,
     }),
     prisma.product.groupBy({ by: ["vertical"], where: PUBLISHED, _count: true }),
     prisma.product.aggregate({ where: PUBLISHED, _min: { price: true }, _avg: { discountPct: true } }),
@@ -139,30 +133,28 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ---------------------------- LES 3 UNIVERS ---------------------------- */}
+      {/* ---------------------------- NOTRE UNIVERS ---------------------------- */}
       <section className="mx-auto max-w-[1280px] px-4 py-14">
         <SectionTitle
-          eyebrow="Trois univers"
-          title="Où voulez-vous chiner ?"
-          subtitle="Le mobilier reste notre métier. À côté, deux rayons qui marchent fort : les sacs de luxe authentifiés, et le fourre-tout des bonnes affaires."
+          eyebrow="Le catalogue"
+          title="Un seul univers, des prix qui parlent"
+          subtitle="Le Beau Défaut met en vente le mobilier de seconde main à petit défaut, avec transparence sur la nature et la gravité du défaut."
         />
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-          {VERTICAL_LIST.map((v) => (
-            <Link key={v.key} href={`/${v.slug}`} className="surface surface-hover p-7 group relative overflow-hidden">
-              <span className="absolute -right-6 -top-6 text-[var(--color-gold)] opacity-[0.07] group-hover:opacity-[0.13] transition-opacity">
-                <Icon name={v.icon as IconName} size={140} strokeWidth={0.7} />
-              </span>
-              <span className="relative inline-flex h-12 w-12 items-center justify-center rounded-full bg-[var(--color-gold-pale)] text-[var(--color-gold-dark)] mb-4">
-                <Icon name={v.icon as IconName} size={23} />
-              </span>
-              <h3 className="relative font-display text-xl font-bold">{v.label}</h3>
-              <p className="relative text-sm text-[var(--color-ink-muted)] mt-1.5 leading-relaxed">{v.tagline}</p>
-              <p className="relative inline-flex items-center gap-1.5 text-sm font-medium text-[var(--color-gold-dark)] mt-4">
-                {countBy[v.key] ?? 0} article{(countBy[v.key] ?? 0) > 1 ? "s" : ""}
-                <Icon name="arrow-right" size={14} className="group-hover:translate-x-1 transition-transform" />
-              </p>
-            </Link>
-          ))}
+        <div className="grid grid-cols-1 gap-5">
+          <Link href="/catalogue" className="surface surface-hover p-7 group relative overflow-hidden">
+            <span className="absolute -right-6 -top-6 text-[var(--color-gold)] opacity-[0.07] group-hover:opacity-[0.13] transition-opacity">
+              <Icon name="armchair" size={140} strokeWidth={0.7} />
+            </span>
+            <span className="relative inline-flex h-12 w-12 items-center justify-center rounded-full bg-[var(--color-gold-pale)] text-[var(--color-gold-dark)] mb-4">
+              <Icon name="armchair" size={23} />
+            </span>
+            <h3 className="relative font-display text-xl font-bold">Mobilier à petit défaut</h3>
+            <p className="relative text-sm text-[var(--color-ink-muted)] mt-1.5 leading-relaxed">Canapés, tables, dressers et rangements : le défaut est visible en photo, la remise découle du grade.</p>
+            <p className="relative inline-flex items-center gap-1.5 text-sm font-medium text-[var(--color-gold-dark)] mt-4">
+              {total} article{total > 1 ? "s" : ""}
+              <Icon name="arrow-right" size={14} className="group-hover:translate-x-1 transition-transform" />
+            </p>
+          </Link>
         </div>
       </section>
 
@@ -242,33 +234,6 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* ---------------------------- SACS DE LUXE ---------------------------- */}
-      {bags.length > 0 && (
-        <section className="bg-[var(--color-ink)] text-[var(--color-cream)] py-14">
-          <div className="mx-auto max-w-[1280px] px-4">
-            <div className="flex items-end justify-between gap-4 flex-wrap mb-6">
-              <div>
-                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--color-gold-light)] mb-1.5">
-                  Le rayon luxe
-                </p>
-                <h2 className="font-display text-[28px] font-bold">Sacs de luxe authentifiés</h2>
-                <p className="text-sm text-[var(--color-cream)]/65 mt-1 max-w-xl">
-                  Chaque pièce passe par notre contrôle avant mise en ligne. Le défaut est décrit au
-                  millimètre : coin frotté, doublure marquée, poignée patinée.
-                </p>
-              </div>
-              <Link href="/sacs-de-luxe" className="btn btn-gold btn-sm">
-                Découvrir <Icon name="arrow-right" size={14} />
-              </Link>
-            </div>
-            <ProductGrid>
-              {bags.map((p) => (
-                <ProductCard key={p.id} product={p} isFavorite={favs.has(p.id)} revalidate="/" />
-              ))}
-            </ProductGrid>
-          </div>
-        </section>
-      )}
 
       {/* ---------------------------- COMMENT ÇA MARCHE ---------------------------- */}
       <section className="mx-auto max-w-[1280px] px-4 py-16">
@@ -324,8 +289,8 @@ export default async function HomePage() {
               ))}
             </ul>
             <div className="flex flex-wrap gap-3 mt-7">
-              <Link href="/inscription?type=vendeur" className="btn btn-gold btn-lg">
-                Ouvrir ma boutique
+              <Link href="/catalogue" className="btn btn-gold btn-lg">
+                Découvrir le catalogue
               </Link>
               <Link href="/vendre" className="btn btn-outline btn-lg">
                 Comment ça marche

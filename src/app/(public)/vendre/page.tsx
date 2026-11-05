@@ -7,7 +7,7 @@ import { Breadcrumb, GradeBadge } from "@/components/ui";
 
 export const metadata: Metadata = {
   title: "Vendre avec nous",
-  description: "Nous rachetons votre mobilier et vos sacs de luxe à petit défaut. Pour tout le reste, ouvrez une boutique dans le fourre-tout : paiement sous séquestre, versé après la livraison.",
+  description: "Nous rachetons votre mobilier à petit défaut et vous aidons à le revendre avec transparence, prix net et livraison claire.",
 };
 
 const STEPS: { icon: IconName; title: string; text: string }[] = [
@@ -44,15 +44,15 @@ export default async function SellPage() {
             de vendre votre défaut.
           </h1>
           <p className="text-[16px] text-[var(--color-ink-soft)] mt-5 leading-relaxed max-w-xl">
-            Le mobilier et les sacs de luxe, nous vous les <strong>rachetons</strong> : c&apos;est ensuite notre
-            affaire de les revendre. Pour tout le reste, ouvrez une boutique dans le <strong>fourre-tout</strong> et
-            vendez vous-même — nous encaissons pour vous et vous payons après la livraison.
+            Nous <strong>rachetons votre mobilier</strong> à petit défaut, puis nous le revendons avec une vraie
+            transparence sur le défaut, la remise et le prix final. Vous gagnez du temps, et l&apos;article trouve
+            immédiatement un client sérieux.
           </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-7">
             <div className="surface p-4 border-[var(--color-gold)]/50">
               <p className="text-sm font-semibold flex items-center gap-2 mb-1">
-                <Icon name="sparkle" size={15} className="text-[var(--color-gold-dark)]" /> Mobilier, sacs de luxe
+                <Icon name="sparkle" size={15} className="text-[var(--color-gold-dark)]" /> Mobilier à petit défaut
               </p>
               <p className="text-xs text-[var(--color-ink-muted)] mb-3">
                 Entreprise, showroom, importateur : nous venons voir le lot et vous faisons une offre ferme.
@@ -69,13 +69,13 @@ export default async function SellPage() {
             </div>
             <div className="surface p-4">
               <p className="text-sm font-semibold flex items-center gap-2 mb-1">
-                <Icon name="box" size={15} className="text-[var(--color-gold-dark)]" /> Tout le reste
+                <Icon name="box" size={15} className="text-[var(--color-gold-dark)]" /> Mobilier en lots
               </p>
               <p className="text-xs text-[var(--color-ink-muted)] mb-3">
-                Déco, électroménager, luminaires… Vous publiez, nous sécurisons le paiement.
+                Canapés, tables, chaises, rangements, fauteuils et autres pièces de maison : nous évaluons votre stock.
               </p>
               <Link href="/devenir-vendeur" className="btn btn-primary btn-sm w-full">
-                Ouvrir ma boutique
+                Faire une demande
               </Link>
             </div>
           </div>
@@ -116,9 +116,9 @@ export default async function SellPage() {
           <p className="text-sm text-[var(--color-ink-muted)] mt-1 mb-5">Prélevée uniquement sur les ventes livrées.</p>
           <ul className="flex flex-col gap-3">
             {[
-              ["Mobilier & fourre-tout", "15 %"],
-              ["Sacs de luxe (avec authentification)", "20 %"],
-              ["Électroménager en volume", "Sur devis"],
+              ["Mobilier critique / fin de série", "15 %"],
+              ["Mobilier de grande pièce ou lot volumineux", "Sur devis"],
+              ["Mobilier premium / showroom", "20 %"],
             ].map(([k, v]) => (
               <li key={k} className="flex justify-between items-baseline border-b border-[var(--color-sand)] pb-2.5">
                 <span>{k}</span>
@@ -127,7 +127,7 @@ export default async function SellPage() {
             ))}
           </ul>
           <p className="text-xs text-[var(--color-ink-muted)] mt-4">
-            Exemple : un canapé vendu 590 000 FCFA vous rapporte 501 500 FCFA, livraison organisée par nos soins.
+            Exemple : un canapé vendu 590 000 FCFA vous rapporte 501 500 FCFA, livraison et vérification incluses.
           </p>
         </div>
 

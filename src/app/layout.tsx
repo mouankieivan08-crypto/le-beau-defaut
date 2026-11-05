@@ -10,18 +10,17 @@ export const metadata: Metadata = {
     template: `%s · ${BRAND.name}`,
   },
   description:
-    "La marketplace congolaise du mobilier à petit défaut, des sacs de luxe authentifiés et du fourre-tout. Chaque défaut est photographié, décrit et noté. Prix raisonnable, transparence totale.",
+    "Le Beau Défaut propose du mobilier à petit défaut en Congo : chaque défaut est photographié, décrit et noté. Prix raisonnable, transparence totale.",
   keywords: [
     "mobilier Congo",
     "meubles Brazzaville",
-    "sacs de luxe Congo",
     "déstockage mobilier",
     "Le Beau Défaut",
     "seconde main Brazzaville",
   ],
   openGraph: {
     title: `${BRAND.name} — ${BRAND.tagline}`,
-    description: "Mobilier, décoration, sacs de luxe : le petit défaut en moins cher, annoncé en toute transparence.",
+    description: "Mobilier à petit défaut : le petit défaut en moins cher, annoncé en toute transparence.",
     type: "website",
     locale: "fr_CG",
   },

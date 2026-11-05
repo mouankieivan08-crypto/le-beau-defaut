@@ -1,10 +1,6 @@
 /**
- * Protection des échanges du fourre-tout.
- *
- * Sur une mise en relation, Le Beau Défaut ne gagne sa commission que si la vente
- * se conclut sur la plateforme — et l'acheteur n'est protégé (séquestre, réclamation)
- * que dans ce cadre. On masque donc les coordonnées avant d'enregistrer un message :
- * numéros de téléphone, adresses e-mail, liens et renvois vers WhatsApp ou les réseaux.
+ * Protection des échanges : on masque les coordonnées avant d'enregistrer un message,
+ * afin de garder les achats et échanges sur la plateforme seule.
  *
  * Le seuil de huit chiffres évite de masquer les prix : « 250 000 FCFA » passe,
  * « 06 123 45 67 » ne passe pas.

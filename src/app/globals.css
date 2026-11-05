@@ -75,6 +75,25 @@
     scroll-behavior: smooth;
   }
 
+  html[data-theme="dark"] {
+    --color-cream: #101417;
+    --color-cream-deep: #171d22;
+    --color-sand: #2b3640;
+    --color-linen: #1a2128;
+    --color-ink: #f4efe7;
+    --color-ink-soft: #d8d1c7;
+    --color-ink-muted: #a8adaf;
+    --color-brand: #d9c59a;
+    --color-brand-soft: #bfa979;
+    --color-brand-pale: #5b4e3a;
+    --color-gold-pale: rgba(191, 169, 121, 0.18);
+    --color-viz-grid: #26313a;
+    --color-grade-a-bg: rgba(75, 143, 88, 0.18);
+    --color-grade-b-bg: rgba(184, 145, 60, 0.18);
+    --color-grade-c-bg: rgba(176, 58, 46, 0.18);
+    color-scheme: dark;
+  }
+
   body {
     background: var(--color-cream);
     color: var(--color-ink);

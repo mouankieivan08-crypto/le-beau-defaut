@@ -11,17 +11,17 @@ import { gradeOf, saleModeForVertical } from "@/lib/constants";
 
 type State = { error?: string; success?: string } | undefined;
 
-const VERTICAL_PREFIX: Record<string, string> = { MOBILIER: "M", SACS: "S", FOURRE_TOUT: "F" };
+const VERTICAL_PREFIX: Record<string, string> = { MOBILIER: "M" };
 
 async function nextProductReference(vertical: string) {
   const count = await prisma.product.count({ where: { vertical } });
-  return `LBD-${VERTICAL_PREFIX[vertical] ?? "X"}-${String(count + 1).padStart(5, "0")}`;
+  return `LBD-${VERTICAL_PREFIX[vertical] ?? "M"}-${String(count + 1).padStart(5, "0")}`;
 }
 
 const productSchema = z.object({
   title: z.string().min(5, "Le titre doit faire au moins 5 caractères").max(120),
   description: z.string().min(20, "Décrivez l'article en 20 caractères minimum"),
-  vertical: z.enum(["MOBILIER", "SACS", "FOURRE_TOUT"]),
+  vertical: z.literal("MOBILIER"),
   categoryId: z.string().min(1, "Choisissez une catégorie"),
   priceOriginal: z.number().int().positive("Prix d'origine invalide"),
   price: z.number().int().positive("Prix de vente invalide"),
@@ -58,8 +58,6 @@ function readExtras(formData: FormData) {
     deliverable: formData.get("deliverable") !== "off",
     pickupOnly: formData.get("pickupOnly") === "on",
     serialNumber: String(formData.get("serialNumber") || "").trim() || null,
-    hasDustBag: formData.get("hasDustBag") === "on",
-    hasCertif: formData.get("hasCertif") === "on",
   };
 }
 
@@ -95,8 +93,7 @@ export async function createProductAction(_prev: State, formData: FormData): Pro
   if (!parsed.success) return { error: parsed.error.issues[0].message };
   const d = parsed.data;
 
-  // Le mobilier et les sacs de luxe appartiennent à Le Beau Défaut : seule la boutique
-  // maison peut les mettre en ligne. Les vendeurs extérieurs publient dans le fourre-tout.
+  // Le mobilier appartient à Le Beau Défaut : seule la boutique maison peut le mettre en ligne.
   const isHouse = user.role === "ADMIN" || seller?.isHouse === true;
 
   // Un administrateur n'a pas de boutique à lui : ce qu'il publie appartient à la
@@ -105,8 +102,7 @@ export async function createProductAction(_prev: State, formData: FormData): Pro
   const ownerId = houseShop?.userId ?? user.id;
   if (!isHouse && saleModeForVertical(d.vertical) === "MAISON") {
     return {
-      error:
-        "Le mobilier et les sacs de luxe sont achetés puis revendus par Le Beau Défaut. Proposez votre article dans le fourre-tout, ou écrivez-nous pour nous vendre votre lot.",
+      error: "Le mobilier est vendu par Le Beau Défaut. Contactez notre équipe pour proposer un lot.",
     };
   }
 
@@ -177,7 +173,6 @@ export async function createProductAction(_prev: State, formData: FormData): Pro
       quantity: d.quantity,
       city: d.city,
       ...extras,
-      authenticity: d.vertical === "SACS" ? "NON_VERIFIE" : "NON_APPLICABLE",
       status: asDraft ? "BROUILLON" : user.role === "ADMIN" ? "PUBLIE" : "EN_ATTENTE",
       publishedAt: !asDraft && user.role === "ADMIN" ? new Date() : null,
       images: {
@@ -235,10 +230,10 @@ export async function updateProductAction(_prev: State, formData: FormData): Pro
 
   if (d.price >= d.priceOriginal) return { error: "Le prix doit rester inférieur au prix d'origine." };
 
-  // Même règle qu'à la création : le mobilier et les sacs restent réservés à la boutique maison.
+  // Même règle qu'à la création : le mobilier est réservé à la boutique maison.
   const isHouse = user.role === "ADMIN" || user.seller?.isHouse === true;
   if (!isHouse && saleModeForVertical(d.vertical) === "MAISON") {
-    return { error: "Le mobilier et les sacs de luxe sont vendus par Le Beau Défaut : gardez cette annonce dans le fourre-tout." };
+    return { error: "Le mobilier est vendu par Le Beau Défaut : cette annonce reste réservée à la boutique maison." };
   }
 
   const pct = discountPct(d.priceOriginal, d.price);
@@ -443,7 +438,7 @@ export async function becomeSellerAction(_prev: State, formData: FormData): Prom
       userId: a.id,
       type: "SYSTEME",
       title: "Nouvelle boutique à activer",
-      body: `${shopName} (${city}) demande à vendre sur le fourre-tout.`,
+      body: `${shopName} (${city}) demande à vendre sur la plateforme de Le Beau Défaut.`,
       link: "/admin/vendeurs?statut=EN_ATTENTE",
     })),
   });

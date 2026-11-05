@@ -88,14 +88,14 @@ export default async function AdminDashboard() {
 
   const weekly = weeklySeries(ordersForChart.map((o) => ({ date: o.createdAt, amount: o.total })), 12);
 
-  const byVertical = (["MOBILIER", "SACS", "FOURRE_TOUT"] as const).map((v) => {
+  const byVertical = (["MOBILIER"] as const).map((v) => {
     const rows = itemsByVertical.filter((i) => i.product.vertical === v);
     return {
       key: v,
       label: VERTICALS[v].label,
       value: rows.reduce((s, i) => s + i.lineTotal, 0),
       detail: `${rows.reduce((s, i) => s + i.quantity, 0)} articles vendus`,
-      color: v === "MOBILIER" ? "var(--color-viz-mobilier)" : v === "SACS" ? "var(--color-viz-sacs)" : "var(--color-viz-fourre-tout)",
+      color: "var(--color-viz-mobilier)",
     };
   });
 

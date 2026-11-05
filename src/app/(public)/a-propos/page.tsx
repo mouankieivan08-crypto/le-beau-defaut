@@ -35,10 +35,9 @@ export default function AboutPage() {
             payer le prix du neuf. Ils se moquent d&apos;une rayure sous un accoudoir — à condition de le savoir avant.
           </p>
           <p>
-            Le Beau Défaut fait le lien. Nous reprenons ces articles, nous photographions leur défaut, nous le notons sur une
-            grille claire, et nous les revendons à un prix qui en tient compte. Nous avons ensuite ouvert deux rayons voisins :
-            les <strong>sacs de luxe</strong>, authentifiés pièce par pièce, et le <strong>fourre-tout</strong>, pour tout le
-            reste.
+            Le Beau Défaut fait le lien. Nous reprenons les meubles, nous photographions leur défaut, nous le notons sur une
+            grille claire, et nous les revendons à un prix qui en tient compte. Le but est simple : donner une seconde vie à
+            des pièces encore belles, sans masquer la réalité du défaut.
           </p>
           <p className="font-script text-gilded text-3xl text-center pt-4">Les petits défauts font de grandes économies.</p>
         </div>

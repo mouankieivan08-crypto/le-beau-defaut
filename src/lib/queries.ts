@@ -28,7 +28,7 @@ export const cardSelect = {
   seller: { select: { seller: { select: { shopName: true, shopSlug: true } } } },
 } satisfies Prisma.ProductSelect;
 
-export const PUBLISHED = { status: "PUBLIE" as const };
+export const PUBLISHED = { status: "PUBLIE" as const, vertical: "MOBILIER" as const };
 
 /** Identifiants des articles favoris d'un utilisateur (pour colorer les cœurs). */
 export async function favoriteIds(userId?: string | null): Promise<Set<string>> {
@@ -51,11 +51,11 @@ export type CatalogueParams = {
   prixMin?: string;
   prixMax?: string;
   remiseMin?: string;
-  /** « 1 » pour n'afficher que les sacs authentifiés par nos soins */
+  /** @deprecated : non supporté pour le catalogue mobilier */
   authentifie?: string;
-  /** « 1 » pour n'afficher que les articles au prix négociable */
+  /** @deprecated : non supporté pour le catalogue mobilier */
   negociable?: string;
-  /** « 1 » pour écarter les articles à retirer sur place */
+  /** @deprecated : non supporté pour le catalogue mobilier */
   livrable?: string;
   tri?: string;
   page?: string;
@@ -82,7 +82,10 @@ export const PAGE_SIZE = 16;
 export function buildProductWhere(params: CatalogueParams): Prisma.ProductWhereInput {
   const where: Prisma.ProductWhereInput = { ...PUBLISHED };
 
-  if (params.vertical) where.vertical = params.vertical;
+  where.vertical = "MOBILIER";
+  if (params.vertical && params.vertical !== "MOBILIER") {
+    where.vertical = "MOBILIER";
+  }
   if (params.grade) where.defectGrade = params.grade;
   if (params.ville) where.city = params.ville;
   if (params.quartier) where.quartier = params.quartier;
@@ -90,9 +93,6 @@ export function buildProductWhere(params: CatalogueParams): Prisma.ProductWhereI
   if (params.marque) where.brand = params.marque;
   if (params.boutique) where.seller = { seller: { shopSlug: params.boutique } };
   if (params.categorie) where.category = { slug: params.categorie };
-  if (params.authentifie === "1") where.authenticity = "AUTHENTIFIE_LBD";
-  if (params.negociable === "1") where.negotiable = true;
-  if (params.livrable === "1") where.pickupOnly = false;
 
   const min = Number(params.prixMin);
   const max = Number(params.prixMax);
@@ -121,16 +121,15 @@ export async function searchProducts(params: CatalogueParams) {
   const page = Math.max(1, Number(params.page) || 1);
   const orderBy = SORTS[params.tri ?? "recent"] ?? SORTS.recent;
 
-  const [items, total] = await Promise.all([
-    prisma.product.findMany({
-      where,
-      select: cardSelect,
-      orderBy,
-      skip: (page - 1) * PAGE_SIZE,
-      take: PAGE_SIZE,
-    }),
-    prisma.product.count({ where }),
-  ]);
+  const items = await prisma.product.findMany({
+    where,
+    select: cardSelect,
+    orderBy,
+    skip: (page - 1) * PAGE_SIZE,
+    take: PAGE_SIZE,
+  });
+
+  const total = await prisma.product.count({ where });
 
   return { items, total, page, pages: Math.max(1, Math.ceil(total / PAGE_SIZE)) };
 }
@@ -147,20 +146,19 @@ export async function facets(params: CatalogueParams) {
   const sansCircuit = buildProductWhere({ ...params, circuit: undefined });
   const sansMarque = buildProductWhere({ ...params, marque: undefined });
   const sansUnivers = buildProductWhere({ ...params, vertical: undefined, categorie: undefined });
-  const sansOptions = buildProductWhere({ ...params, authentifie: undefined, negociable: undefined, livrable: undefined });
 
-  const [byGrade, byCity, byQuartier, byCircuit, byBrand, byVertical, authCount, negoCount, deliverCount] =
-    await Promise.all([
-      prisma.product.groupBy({ by: ["defectGrade"], where: sansGrade, _count: true }),
-      prisma.product.groupBy({ by: ["city"], where: sansQuartier, _count: true }),
-      prisma.product.groupBy({ by: ["quartier"], where: sansQuartier, _count: true }),
-      prisma.product.groupBy({ by: ["saleMode"], where: sansCircuit, _count: true }),
-      prisma.product.groupBy({ by: ["brand"], where: sansMarque, _count: true, orderBy: { _count: { brand: "desc" } }, take: 18 }),
-      prisma.product.groupBy({ by: ["vertical"], where: sansUnivers, _count: true }),
-      prisma.product.count({ where: { ...sansOptions, authenticity: "AUTHENTIFIE_LBD" } }),
-      prisma.product.count({ where: { ...sansOptions, negotiable: true } }),
-      prisma.product.count({ where: { ...sansOptions, pickupOnly: false } }),
-    ]);
+  const byGrade = await prisma.product.groupBy({ by: ["defectGrade"], where: sansGrade, _count: true });
+  const byCity = await prisma.product.groupBy({ by: ["city"], where: sansQuartier, _count: true });
+  const byQuartier = await prisma.product.groupBy({ by: ["quartier"], where: sansQuartier, _count: true });
+  const byCircuit = await prisma.product.groupBy({ by: ["saleMode"], where: sansCircuit, _count: true });
+  const byBrand = await prisma.product.groupBy({
+    by: ["brand"],
+    where: sansMarque,
+    _count: true,
+    orderBy: { _count: { brand: "desc" } },
+    take: 18,
+  });
+  const byVertical = await prisma.product.groupBy({ by: ["vertical"], where: sansUnivers, _count: true });
 
   return {
     grades: Object.fromEntries(byGrade.map((g) => [g.defectGrade, g._count])) as Record<string, number>,
@@ -175,7 +173,7 @@ export async function facets(params: CatalogueParams) {
       .map((b) => ({ brand: b.brand as string, count: b._count }))
       .sort((a, b) => b.count - a.count || a.brand!.localeCompare(b.brand!)),
     verticals: Object.fromEntries(byVertical.map((v) => [v.vertical, v._count])) as Record<string, number>,
-    options: { authentifie: authCount, negociable: negoCount, livrable: deliverCount },
+    options: { authentifie: 0, negociable: 0, livrable: 0 },
   };
 }
 

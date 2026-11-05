@@ -9,23 +9,9 @@ export const VERTICALS = {
   MOBILIER: {
     key: "MOBILIER",
     label: "Mobilier",
-    slug: "mobilier",
+    slug: "catalogue",
     tagline: "Canapés, tables, rangements — le petit défaut en moins cher.",
     icon: "armchair",
-  },
-  SACS: {
-    key: "SACS",
-    label: "Sacs de luxe",
-    slug: "sacs-de-luxe",
-    tagline: "Pièces authentifiées, prix raisonnable.",
-    icon: "bag",
-  },
-  FOURRE_TOUT: {
-    key: "FOURRE_TOUT",
-    label: "Fourre-tout",
-    slug: "fourre-tout",
-    tagline: "Déco, électroménager, luminaires, bonnes affaires.",
-    icon: "box",
   },
 } as const;
 
@@ -91,19 +77,19 @@ export function gradeOf(key: string) {
 // ---------------------- TYPES DE DÉFAUT ----------------------
 
 export const DEFECT_TYPES = [
-  { key: "RAYURE", label: "Rayure", verticals: ["MOBILIER", "SACS", "FOURRE_TOUT"] },
-  { key: "TACHE", label: "Tache", verticals: ["MOBILIER", "SACS", "FOURRE_TOUT"] },
-  { key: "ACCROC", label: "Accroc / déchirure", verticals: ["MOBILIER", "SACS", "FOURRE_TOUT"] },
-  { key: "DECOLORATION", label: "Décoloration", verticals: ["MOBILIER", "SACS", "FOURRE_TOUT"] },
-  { key: "BOSSE", label: "Bosse / enfoncement", verticals: ["MOBILIER", "FOURRE_TOUT"] },
-  { key: "ECLAT", label: "Éclat / fissure", verticals: ["MOBILIER", "FOURRE_TOUT"] },
-  { key: "PIECE_MANQUANTE", label: "Pièce manquante", verticals: ["MOBILIER", "SACS", "FOURRE_TOUT"] },
-  { key: "FIN_DE_SERIE", label: "Fin de série / démodé", verticals: ["MOBILIER", "SACS", "FOURRE_TOUT"] },
-  { key: "EMBALLAGE_ABIME", label: "Emballage abîmé", verticals: ["MOBILIER", "SACS", "FOURRE_TOUT"] },
+  { key: "RAYURE", label: "Rayure", verticals: ["MOBILIER"] },
+  { key: "TACHE", label: "Tache", verticals: ["MOBILIER"] },
+  { key: "ACCROC", label: "Accroc / déchirure", verticals: ["MOBILIER"] },
+  { key: "DECOLORATION", label: "Décoloration", verticals: ["MOBILIER"] },
+  { key: "BOSSE", label: "Bosse / enfoncement", verticals: ["MOBILIER"] },
+  { key: "ECLAT", label: "Éclat / fissure", verticals: ["MOBILIER"] },
+  { key: "PIECE_MANQUANTE", label: "Pièce manquante", verticals: ["MOBILIER"] },
+  { key: "FIN_DE_SERIE", label: "Fin de série / démodé", verticals: ["MOBILIER"] },
+  { key: "EMBALLAGE_ABIME", label: "Emballage abîmé", verticals: ["MOBILIER"] },
   { key: "DEMONTE", label: "Livré démonté", verticals: ["MOBILIER"] },
-  { key: "ODEUR", label: "Odeur / stockage", verticals: ["MOBILIER", "SACS", "FOURRE_TOUT"] },
-  { key: "USURE", label: "Usure d'usage", verticals: ["MOBILIER", "SACS", "FOURRE_TOUT"] },
-  { key: "AUTRE", label: "Autre", verticals: ["MOBILIER", "SACS", "FOURRE_TOUT"] },
+  { key: "ODEUR", label: "Odeur / stockage", verticals: ["MOBILIER"] },
+  { key: "USURE", label: "Usure d'usage", verticals: ["MOBILIER"] },
+  { key: "AUTRE", label: "Autre", verticals: ["MOBILIER"] },
 ] as const;
 
 export function defectTypeLabel(key: string) {
@@ -336,15 +322,9 @@ export const TONE_CLASSES: Record<string, string> = {
 // ---------------------- LES DEUX CIRCUITS DE VENTE ----------------------
 
 /**
- * Le Beau Défaut fonctionne sur deux circuits bien distincts :
- *
- *  · MAISON       — le mobilier et les sacs de luxe nous appartiennent. Nous les
- *                   achetons aux entreprises, nous les remettons en lumière, nous
- *                   les vendons. L'acheteur parle directement à notre équipe.
- *  · PARTICULIER  — le fourre-tout est une place de marché : nous mettons en
- *                   relation un vendeur et un acheteur. L'argent est conservé par
- *                   Le Beau Défaut jusqu'à la livraison (séquestre) et les échanges
- *                   restent sur la plateforme.
+ * Le Beau Défaut vend son propre stock de mobilier à petit défaut.
+ * Le système garde un mode de vente "MAISON" pour la logique de boutique
+ * et la cohérence du catalogue, sans réintroduire d'autres univers.
  */
 export const SALE_MODES = {
   MAISON: {
@@ -366,20 +346,18 @@ export const SALE_MODES = {
 
 export type SaleModeKey = keyof typeof SALE_MODES;
 
-/** Les univers que Le Beau Défaut vend en son nom propre. */
-export const HOUSE_VERTICALS = ["MOBILIER", "SACS"] as const;
+/** Le Beau Défaut vend uniquement son propre stock de mobilier. */
+export const HOUSE_VERTICALS = ["MOBILIER"] as const;
 
-/** Le circuit découle de l'univers : mobilier et sacs sont à nous, le fourre-tout est ouvert. */
 export function saleModeForVertical(vertical: string): SaleModeKey {
-  return (HOUSE_VERTICALS as readonly string[]).includes(vertical) ? "MAISON" : "PARTICULIER";
+  return "MAISON";
 }
 
 export function saleModeOf(key: string) {
-  return SALE_MODES[key as SaleModeKey] ?? SALE_MODES.PARTICULIER;
+  return SALE_MODES[key as SaleModeKey] ?? SALE_MODES.MAISON;
 }
 
-/** Univers qu'un vendeur extérieur peut proposer. */
-export const OPEN_VERTICALS = ["FOURRE_TOUT"] as const;
+export const OPEN_VERTICALS = [] as const;
 
 // ---------------------- SÉQUESTRE ----------------------
 

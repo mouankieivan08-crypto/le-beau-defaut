@@ -13,12 +13,8 @@ const FAQ: { q: string; a: string }[] = [
     a: "Non, et c'est volontaire pour l'instant. Vous faites un dépôt sur notre numéro Mobile Money, vous nous envoyez la preuve par WhatsApp, et notre équipe confirme la commande à la main. Aucun prélèvement automatique n'est possible depuis votre compte.",
   },
   {
-    q: "Qui me vend l'article : Le Beau Défaut ou un particulier ?",
-    a: "Les deux existent, et c'est écrit sur chaque annonce. Le mobilier et les sacs de luxe nous appartiennent : nous les rachetons aux entreprises, nous les inspectons et nous les vendons nous-mêmes (mention « Notre stock »). Le fourre-tout est une place de marché : l'article appartient à un vendeur, nous mettons en relation et nous sécurisons le paiement.",
-  },
-  {
-    q: "Dans le fourre-tout, comment mon argent est-il protégé ?",
-    a: "Vous payez Le Beau Défaut, pas le vendeur. Nous conservons la somme jusqu'à la livraison. Vous confirmez la réception d'un clic et le vendeur est payé ; sans nouvelles de votre part, il l'est automatiquement 3 jours après la livraison. Si l'article ne correspond pas, ouvrez une réclamation dans ces 3 jours : l'argent reste bloqué le temps que nous tranchions.",
+    q: "Qui me vend l'article ?",
+    a: "Chez Le Beau Défaut, l'article est vendu par notre équipe. Nous reprenons le mobilier à petit défaut, nous le vérifions et nous le remettons en vente avec sa note de défaut affichée.",
   },
   {
     q: "Pourquoi mon numéro a-t-il été masqué dans la messagerie ?",
@@ -29,8 +25,8 @@ const FAQ: { q: string; a: string }[] = [
     a: "Oui. Depuis votre compte, « Ouvrir une boutique » ajoute un espace vente à côté de votre espace achat. Vous passez de l'un à l'autre par le menu de votre profil, sans vous déconnecter.",
   },
   {
-    q: "J'ai du mobilier ou des sacs de luxe à vendre. Comment faire ?",
-    a: "Ces deux rayons ne sont pas ouverts aux vendeurs extérieurs : nous achetons le lot, puis nous le revendons nous-mêmes. Écrivez-nous depuis la page « Vendre avec nous » ; nous venons voir les pièces et nous vous faisons une offre.",
+    q: "J'ai du mobilier à vendre. Comment faire ?",
+    a: "Nous achetons le lot, puis nous le revendons nous-mêmes. Écrivez-nous depuis la page « Vendre avec nous » ; nous venons voir les pièces et nous vous faisons une offre.",
   },
   {
     q: "Le défaut sera-t-il vraiment celui de la photo ?",
@@ -51,10 +47,6 @@ const FAQ: { q: string; a: string }[] = [
   {
     q: "Puis-je annuler ma commande ?",
     a: "Oui, depuis votre espace « Mes commandes », tant que le colis n'a pas été récupéré par le livreur. Un paiement Mobile Money est remboursé sous 48 h.",
-  },
-  {
-    q: "Les sacs de luxe sont-ils authentiques ?",
-    a: "Les sacs portant le badge « Authentifié LBD » ont été contrôlés par notre équipe : coutures, ferrures, numéro de série, facture ou certificat quand il existe. Les autres sont clairement indiqués « non vérifié ».",
   },
   {
     q: "Le prix est-il négociable ?",

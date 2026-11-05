@@ -21,11 +21,7 @@ export default function TermsPage() {
           photographié, situé et noté — c&apos;est ce qui justifie son prix.
         </p>
         <p>
-          <strong>Mobilier et sacs de luxe :</strong> les articles nous appartiennent, nous en sommes le vendeur.
-        </p>
-        <p>
-          <strong>Fourre-tout :</strong> l&apos;article appartient à un vendeur inscrit. Nous mettons en relation,
-          nous sécurisons le paiement, mais le vendeur reste responsable de son article.
+          <strong>Mobilier :</strong> les articles nous appartiennent, nous en sommes le vendeur.
         </p>
       </LegalSection>
 
@@ -67,11 +63,11 @@ export default function TermsPage() {
         </p>
       </LegalSection>
 
-      <LegalSection title="5. Le séquestre, pour les ventes entre particuliers">
+      <LegalSection title="5. Paiement et réception">
         <p>
-          Sur le fourre-tout, votre argent est conservé par Le Beau Défaut et n&apos;est pas versé au vendeur tant
-          que vous n&apos;avez pas reçu l&apos;article. Vous confirmez la réception d&apos;un bouton ; sans réponse
-          de votre part, le versement part automatiquement {ESCROW_RELEASE_DAYS} jours après la livraison.
+          Votre argent est conservé par Le Beau Défaut jusqu&apos;à la réception du meuble. Vous confirmez la réception
+          d&apos;un bouton ; sans réponse de votre part, le versement part automatiquement {ESCROW_RELEASE_DAYS} jours
+          après la livraison.
         </p>
         <p>
           Si vous ouvrez une réclamation dans ce délai, l&apos;argent reste bloqué le temps que nous tranchions.
@@ -104,25 +100,23 @@ export default function TermsPage() {
 
       <LegalSection title="8. Si vous vendez">
         <p>
-          Vous publiez dans le fourre-tout, vous décrivez honnêtement le défaut, et vous préparez l&apos;article
-          dès la commande. Notre commission est de {DEFAULT_COMMISSION_PCT} % du prix de vente, prélevée uniquement
-          quand la vente aboutit ; publier ne coûte rien.
+          Vous décrivez honnêtement le défaut, et vous préparez le meuble dès la commande. Notre commission est de
+          {DEFAULT_COMMISSION_PCT} % du prix de vente, prélevée uniquement quand la vente aboutit ; publier ne coûte rien.
         </p>
         <p>
-          Les échanges restent sur la plateforme. Une vente conclue en dehors vous prive du séquestre — et nous
-          prive de notre commission : c&apos;est un motif de fermeture de boutique.
+          Les échanges restent sur la plateforme. Une vente conclue en dehors nous prive de notre commission et nous
+          empêche de sécuriser la transaction.
         </p>
         <p>
-          Sont interdits : la contrefaçon, les produits volés, les armes, les médicaments, les animaux, et tout ce
-          que la loi congolaise interdit de vendre.
+          Sont interdits : les produits volés, les armes, les médicaments, les animaux, et tout ce que la loi
+          congolaise interdit de vendre.
         </p>
       </LegalSection>
 
       <LegalSection title="9. Responsabilité">
         <p>
-          Pour nos propres articles, nous répondons de la conformité de ce qui est livré. Pour le fourre-tout,
-          notre responsabilité est celle d&apos;un intermédiaire : nous sécurisons le paiement et arbitrons les
-          litiges, sans garantir l&apos;article lui-même.
+          Nous répondons de la conformité de ce qui est livré. Nous sécurisons le paiement et arbitrons les litiges
+          avec le souci de transparence annoncé dans cette page.
         </p>
         <p>
           Le site peut être momentanément indisponible pour maintenance ; nous faisons au mieux pour que cela reste

@@ -8,10 +8,9 @@ import { CITIES } from "@/lib/constants";
 import Icon from "./Icon";
 import { Alert } from "./ui";
 
-// Comptes de démonstration montrés au public : uniquement les deux profils du site.
+// Comptes de démonstration montrés au public : profils de l'application uniquement.
 const DEMO_ACCOUNTS = [
-  { label: "Acheteur", email: "client@lebeaudefaut.cg" },
-  { label: "Vendeur fourre-tout", email: "vendeur@lebeaudefaut.cg" },
+  { label: "Client", email: "client@lebeaudefaut.cg" },
 ];
 
 // Réservés à la page d'accès de l'équipe, qui n'est liée nulle part sur le site.
@@ -130,7 +129,7 @@ export function LoginForm({ next, team = false }: { next?: string; team?: boolea
 
 export function RegisterForm({ defaultType = "CLIENT" }: { defaultType?: "CLIENT" | "VENDEUR" }) {
   const [state, onSubmit, pending] = useStickyAction(registerAction, undefined);
-  const [type, setType] = useState<"CLIENT" | "VENDEUR">(defaultType);
+  const [type, setType] = useState<"CLIENT" | "VENDEUR">("CLIENT");
 
   return (
     <form onSubmit={onSubmit} className="flex flex-col gap-4">
@@ -138,63 +137,20 @@ export function RegisterForm({ defaultType = "CLIENT" }: { defaultType?: "CLIENT
 
       <input type="hidden" name="accountType" value={type} />
       <fieldset>
-        <legend className="label mb-2">Qui êtes-vous ?</legend>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-          {(
-            [
-              {
-                key: "CLIENT",
-                label: "J'achète",
-                icon: "cart",
-                hint: "Meubles, sacs, bonnes affaires — livrés chez vous.",
-              },
-              {
-                key: "VENDEUR",
-                label: "Je vends",
-                icon: "tag",
-                hint: "Vos articles dans le fourre-tout, paiement garanti.",
-              },
-            ] as const
-          ).map((t) => (
-            <button
-              key={t.key}
-              type="button"
-              onClick={() => setType(t.key)}
-              aria-pressed={type === t.key}
-              className={`flex flex-col items-start gap-1 p-3 rounded-xl border text-left transition-all ${
-                type === t.key
-                  ? "border-[var(--color-gold-dark)] bg-[var(--color-gold-pale)] text-[var(--color-ink)]"
-                  : "border-[var(--color-sand)] bg-[var(--color-linen)] text-[var(--color-ink-soft)] hover:bg-[var(--color-cream-deep)]"
-              }`}
-            >
-              <span className="flex items-center gap-2 text-sm font-semibold">
-                <Icon name={t.icon} size={16} /> {t.label}
-              </span>
-              <span className="text-[11px] text-[var(--color-ink-muted)]">{t.hint}</span>
-            </button>
-          ))}
+        <legend className="label mb-2">Type de compte</legend>
+        <div className="grid grid-cols-1 gap-2">
+          <button
+            type="button"
+            aria-pressed={true}
+            className="flex flex-col items-start gap-1 p-3 rounded-xl border text-left transition-all border-[var(--color-gold-dark)] bg-[var(--color-gold-pale)] text-[var(--color-ink)]"
+          >
+            <span className="flex items-center gap-2 text-sm font-semibold">
+              <Icon name="cart" size={16} /> J'achète
+            </span>
+            <span className="text-[11px] text-[var(--color-ink-muted)]">Mobilier à petit défaut, livraison et suivi de commande.</span>
+          </button>
         </div>
-        <p className="text-[11px] text-[var(--color-ink-muted)] mt-2">
-          Ce choix n'enferme personne : un acheteur peut ouvrir une boutique plus tard, un vendeur achète
-          comme tout le monde. Le compte est le même.
-        </p>
       </fieldset>
-
-      {type === "VENDEUR" && (
-        <>
-          <Alert tone="info">
-            Vous vendrez dans le <strong>fourre-tout</strong> : les acheteurs vous paient via Le Beau Défaut,
-            qui vous reverse après la livraison. Le mobilier et les sacs de luxe, eux, nous les achetons avant
-            de les revendre — dites-le nous et nous viendrons voir votre lot.
-          </Alert>
-          <div>
-            <label className="label" htmlFor="shopName">
-              Nom de la boutique
-            </label>
-            <input id="shopName" name="shopName" className="field" placeholder="Ex. Maison Mbemba Mobilier" required />
-          </div>
-        </>
-      )}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>

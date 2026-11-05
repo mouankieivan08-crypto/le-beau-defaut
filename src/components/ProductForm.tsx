@@ -50,14 +50,14 @@ export default function ProductForm({
   categories: Category[];
   initial?: ProductInitial;
   defaultCity?: string;
-  /** Boutique maison : seule à pouvoir publier du mobilier et des sacs de luxe. */
+  /** Boutique maison : seule à pouvoir publier du mobilier. */
   isHouse?: boolean;
 }) {
   const isEdit = !!initial;
   const [state, onSubmit, pending] = useStickyAction(isEdit ? updateProductAction : createProductAction, undefined);
 
-  // Un vendeur extérieur ne publie que dans le fourre-tout ; la boutique maison, partout.
-  const allowedVerticals = isHouse ? VERTICAL_LIST : VERTICAL_LIST.filter((v) => v.key === "FOURRE_TOUT");
+  // Le Beau Défaut ne publie qu'un seul univers : le mobilier à petit défaut.
+  const allowedVerticals = VERTICAL_LIST;
   const [vertical, setVertical] = useState(initial?.vertical ?? allowedVerticals[0].key);
   const [grade, setGrade] = useState(initial?.defectGrade ?? "A");
   const [orig, setOrig] = useState<number>(initial?.priceOriginal ?? 0);
@@ -98,7 +98,7 @@ export default function ProductForm({
       {/* 1. Univers */}
       <Section n={1} title="Univers et catégorie">
         <input type="hidden" name="vertical" value={vertical} />
-        {isHouse && vertical !== "FOURRE_TOUT" && (
+        {isHouse && (
           <div className="mb-4">
             <label className="label" htmlFor="supplierName">
               Fournisseur d&apos;origine
@@ -111,12 +111,6 @@ export default function ProductForm({
               placeholder="Ex. Maison Mbemba Mobilier — l'entreprise qui nous a vendu le lot"
             />
           </div>
-        )}
-        {!isHouse && (
-          <p className="text-xs text-[var(--color-ink-muted)] mb-3">
-            Vous publiez dans le <strong>fourre-tout</strong>. Le mobilier et les sacs de luxe sont rachetés puis
-            vendus directement par Le Beau Défaut.
-          </p>
         )}
         <div className={`grid grid-cols-1 ${isHouse ? "sm:grid-cols-3" : ""} gap-3 mb-4`}>
           {allowedVerticals.map((v) => (
@@ -167,7 +161,7 @@ export default function ProductForm({
             <textarea id="description" name="description" rows={5} defaultValue={initial?.description} className="field" required />
           </Field>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <Field label={vertical === "SACS" ? "Marque" : "Marque / fabricant"} htmlFor="brand">
+            <Field label="Marque / fabricant" htmlFor="brand">
               <input id="brand" name="brand" defaultValue={initial?.brand ?? ""} className="field" />
             </Field>
             <Field label="Matière" htmlFor="material">
@@ -186,20 +180,6 @@ export default function ProductForm({
               <input id="quantity" name="quantity" type="number" min={1} max={999} defaultValue={initial?.quantity ?? 1} className="field" required />
             </Field>
           </div>
-
-          {vertical === "SACS" && (
-            <div className="rounded-xl bg-[var(--color-cream-deep)]/60 p-4 grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
-              <Field label="N° de série / code date" htmlFor="serialNumber">
-                <input id="serialNumber" name="serialNumber" defaultValue={initial?.serialNumber ?? ""} className="field" />
-              </Field>
-              <Check name="hasDustBag" label="Dust bag fourni" defaultChecked={initial?.hasDustBag} />
-              <Check name="hasCertif" label="Facture ou certificat" defaultChecked={initial?.hasCertif} />
-              <p className="sm:col-span-3 text-xs text-[var(--color-ink-muted)] flex gap-1.5">
-                <Icon name="shield" size={13} className="shrink-0 mt-0.5" />
-                Chaque sac passe par notre contrôle d&apos;authenticité avant d&apos;afficher le badge « Authentifié LBD ».
-              </p>
-            </div>
-          )}
         </div>
       </Section>
 

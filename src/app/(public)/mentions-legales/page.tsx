@@ -17,8 +17,7 @@ export default function LegalNoticePage() {
     >
       <LegalSection title="Éditeur du site">
         <p>
-          <strong>{BRAND.name}</strong> — place de marché du mobilier à petit défaut, des sacs de luxe et du
-          fourre-tout, à {BRAND.city} (République du Congo).
+          <strong>{BRAND.name}</strong> — place de marché du mobilier à petit défaut, à {BRAND.city} (République du Congo).
         </p>
         <p>
           Contact : <strong>{BRAND.email}</strong> · WhatsApp {phoneFR(DEPOSIT_NUMBERS[0].raw)}
@@ -58,16 +57,8 @@ export default function LegalNoticePage() {
 
       <LegalSection title="Rôle de Le Beau Défaut dans les ventes">
         <p>
-          Deux situations, indiquées sur chaque annonce :
-        </p>
-        <p>
-          <strong>Mobilier et sacs de luxe</strong> — les articles nous appartiennent. Nous sommes le vendeur et
-          nous répondons de la conformité de ce qui est livré.
-        </p>
-        <p>
-          <strong>Fourre-tout</strong> — l&apos;article appartient à un vendeur inscrit. Nous sommes intermédiaire :
-          nous hébergeons l&apos;annonce, nous conservons le paiement jusqu&apos;à la réception et nous tranchons les
-          réclamations. La conformité de l&apos;article reste de la responsabilité du vendeur.
+          Les articles présentés sur le site appartiennent à Le Beau Défaut. Nous sommes le vendeur et nous répondons
+          de la conformité de ce qui est livré.
         </p>
       </LegalSection>
 

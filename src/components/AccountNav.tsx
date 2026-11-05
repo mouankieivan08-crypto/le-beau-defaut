@@ -49,12 +49,14 @@ export default function AccountNav({
             </Link>
           );
         })}
-        <Link
-          href={sells ? "/vendeur" : "/devenir-vendeur"}
-          className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm whitespace-nowrap transition-colors text-[var(--color-gold-dark)] hover:bg-[var(--color-gold-pale)] lg:mt-2 lg:border-t lg:border-[var(--color-sand)] lg:rounded-none lg:pt-3"
-        >
-          <Icon name="tag" size={16} /> {sells ? "Mon espace vente" : "Ouvrir une boutique"}
-        </Link>
+        {sells && (
+          <Link
+            href="/vendeur"
+            className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm whitespace-nowrap transition-colors text-[var(--color-gold-dark)] hover:bg-[var(--color-gold-pale)] lg:mt-2 lg:border-t lg:border-[var(--color-sand)] lg:rounded-none lg:pt-3"
+          >
+            <Icon name="tag" size={16} /> Mon espace vente
+          </Link>
+        )}
       </nav>
 
       {user.role !== "CLIENT" && (

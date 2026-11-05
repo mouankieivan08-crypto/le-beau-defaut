@@ -73,7 +73,7 @@ const registerSchema = z
     phone: z.string().min(9, "Numéro de téléphone invalide").max(20),
     password: z.string().min(8, "Le mot de passe doit faire au moins 8 caractères"),
     confirm: z.string(),
-    accountType: z.enum(["CLIENT", "VENDEUR"]),
+    accountType: z.enum(["CLIENT"]),
     city: z.string().min(2),
     shopName: z.string().optional(),
   })
@@ -81,9 +81,9 @@ const registerSchema = z
     message: "Les mots de passe ne correspondent pas",
     path: ["confirm"],
   })
-  .refine((d) => d.accountType !== "VENDEUR" || (d.shopName && d.shopName.length >= 2), {
-    message: "Le nom de la boutique est requis pour un compte vendeur",
-    path: ["shopName"],
+  .refine((d) => d.accountType === "CLIENT", {
+    message: "Seuls les comptes clients sont autorisés pour l'inscription publique.",
+    path: ["accountType"],
   });
 
 export async function registerAction(_prev: FormState, formData: FormData): Promise<FormState> {
@@ -94,7 +94,7 @@ export async function registerAction(_prev: FormState, formData: FormData): Prom
     phone: String(formData.get("phone") || "").trim(),
     password: String(formData.get("password") || ""),
     confirm: String(formData.get("confirm") || ""),
-    accountType: String(formData.get("accountType") || "CLIENT") as "CLIENT" | "VENDEUR",
+    accountType: "CLIENT" as const,
     city: String(formData.get("city") || "Brazzaville"),
     shopName: String(formData.get("shopName") || "").trim(),
   };
@@ -131,42 +131,15 @@ export async function registerAction(_prev: FormState, formData: FormData): Prom
     },
   });
 
-  if (d.accountType === "VENDEUR") {
-    let slug = slugify(d.shopName!);
-    if (await prisma.sellerProfile.findUnique({ where: { shopSlug: slug } })) {
-      slug = `${slug}-${user.id.slice(-5)}`;
-    }
-    await prisma.sellerProfile.create({
-      data: {
-        userId: user.id,
-        shopName: d.shopName!,
-        shopSlug: slug,
-        contactPhone: d.phone,
-        city: d.city,
-        commissionPct: DEFAULT_COMMISSION_PCT,
-        status: "EN_ATTENTE",
-      },
-    });
-    await prisma.notification.create({
-      data: {
-        userId: user.id,
-        type: "SYSTEME",
-        title: "Bienvenue chez Le Beau Défaut",
-        body: "Votre boutique est en cours de validation. Vous pourrez publier dès qu'un administrateur l'aura activée.",
-        link: "/vendeur",
-      },
-    });
-  } else {
-    await prisma.notification.create({
-      data: {
-        userId: user.id,
-        type: "SYSTEME",
-        title: "Bienvenue chez Le Beau Défaut",
-        body: "Découvrez le mobilier à petit défaut, les sacs de luxe et le fourre-tout.",
-        link: "/catalogue",
-      },
-    });
-  }
+  await prisma.notification.create({
+    data: {
+      userId: user.id,
+      type: "SYSTEME",
+      title: "Bienvenue chez Le Beau Défaut",
+      body: "Découvrez le mobilier à petit défaut, sélectionné et présenté avec transparence.",
+      link: "/catalogue",
+    },
+  });
 
   await createSession({
     userId: user.id,

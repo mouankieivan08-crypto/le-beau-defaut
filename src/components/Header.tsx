@@ -7,6 +7,7 @@ import Icon from "./Icon";
 import { Avatar } from "./ui";
 import MobileMenu from "./MobileMenu";
 import { logoutAction } from "@/lib/actions/auth";
+import ThemeToggle from "@/components/ThemeToggle";
 
 export default async function Header() {
   const user = await getCurrentUser();
@@ -50,7 +51,7 @@ export default async function Header() {
             <input
               type="search"
               name="q"
-              placeholder="Canapé, table, sac, lampe…"
+              placeholder="Canapé, table, lampe…"
               className="field pl-9 rounded-full"
               aria-label="Rechercher un article"
             />
@@ -62,15 +63,9 @@ export default async function Header() {
           </form>
 
           <nav className="hidden lg:flex items-center gap-1 ml-auto">
-            {VERTICAL_LIST.map((v) => (
-              <Link
-                key={v.key}
-                href={`/${v.slug}`}
-                className="px-3 py-2 text-sm font-medium text-[var(--color-ink-soft)] hover:text-[var(--color-gold-dark)] transition-colors rounded-lg"
-              >
-                {v.label}
-              </Link>
-            ))}
+            <Link href="/catalogue" className="px-3 py-2 text-sm font-medium text-[var(--color-ink-soft)] hover:text-[var(--color-gold-dark)] transition-colors rounded-lg">
+              Catalogue
+            </Link>
             <Link
               href="/le-defaut"
               className="px-3 py-2 text-sm font-medium text-[var(--color-ink-soft)] hover:text-[var(--color-gold-dark)] transition-colors"
@@ -80,6 +75,7 @@ export default async function Header() {
           </nav>
 
           <div className="flex items-center gap-1 ml-auto lg:ml-0">
+            <ThemeToggle />
             {user && (
               <Link
                 href="/notifications"
@@ -136,23 +132,9 @@ export default async function Header() {
 
                     {/* Un seul compte, deux espaces : on achète et on vend sans se déconnecter. */}
                     <div className="border-t border-[var(--color-sand)] my-1 pt-1">
-                      {user.seller || user.role === "ADMIN" ? (
-                        <>
-                          <Link href="/compte" className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm hover:bg-[var(--color-cream-deep)]">
-                            <Icon name="cart" size={15} /> Espace achat
-                          </Link>
-                          <Link href="/vendeur" className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm hover:bg-[var(--color-cream-deep)]">
-                            <Icon name="tag" size={15} /> Espace vente
-                            {user.seller?.status === "EN_ATTENTE" && (
-                              <span className="ml-auto text-[10px] text-[var(--color-gold-dark)]">à valider</span>
-                            )}
-                          </Link>
-                        </>
-                      ) : (
-                        <Link href="/devenir-vendeur" className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-[var(--color-gold-dark)] hover:bg-[var(--color-gold-pale)]">
-                          <Icon name="tag" size={15} /> Ouvrir une boutique
-                        </Link>
-                      )}
+                      <Link href="/compte" className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm hover:bg-[var(--color-cream-deep)]">
+                        <Icon name="cart" size={15} /> Espace achat
+                      </Link>
                     </div>
                     <Link href="/messages" className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm hover:bg-[var(--color-cream-deep)]">
                       <Icon name="message" size={15} /> Messages
@@ -174,7 +156,7 @@ export default async function Header() {
                   Connexion
                 </Link>
                 <Link href="/inscription" className="btn btn-primary btn-sm">
-                  Vendre avec nous
+                  Créer un compte
                 </Link>
               </div>
             )}

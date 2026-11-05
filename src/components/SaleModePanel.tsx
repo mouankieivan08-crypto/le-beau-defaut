@@ -49,7 +49,7 @@ export default function SaleModePanel({
           ? supplierName
             ? `Racheté à ${supplierName}, remis en lumière par nos soins.`
             : "Cet article nous appartient : nous l'avons racheté pour le revendre à son juste prix."
-          : "Le Beau Défaut ne possède pas cet article : il appartient à un vendeur du fourre-tout. Nous sécurisons la transaction."}
+          : "Le Beau Défaut sécurise la transaction et organise la livraison avec transparence pour chaque article."}
       </p>
       <ul className="flex flex-col gap-2">
         {points.map((p) => (

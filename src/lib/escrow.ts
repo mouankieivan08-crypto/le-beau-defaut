@@ -2,14 +2,9 @@ import type { Prisma } from "@prisma/client";
 import { ESCROW_RELEASE_DAYS } from "./constants";
 
 /**
- * Le séquestre — la mécanique qui rend le fourre-tout sûr.
- *
- * Quand l'article appartient à Le Beau Défaut (mobilier, sacs), l'argent est à nous
- * dès la vente : rien à conserver, aucun versement à préparer.
- *
- * Quand il s'agit d'une mise en relation entre particuliers, nous encaissons pour le
- * compte du vendeur et nous gardons la somme jusqu'à ce que l'acheteur confirme la
- * réception — ou, à défaut, jusqu'à l'expiration du délai de réclamation.
+ * Le séquestre sécurise les paiements quand une commande doit être vérifiée.
+ * Pour le mobilier vendu par Le Beau Défaut, l'argent est déjà dans notre logique
+ * de vente : aucun versement de tiers n'est à bloquer.
  */
 
 type Tx = Prisma.TransactionClient;

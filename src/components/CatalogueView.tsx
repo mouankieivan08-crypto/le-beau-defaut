@@ -29,20 +29,19 @@ export default async function CatalogueView({
   intro?: string;
 }) {
   const user = await getCurrentUser();
-  const [{ items, total, page, pages }, f, categories] = await Promise.all([
-    searchProducts(params),
-    facets(params),
-    prisma.category.findMany({
-      where: { isActive: true, ...(params.vertical ? { vertical: params.vertical } : {}) },
-      orderBy: [{ vertical: "asc" }, { position: "asc" }, { name: "asc" }],
-      select: { id: true, name: true, slug: true, vertical: true, _count: { select: { products: true } } },
-    }),
-  ]);
+  const catalog = await searchProducts(params);
+  const f = await facets(params);
+  const categories = await prisma.category.findMany({
+    where: { isActive: true, vertical: "MOBILIER" },
+    orderBy: [{ position: "asc" }, { name: "asc" }],
+    select: { id: true, name: true, slug: true, vertical: true, _count: { select: { products: true } } },
+  });
+  const { items, total, page, pages } = catalog;
   const favs = await favoriteIds(user?.id);
 
   const vert = params.vertical ? VERTICAL_LIST.find((v) => v.key === params.vertical) : null;
   const title = heading ?? vert?.label ?? "Tout le catalogue";
-  const subtitle = intro ?? vert?.tagline ?? "Mobilier, sacs de luxe et fourre-tout — le défaut annoncé, le prix ajusté.";
+  const subtitle = intro ?? vert?.tagline ?? "Mobilier à petit défaut — le défaut annoncé, le prix ajusté.";
 
   /** Construit une URL en conservant les filtres actifs. */
   const url = (patch: Partial<CatalogueParams>) => {
@@ -80,8 +79,6 @@ export default async function CatalogueView({
     },
     params.remiseMin && { label: `Remise ≥ ${params.remiseMin} %`, href: url({ remiseMin: "" }) },
     params.authentifie === "1" && { label: "Authentifié LBD", href: url({ authentifie: "" }) },
-    params.negociable === "1" && { label: "Prix négociable", href: url({ negociable: "" }) },
-    params.livrable === "1" && { label: "Livrable à domicile", href: url({ livrable: "" }) },
   ].filter(Boolean) as { label: string; href: string }[];
 
   return (
@@ -168,7 +165,7 @@ export default async function CatalogueView({
               </FilterBlock>
             )}
 
-            <FilterBlock title="Qui vend">
+            <FilterBlock title="Notre stock">
               <div className="flex flex-col gap-1">
                 <FilterRadio name="circuit" value="" label="Peu importe" checked={!params.circuit} />
                 <FilterRadio
@@ -178,14 +175,6 @@ export default async function CatalogueView({
                   hint="Notre stock, notre garantie"
                   count={f.circuits.MAISON}
                   checked={params.circuit === "MAISON"}
-                />
-                <FilterRadio
-                  name="circuit"
-                  value="PARTICULIER"
-                  label="Vendeurs du fourre-tout"
-                  hint="Paiement sous séquestre"
-                  count={f.circuits.PARTICULIER}
-                  checked={params.circuit === "PARTICULIER"}
                 />
               </div>
             </FilterBlock>
@@ -313,31 +302,6 @@ export default async function CatalogueView({
                 </select>
               </FilterBlock>
             )}
-
-            <FilterBlock title="Options">
-              <div className="flex flex-col gap-1">
-                <FilterCheck
-                  name="livrable"
-                  label="Livrable à domicile"
-                  count={f.options.livrable}
-                  checked={params.livrable === "1"}
-                />
-                <FilterCheck
-                  name="negociable"
-                  label="Prix négociable"
-                  count={f.options.negociable}
-                  checked={params.negociable === "1"}
-                />
-                {(params.vertical === "SACS" || f.options.authentifie > 0) && (
-                  <FilterCheck
-                    name="authentifie"
-                    label="Sac authentifié par nos soins"
-                    count={f.options.authentifie}
-                    checked={params.authentifie === "1"}
-                  />
-                )}
-              </div>
-            </FilterBlock>
 
             <div className="flex gap-2 pt-2 sticky bottom-0 bg-[var(--color-linen)] lg:static">
               <button className="btn btn-primary flex-1">

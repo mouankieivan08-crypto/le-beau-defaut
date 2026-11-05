@@ -7,7 +7,7 @@ export default function manifest(): MetadataRoute.Manifest {
     name: `${BRAND.name} — ${BRAND.tagline}`,
     short_name: BRAND.name,
     description:
-      "Mobilier à petit défaut, sacs de luxe authentifiés et fourre-tout. Le défaut est annoncé, le prix est ajusté.",
+      "Mobilier à petit défaut : le défaut est annoncé, le prix est ajusté.",
     start_url: "/",
     scope: "/",
     display: "standalone",
@@ -23,8 +23,7 @@ export default function manifest(): MetadataRoute.Manifest {
       { src: "/brand/lbd-monogramme.svg", sizes: "any", type: "image/svg+xml" },
     ],
     shortcuts: [
-      { name: "Mobilier", url: "/mobilier" },
-      { name: "Sacs de luxe", url: "/sacs-de-luxe" },
+      { name: "Mobilier", url: "/catalogue" },
       { name: "Mes commandes", url: "/compte/commandes" },
     ],
   };

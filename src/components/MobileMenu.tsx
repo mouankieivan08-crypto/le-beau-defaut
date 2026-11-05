@@ -110,21 +110,13 @@ export default function MobileMenu({
                 >
                   <Icon name="package" size={16} /> Mes commandes
                 </Link>
-                {canSell ? (
+                {canSell && (
                   <Link
                     href="/vendeur"
                     onClick={fermer}
                     className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg hover:bg-[var(--color-cream-deep)] text-sm font-medium"
                   >
                     <Icon name="tag" size={16} /> Espace vente
-                  </Link>
-                ) : (
-                  <Link
-                    href="/devenir-vendeur"
-                    onClick={fermer}
-                    className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg hover:bg-[var(--color-gold-pale)] text-sm font-medium text-[var(--color-gold-dark)]"
-                  >
-                    <Icon name="tag" size={16} /> Ouvrir une boutique
                   </Link>
                 )}
                 <Link
