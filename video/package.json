@@ -1,0 +1,21 @@
+{
+  "name": "le-beau-defaut-video",
+  "private": true,
+  "description": "Vidéo publicitaire Le Beau Défaut — Remotion",
+  "scripts": {
+    "studio": "remotion studio",
+    "render:vertical": "remotion render LBD-Vertical out/le-beau-defaut-pub-9x16.mp4 --crf=18 --chrome-mode=chrome-for-testing --browser-executable=\"C:/Program Files/Google/Chrome/Application/chrome.exe\"",
+    "render:carre": "remotion render LBD-Carre out/le-beau-defaut-pub-1x1.mp4 --crf=18 --chrome-mode=chrome-for-testing --browser-executable=\"C:/Program Files/Google/Chrome/Application/chrome.exe\"",
+    "render:tout": "npm run render:vertical && npm run render:carre"
+  },
+  "devDependencies": {
+    "@types/react": "^19.3.0",
+    "typescript": "^7.0.2"
+  },
+  "dependencies": {
+    "@remotion/cli": "^4.0.532",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "remotion": "^4.0.532"
+  }
+}

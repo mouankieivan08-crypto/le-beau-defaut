@@ -1,0 +1,44 @@
+[
+ {
+  "fam": "Inter",
+  "w": "500",
+  "st": "normal",
+  "name": "inter-500.woff2"
+ },
+ {
+  "fam": "Inter",
+  "w": "600",
+  "st": "normal",
+  "name": "inter-600.woff2"
+ },
+ {
+  "fam": "Inter",
+  "w": "700",
+  "st": "normal",
+  "name": "inter-700.woff2"
+ },
+ {
+  "fam": "Inter",
+  "w": "800",
+  "st": "normal",
+  "name": "inter-800.woff2"
+ },
+ {
+  "fam": "Playfair Display",
+  "w": "600",
+  "st": "italic",
+  "name": "playfair-display-600-italic.woff2"
+ },
+ {
+  "fam": "Playfair Display",
+  "w": "700",
+  "st": "italic",
+  "name": "playfair-display-700-italic.woff2"
+ },
+ {
+  "fam": "Playfair Display",
+  "w": "700",
+  "st": "normal",
+  "name": "playfair-display-700.woff2"
+ }
+]
