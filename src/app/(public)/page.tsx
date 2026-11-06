@@ -1,4 +1,6 @@
 import Link from "next/link";
+import type { Metadata } from "next";
+import { JsonLd, organizationLd, websiteLd } from "@/lib/seo";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { cardSelect, PUBLISHED, favoriteIds } from "@/lib/queries";
@@ -8,6 +10,8 @@ import ProductCard, { ProductGrid } from "@/components/ProductCard";
 import Logo from "@/components/Logo";
 import Icon, { type IconName } from "@/components/Icon";
 import { SectionTitle, GradeBadge, Badge } from "@/components/ui";
+
+export const metadata: Metadata = { alternates: { canonical: "/" } };
 
 export default async function HomePage() {
   const user = await getCurrentUser();
@@ -44,6 +48,7 @@ export default async function HomePage() {
 
   return (
     <>
+      <JsonLd data={[organizationLd(), websiteLd()]} />
       {/* ---------------------------- HÉROS ---------------------------- */}
       <section className="relative overflow-hidden bg-[var(--color-cream)]">
         <div className="mx-auto max-w-[1280px] px-4 grid grid-cols-1 lg:grid-cols-[1.05fr_1fr] gap-10 items-center py-14 lg:py-20">
@@ -138,7 +143,7 @@ export default async function HomePage() {
         <SectionTitle
           eyebrow="Le catalogue"
           title="Un seul univers, des prix qui parlent"
-          subtitle="Le Beau Défaut met en vente le mobilier de seconde main à petit défaut, avec transparence sur la nature et la gravité du défaut."
+          subtitle="Du mobilier neuf, invendu ou légèrement abîmé, contrôlé par nos soins : le défaut est décrit sans détour, le prix en tient compte."
         />
         <div className="grid grid-cols-1 gap-5">
           <Link href="/catalogue" className="surface surface-hover p-7 group relative overflow-hidden">

@@ -218,3 +218,34 @@ icoSizes.forEach((s, i) => {
 });
 writeFileSync("public/favicon.ico", Buffer.concat([header, ...icoImages]));
 console.log("écrit public/favicon.ico (16, 32, 48 px)");
+
+// ---------------------------------------------------------------- image de partage
+/**
+ * L'aperçu affiché quand on partage le site (WhatsApp, Facebook, X) : 1200 × 630.
+ * Les fiches produit le remplacent par la photo de l'article.
+ */
+{
+  const { paths, right } = letterPaths({ cap: 120, baseline: 360, centerX: 300 });
+  const brush = swooshPath({ x: right - 120 * 0.55, y: 360 - 120 * 0.56, w: 120 * 1.15 });
+  const og = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">${FONTS}<defs>${gold("or")}</defs>
+  <rect width="1200" height="630" fill="${C.cream}"/>
+  <g fill="none" stroke="${C.arc}" stroke-width="4" stroke-linecap="round">${ringArcs({ cx: 300, cy: 315, r: 190 })
+    .map((d) => `<path d="${d}"/>`)
+    .join("")}</g>
+  ${paths.map((p) => `<path d="${p.d}" transform="${p.transform}" fill="${C.brown}" fill-rule="evenodd"/>`).join("")}
+  <path d="${brush.d}" transform="${brush.transform}" fill="url(#or)"/>
+  <text x="560" y="240" ${serif} font-size="66" font-weight="600" fill="${C.brown}" style="font-variant:small-caps">Le Beau Défaut</text>
+  <text x="562" y="305" ${script} font-size="40" fill="#A8802F">Les petits défauts font</text>
+  <text x="562" y="350" ${script} font-size="40" fill="#A8802F">de grandes économies</text>
+  <rect x="562" y="380" width="520" height="2" fill="${C.rule}"/>
+  <text x="562" y="430" font-family="Arial, sans-serif" font-size="30" fill="${C.ink}">Meubles neufs à petit défaut</text>
+  <text x="562" y="472" font-family="Arial, sans-serif" font-size="30" fill="${C.ink}">jusqu'à 70 % moins cher · Brazzaville</text>
+  <text x="562" y="535" font-family="Arial, sans-serif" font-size="26" font-weight="700" fill="#8C6A24">lebeaudefaut.site</text>
+</svg>`;
+  const png = await sharp(Buffer.from(og)).png({ compressionLevel: 9 }).toBuffer();
+  writeFileSync("src/app/opengraph-image.png", png);
+  writeFileSync("src/app/twitter-image.png", png);
+  writeFileSync("src/app/opengraph-image.alt.txt", "Le Beau Défaut — meubles neufs à petit défaut, jusqu'à 70 % moins cher à Brazzaville");
+  writeFileSync("src/app/twitter-image.alt.txt", "Le Beau Défaut — meubles neufs à petit défaut, jusqu'à 70 % moins cher à Brazzaville");
+  console.log("écrit src/app/opengraph-image.png (1200 × 630)");
+}

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { isVisibleVertical } from "@/lib/constants";
 import SaleModePanel from "@/components/SaleModePanel";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
@@ -15,6 +16,7 @@ import Icon from "@/components/Icon";
 import { Badge, GradeBadge, Price, Rating, Breadcrumb, SectionTitle, Avatar, Alert } from "@/components/ui";
 import ReviewForm from "@/components/ReviewForm";
 import ShareButtons from "@/components/ShareButtons";
+import { JsonLd, breadcrumbLd, productLd } from "@/lib/seo";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -39,13 +41,39 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const p = await prisma.product.findUnique({
     where: { slug },
-    select: { title: true, defectSummary: true, price: true, images: { where: { isCover: true }, take: 1 } },
+    select: {
+      title: true,
+      status: true,
+      vertical: true,
+      defectSummary: true,
+      price: true,
+      priceOriginal: true,
+      discountPct: true,
+      category: { select: { name: true } },
+      images: { where: { isCover: true }, take: 1, select: { url: true, alt: true } },
+    },
   });
-  if (!p) return { title: "Article introuvable" };
+  if (!p || p.status !== "PUBLIE" || !isVisibleVertical(p.vertical)) {
+    return { title: "Article introuvable", robots: { index: false, follow: false } };
+  }
+
+  // Une description qui donne envie de cliquer : le prix, la remise et le défaut, sans détour.
+  const description = `${p.category.name} neuf à ${money(p.price)} au lieu de ${money(p.priceOriginal)} (−${p.discountPct} %) à Brazzaville. Défaut annoncé : ${p.defectSummary}`.slice(0, 300);
+  const path = `/produit/${slug}`;
+  const image = p.images[0]?.url;
+
   return {
-    title: p.title,
-    description: `${p.defectSummary} — ${money(p.price)}`,
-    openGraph: { images: p.images[0]?.url ? [p.images[0].url] : [] },
+    title: `${p.title} — ${money(p.price)}`,
+    description,
+    alternates: { canonical: path },
+    openGraph: {
+      type: "website",
+      url: path,
+      title: `${p.title} — ${money(p.price)} (−${p.discountPct} %)`,
+      description,
+      images: image ? [{ url: image, alt: p.images[0]?.alt ?? p.title }] : undefined,
+    },
+    twitter: { card: "summary_large_image", title: p.title, description, images: image ? [image] : undefined },
   };
 }
 
@@ -56,7 +84,8 @@ export default async function ProductPage({ params }: Props) {
 
   const user = await getCurrentUser();
   const isOwner = user?.id === product.sellerId;
-  const visible = product.status === "PUBLIE" || isOwner || user?.role === "ADMIN";
+  const visible =
+    user?.role === "ADMIN" || isOwner || (product.status === "PUBLIE" && isVisibleVertical(product.vertical));
   if (!visible) notFound();
 
   // Compteur de vues (pas pour le vendeur lui-même)
@@ -105,6 +134,17 @@ export default async function ProductPage({ params }: Props) {
 
   return (
     <div className="mx-auto max-w-[1280px] px-4 py-8">
+      <JsonLd
+        data={[
+          productLd(product),
+          breadcrumbLd([
+            { name: "Accueil", path: "/" },
+            { name: "Catalogue", path: "/catalogue" },
+            { name: product.category.name, path: `/catalogue?categorie=${product.category.slug}` },
+            { name: product.title, path: `/produit/${product.slug}` },
+          ]),
+        ]}
+      />
       <Breadcrumb
         items={[
           { label: "Accueil", href: "/" },

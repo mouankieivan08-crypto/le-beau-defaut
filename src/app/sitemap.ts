@@ -1,6 +1,8 @@
 import type { MetadataRoute } from "next";
 import { prisma } from "@/lib/prisma";
 import { siteUrl } from "@/lib/site";
+import { PUBLISHED } from "@/lib/queries";
+import { VISIBLE_VERTICALS } from "@/lib/constants";
 
 // Le plan du site lit la base : on le genere a la demande, pas au build.
 export const dynamic = "force-dynamic";
@@ -28,21 +30,30 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: p.priority,
   }));
 
+  // Seuls les articles réellement visibles sont proposés à Google : un article d'un
+  // univers fermé, listé ici, deviendrait une page introuvable dans ses résultats.
   const [products, categories, shops] = await Promise.all([
     prisma.product.findMany({
-      where: { status: "PUBLIE" },
-      select: { slug: true, updatedAt: true },
+      where: PUBLISHED,
+      select: { slug: true, updatedAt: true, images: { where: { isCover: true }, select: { url: true }, take: 1 } },
       orderBy: { publishedAt: "desc" },
       take: 5000,
     }),
-    prisma.category.findMany({ where: { isActive: true }, select: { slug: true } }),
-    prisma.sellerProfile.findMany({ where: { status: "ACTIF" }, select: { shopSlug: true, updatedAt: true } }),
+    prisma.category.findMany({
+      where: { isActive: true, vertical: { in: VISIBLE_VERTICALS }, products: { some: PUBLISHED } },
+      select: { slug: true },
+    }),
+    prisma.sellerProfile.findMany({
+      where: { status: "ACTIF", user: { products: { some: PUBLISHED } } },
+      select: { shopSlug: true, updatedAt: true },
+    }),
   ]);
 
   return [
     ...staticPages,
     ...products.map((p) => ({
       url: `${base}/produit/${p.slug}`,
+      images: p.images.map((i) => i.url),
       lastModified: p.updatedAt,
       changeFrequency: "weekly" as const,
       priority: 0.8,

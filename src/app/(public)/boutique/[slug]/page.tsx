@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
-import { cardSelect, favoriteIds } from "@/lib/queries";
+import { cardSelect, favoriteIds, PUBLISHED } from "@/lib/queries";
 import { dateFR } from "@/lib/format";
 import ProductCard, { ProductGrid } from "@/components/ProductCard";
 import Icon from "@/components/Icon";
@@ -24,7 +24,7 @@ export default async function ShopPublicPage({ params }: Props) {
   const user = await getCurrentUser();
   const [products, sold, reviews] = await Promise.all([
     prisma.product.findMany({
-      where: { sellerId: shop.userId, status: "PUBLIE" },
+      where: { ...PUBLISHED, sellerId: shop.userId },
       select: cardSelect,
       orderBy: { publishedAt: "desc" },
     }),

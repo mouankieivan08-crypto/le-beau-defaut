@@ -1,5 +1,6 @@
 import { prisma } from "./prisma";
 import type { Prisma } from "@prisma/client";
+import { VISIBLE_VERTICALS, isVisibleVertical } from "./constants";
 
 /** Sélection partagée par toutes les vitrines (grilles de cartes). */
 export const cardSelect = {
@@ -28,7 +29,7 @@ export const cardSelect = {
   seller: { select: { seller: { select: { shopName: true, shopSlug: true } } } },
 } satisfies Prisma.ProductSelect;
 
-export const PUBLISHED = { status: "PUBLIE" as const, vertical: "MOBILIER" as const };
+export const PUBLISHED = { status: "PUBLIE" as const, vertical: { in: VISIBLE_VERTICALS } };
 
 /** Identifiants des articles favoris d'un utilisateur (pour colorer les cœurs). */
 export async function favoriteIds(userId?: string | null): Promise<Set<string>> {
@@ -47,6 +48,8 @@ export type CatalogueParams = {
   /** MAISON = vendu par Le Beau Défaut · PARTICULIER = mise en relation */
   circuit?: string;
   marque?: string;
+  /** Type de défaut : RAYURE, DECOLORATION, FIN_DE_SERIE… */
+  defaut?: string;
   boutique?: string;
   prixMin?: string;
   prixMax?: string;
@@ -82,15 +85,13 @@ export const PAGE_SIZE = 16;
 export function buildProductWhere(params: CatalogueParams): Prisma.ProductWhereInput {
   const where: Prisma.ProductWhereInput = { ...PUBLISHED };
 
-  where.vertical = "MOBILIER";
-  if (params.vertical && params.vertical !== "MOBILIER") {
-    where.vertical = "MOBILIER";
-  }
+  where.vertical = params.vertical && isVisibleVertical(params.vertical) ? params.vertical : { in: VISIBLE_VERTICALS };
   if (params.grade) where.defectGrade = params.grade;
   if (params.ville) where.city = params.ville;
   if (params.quartier) where.quartier = params.quartier;
   if (params.circuit) where.saleMode = params.circuit;
   if (params.marque) where.brand = params.marque;
+  if (params.defaut) where.defects = { some: { type: params.defaut } };
   if (params.boutique) where.seller = { seller: { shopSlug: params.boutique } };
   if (params.categorie) where.category = { slug: params.categorie };
 
@@ -160,7 +161,23 @@ export async function facets(params: CatalogueParams) {
   });
   const byVertical = await prisma.product.groupBy({ by: ["vertical"], where: sansUnivers, _count: true });
 
+  // Par type de défaut : on liste les types présents, puis on compte des articles (un article
+  // peut porter deux défauts du même type : compter les défauts gonflerait les chiffres).
+  const sansDefaut = buildProductWhere({ ...params, defaut: undefined });
+  const typesPresents = await prisma.defect.groupBy({ by: ["type"], where: { product: sansDefaut }, _count: true });
+  const defectTypes = (
+    await Promise.all(
+      typesPresents.map(async (t) => ({
+        type: t.type,
+        count: await prisma.product.count({ where: { ...sansDefaut, defects: { some: { type: t.type } } } }),
+      }))
+    )
+  )
+    .filter((t) => t.count > 0)
+    .sort((a, b) => b.count - a.count);
+
   return {
+    defectTypes,
     grades: Object.fromEntries(byGrade.map((g) => [g.defectGrade, g._count])) as Record<string, number>,
     cities: byCity.map((c) => ({ city: c.city, count: c._count })).sort((a, b) => b.count - a.count),
     quartiers: byQuartier

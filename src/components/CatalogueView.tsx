@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
 import { getCurrentUser } from '@/lib/auth';
 import { searchProducts, facets, favoriteIds, SORT_LABELS, type CatalogueParams } from '@/lib/queries';
-import { GRADE_LIST, VERTICAL_LIST, CITIES } from '@/lib/constants';
+import { GRADE_LIST, VERTICAL_LIST, CITIES, defectTypeLabel } from '@/lib/constants';
 import ProductCard, { ProductGrid } from '@/components/ProductCard';
 import Icon from '@/components/Icon';
 import FilterDrawer from '@/components/FilterDrawer';
@@ -61,6 +61,7 @@ export default async function CatalogueView({
       href: url({ circuit: "" }),
     },
     params.grade && { label: `Grade ${params.grade}`, href: url({ grade: "" }) },
+    params.defaut && { label: defectTypeLabel(params.defaut), href: url({ defaut: "" }) },
     params.categorie && {
       label: categories.find((c) => c.slug === params.categorie)?.name ?? params.categorie,
       href: url({ categorie: "" }),
@@ -200,6 +201,19 @@ export default async function CatalogueView({
                 ))}
               </div>
             </FilterBlock>
+
+            {f.defectTypes.length > 0 && (
+              <FilterBlock title="Type de défaut">
+                <select name="defaut" defaultValue={params.defaut ?? ""} className="field">
+                  <option value="">Tous les défauts</option>
+                  {f.defectTypes.map((t) => (
+                    <option key={t.type} value={t.type}>
+                      {defectTypeLabel(t.type)} ({t.count})
+                    </option>
+                  ))}
+                </select>
+              </FilterBlock>
+            )}
 
             {categories.length > 0 && (
               <FilterBlock title="Catégorie">

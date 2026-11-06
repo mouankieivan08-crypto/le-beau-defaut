@@ -216,7 +216,7 @@ const PRODUCTS: ProductSeed[] = [
     desc: "Deux fauteuils club gris anthracite issus du showroom. Structure saine, assise ferme.",
     photo: "1538688525198-9b88f6f53126", focus: [0.8, 0.7, 2.8],
     orig: 480000, price: 235000, grade: "C",
-    summary: "Modèles d'exposition : usure franche du tissu sur les accoudoirs.",
+    summary: "Modèles d'exposition : tissu marqué sur les accoudoirs par les manipulations en magasin.",
     defects: [
       { type: "USURE", zone: "Accoudoirs des deux fauteuils", sev: 4, desc: "Tissu lustré et bouloché là où les clients posaient les mains pendant deux ans d'exposition." },
     ],
@@ -257,7 +257,7 @@ const PRODUCTS: ProductSeed[] = [
     orig: 390000, price: 295000, grade: "A",
     summary: "Modèle de l'an dernier ; deux chaises ont une micro-rayure sous l'assise.",
     defects: [
-      { type: "FIN_DE_SERIE", zone: "Ensemble", sev: 1, desc: "Ancien millésime du modèle." },
+      { type: "FIN_DE_SERIE", zone: "Ensemble", sev: 1, desc: "Modèle de la collection précédente." },
       { type: "RAYURE", zone: "Dessous d'assise (2 chaises)", sev: 1, desc: "Invisible une fois la chaise sur ses pieds." },
     ],
     material: "Polypropylène, hêtre", color: "Noir", dims: "L47 x P53 x H82 cm", weight: 30, qty: 3,
@@ -291,13 +291,13 @@ const PRODUCTS: ProductSeed[] = [
   },
   {
     v: "MOBILIER", cat: "chaises-tabourets", s: 1, age: 30,
-    title: "Chaises bistrot en bois vintage (reprise restaurant)",
-    desc: "Chaises en bois massif reprises à la fermeture d'un restaurant de Brazzaville. Solides, avec du vécu. Vendues à l'unité.",
+    title: "Chaises bistrot en bois massif, fin de série",
+    desc: "Chaises bistrot neuves en bois massif, dernier lot d'une collection arrêtée chez un fournisseur hôtelier. Jamais utilisées, vendues à l'unité.",
     photo: "1549497538-303791108f95", focus: [0.4, 0.55, 2.4],
     orig: 65000, price: 29000, grade: "C",
-    summary: "Vernis écaillé et assise patinée par l'usage.",
+    summary: "Vernis irrégulier et petites éraflures de manutention sur l'assise.",
     defects: [
-      { type: "USURE", zone: "Assise et dossier", sev: 4, desc: "Vernis parti par endroits, marques d'usage. Aucune chaise ne branle." },
+      { type: "RAYURE", zone: "Assise et dossier", sev: 3, desc: "Vernis irrégulier par endroits et éraflures de manutention. Aucune chaise ne branle." },
     ],
     material: "Hêtre massif", color: "Noyer", dims: "L42 x P45 x H84 cm", weight: 5, qty: 6,
     city: "Brazzaville", quartier: "Centre-ville",

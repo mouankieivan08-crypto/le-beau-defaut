@@ -88,7 +88,7 @@ export const DEFECT_TYPES = [
   { key: "EMBALLAGE_ABIME", label: "Emballage abîmé", verticals: ["MOBILIER"] },
   { key: "DEMONTE", label: "Livré démonté", verticals: ["MOBILIER"] },
   { key: "ODEUR", label: "Odeur / stockage", verticals: ["MOBILIER"] },
-  { key: "USURE", label: "Usure d'usage", verticals: ["MOBILIER"] },
+  { key: "USURE", label: "Marques d'exposition ou de stockage", verticals: ["MOBILIER"] },
   { key: "AUTRE", label: "Autre", verticals: ["MOBILIER"] },
 ] as const;
 
@@ -392,3 +392,12 @@ export const TEAM_ACCESS_PATH = "/acces-equipe";
 
 /** Identifiant de la boutique maison. */
 export const HOUSE_SHOP_SLUG = "le-beau-defaut";
+
+/**
+ * Univers ouverts au public. Le catalogue, les fiches, les boutiques et le plan du site
+ * lisent tous cette liste : un article d'un univers fermé n'est ni listé, ni accessible
+ * par son adresse, ni envoyé aux moteurs de recherche. Rouvrir un univers = l'ajouter ici.
+ */
+export const VISIBLE_VERTICALS: string[] = ["MOBILIER"];
+
+export const isVisibleVertical = (v: string) => VISIBLE_VERTICALS.includes(v);
