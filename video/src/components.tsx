@@ -61,12 +61,11 @@ export function AnimatedMark({ at, size, ink = C.brown, arcColor = C.arc }: { at
       <clipPath id={`${id}-clip`}>
         <rect x={right - 32 * 0.55} y={40} width={32 * 1.15 * brush + 1} height={30} />
       </clipPath>
-      <path
-        d={SWOOSH}
-        transform={`translate(${right - 32 * 0.55} 54) scale(${(32 * 1.15) / 100})`}
-        fill={`url(#${id})`}
-        clipPath={`url(#${id}-clip)`}
-      />
+      {/* Le masque est posé sur un groupe sans transformation : posé sur le tracé lui-même,
+          il serait déplacé et agrandi avec lui, et le pinceau disparaîtrait. */}
+      <g clipPath={`url(#${id}-clip)`}>
+        <path d={SWOOSH} transform={`translate(${right - 32 * 0.55} 54) scale(${(32 * 1.15) / 100})`} fill={`url(#${id})`} />
+      </g>
     </svg>
   );
 }
