@@ -45,6 +45,6 @@ export const DEPOSIT = [
   { operator: "Airtel Money", number: "05 541 12 48" },
 ];
 
-export const SITE = "le-beau-defaut.vercel.app";
+export const SITE = "lebeaudefaut.site";
 export const WHATSAPP = "06 501 81 83";
 export const CITY = "Brazzaville";

@@ -190,6 +190,10 @@ connexion : ni traceur, ni mesure d'audience, rien à accepter. Les informations
 
 ## Mise en ligne
 
+Adresse officielle : **https://lebeaudefaut.site**. Domaine chez Namecheap, DNS : A `@` → `76.76.21.21`,
+CNAME `www` → `cname.vercel-dns.com`. `www` et l'ancienne adresse `le-beau-defaut.vercel.app` redirigent
+vers elle (308), sauf les routes `/api` que la tâche quotidienne de Vercel appelle par l'adresse du projet.
+
 Hébergement : **Vercel** (le site) + **Supabase** (la base PostgreSQL et les photos).
 Marche à suivre complète : **[docs/DEPLOIEMENT.md](docs/DEPLOIEMENT.md)**.
 

@@ -20,6 +20,28 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+
+  /**
+   * Une seule adresse officielle : www et l'ancienne adresse Vercel renvoient vers lebeaudefaut.site.
+   * Les routes /api restent servies telles quelles : la tâche quotidienne de Vercel les appelle
+   * par l'adresse du projet et ne doit pas tomber sur une redirection.
+   */
+  async redirects() {
+    return [
+      {
+        source: "/:path*",
+        has: [{ type: "host" as const, value: "www.lebeaudefaut.site" }],
+        destination: "https://lebeaudefaut.site/:path*",
+        permanent: true,
+      },
+      {
+        source: "/:path((?!api/).*)",
+        has: [{ type: "host" as const, value: "le-beau-defaut.vercel.app" }],
+        destination: "https://lebeaudefaut.site/:path",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;
