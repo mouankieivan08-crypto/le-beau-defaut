@@ -4,8 +4,8 @@ import { revalidatePath } from "next/cache";
 import { createPayoutsForOrder, releaseEscrowForOrder, refundEscrowForOrder } from "@/lib/escrow";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin, requireRole, hashPassword } from "@/lib/auth";
-import { slugify } from "@/lib/format";
-import { ESCROW_RELEASE_DAYS } from "@/lib/constants";
+import { slugify, money } from "@/lib/format";
+import { ESCROW_RELEASE_DAYS, ORDER_STATUS, INTERNAL_NOTE_LABEL } from "@/lib/constants";
 
 type State = { error?: string; success?: string } | undefined;
 
@@ -231,6 +231,16 @@ export async function createUserAction(_prev: State, formData: FormData): Promis
 
 /* ---------------------- Commandes & livraisons ---------------------- */
 
+const STATUS_MESSAGES: Record<string, string> = {
+  PAYEE: "Paiement reçu.",
+  CONFIRMEE: "Votre commande est confirmée.",
+  EN_PREPARATION: "Votre commande est en préparation.",
+  EN_LIVRAISON: "Votre commande est en route : le livreur vous appelle avant de passer.",
+  LIVREE: "Votre commande est livrée. Merci pour votre confiance !",
+  ANNULEE: "Votre commande a été annulée.",
+  REMBOURSEE: "Votre commande a été remboursée.",
+};
+
 export async function setOrderStatusAction(formData: FormData) {
   const actor = await requireRole(["ADMIN", "VENDEUR"]);
   const orderId = String(formData.get("orderId") || "");
@@ -277,7 +287,7 @@ export async function setOrderStatusAction(formData: FormData) {
       },
     });
     await tx.orderEvent.create({
-      data: { orderId, status, label: `Statut : ${status.replace(/_/g, " ").toLowerCase()}`, note, actorId: actor.id },
+      data: { orderId, status, label: `Statut : ${ORDER_STATUS[status]?.label.toLowerCase() ?? status}`, note, actorId: actor.id },
     });
 
     // À la livraison, les versements vendeurs deviennent exigibles.
@@ -291,7 +301,7 @@ export async function setOrderStatusAction(formData: FormData) {
         userId: order.buyerId,
         type: "COMMANDE",
         title: `Commande ${order.reference}`,
-        body: `Nouveau statut : ${status.replace(/_/g, " ").toLowerCase()}.`,
+        body: `${STATUS_MESSAGES[status] ?? `Nouveau statut : ${ORDER_STATUS[status]?.label.toLowerCase() ?? status}.`}${note ? ` ${note}` : ""}`,
         link: `/compte/commandes/${orderId}`,
       },
     });
@@ -524,42 +534,164 @@ export async function confirmDepositAction(formData: FormData) {
   const admin = await requireAdmin();
   const orderId = String(formData.get("orderId") || "");
   const transaction = String(formData.get("transaction") || "").trim().slice(0, 80);
-  const order = await prisma.order.findUnique({ where: { id: orderId }, select: { id: true, reference: true, buyerId: true, paymentStatus: true, paymentRef: true } });
+  const operator = String(formData.get("operator") || "").trim().slice(0, 30);
+  const message = String(formData.get("message") || "").trim().slice(0, 500);
+  const order = await prisma.order.findUnique({
+    where: { id: orderId },
+    select: {
+      id: true,
+      reference: true,
+      buyerId: true,
+      status: true,
+      total: true,
+      paymentStatus: true,
+      paymentRef: true,
+      items: { select: { sellerId: true } },
+    },
+  });
   if (!order || order.paymentStatus === "PAYE") return;
+  if (["ANNULEE", "REMBOURSEE"].includes(order.status)) return;
 
-  await prisma.$transaction([
-    prisma.order.update({
+  // Paiement vérifié = commande confirmée d'un seul geste. On ne fait jamais reculer
+  // une commande déjà plus avancée (anciennes commandes payées à la livraison).
+  const advance = ["EN_ATTENTE_PAIEMENT", "PAYEE"].includes(order.status);
+  const ref = transaction || order.paymentRef;
+  const now = new Date();
+
+  await prisma.$transaction(async (tx) => {
+    await tx.order.update({
       where: { id: order.id },
       data: {
-        status: "PAYEE",
+        ...(advance ? { status: "CONFIRMEE" } : {}),
         paymentStatus: "PAYE",
-        paidAt: new Date(),
+        paidAt: now,
         paymentRejectReason: null,
-        paymentRef: transaction || order.paymentRef,
+        paymentRef: ref,
       },
-    }),
-    prisma.orderEvent.create({
+    });
+    await tx.orderEvent.create({
       data: {
         orderId: order.id,
         status: "PAYEE",
-        label: "Paiement vérifié et confirmé",
-        note: transaction || order.paymentRef ? `Transaction ${transaction || order.paymentRef}` : null,
+        label: "Paiement Mobile Money vérifié",
+        note: [operator && `Reçu sur ${operator}`, ref && `Transaction ${ref}`].filter(Boolean).join(" · ") || null,
         actorId: admin.id,
       },
-    }),
-    prisma.notification.create({
+    });
+    if (advance) {
+      await tx.orderEvent.create({
+        data: { orderId: order.id, status: "CONFIRMEE", label: "Commande confirmée par l'équipe", note: message || null, actorId: admin.id },
+      });
+    }
+    await tx.notification.create({
       data: {
         userId: order.buyerId,
         type: "COMMANDE",
-        title: "Paiement confirmé",
-        body: `Nous avons bien reçu votre dépôt pour la commande ${order.reference}. Elle part en préparation.`,
+        title: "Commande confirmée",
+        body:
+          message ||
+          `Paiement reçu pour la commande ${order.reference} (${money(order.total)}). Votre commande est confirmée : nous préparons la livraison.`,
         link: `/compte/commandes/${order.id}`,
       },
+    });
+    const sellerIds = [...new Set(order.items.map((i) => i.sellerId))];
+    await tx.notification.createMany({
+      data: sellerIds.map((userId) => ({
+        userId,
+        type: "PAIEMENT",
+        title: "Paiement reçu",
+        body: `Commande ${order.reference} payée et confirmée : l'article peut être préparé.`,
+        link: "/vendeur/ventes",
+      })),
+    });
+    await tx.auditLog.create({
+      data: { actorId: admin.id, action: "COMMANDE_CONFIRMEE", entity: "Order", entityId: order.reference, details: ref || null },
+    });
+  });
+  revalidatePath("/", "layout");
+}
+
+/** Note interne sur une commande : visible de l'équipe seulement, dans le journal. */
+export async function addOrderNoteAction(formData: FormData) {
+  const admin = await requireAdmin();
+  const orderId = String(formData.get("orderId") || "");
+  const note = String(formData.get("note") || "").trim().slice(0, 1000);
+  if (!note) return;
+  const order = await prisma.order.findUnique({ where: { id: orderId }, select: { id: true, status: true } });
+  if (!order) return;
+  await prisma.orderEvent.create({
+    data: { orderId, status: order.status, label: INTERNAL_NOTE_LABEL, note, actorId: admin.id },
+  });
+  revalidatePath(`/admin/commandes/${orderId}`);
+}
+
+/** Message direct au client, qui le reçoit dans ses notifications. */
+export async function notifyCustomerAction(formData: FormData) {
+  const admin = await requireAdmin();
+  const orderId = String(formData.get("orderId") || "");
+  const body = String(formData.get("body") || "").trim().slice(0, 500);
+  if (!body) return;
+  const order = await prisma.order.findUnique({ where: { id: orderId }, select: { id: true, reference: true, buyerId: true, status: true } });
+  if (!order) return;
+  await prisma.$transaction([
+    prisma.notification.create({
+      data: { userId: order.buyerId, type: "COMMANDE", title: `Commande ${order.reference}`, body, link: `/compte/commandes/${order.id}` },
     }),
-    prisma.auditLog.create({
-      data: { actorId: admin.id, action: "PAIEMENT_CONFIRME", entity: "Order", entityId: order.reference, details: transaction || null },
+    prisma.orderEvent.create({
+      data: { orderId: order.id, status: order.status, label: "Message envoyé au client", note: body, actorId: admin.id },
     }),
   ]);
+  revalidatePath(`/admin/commandes/${orderId}`);
+}
+
+/* ---------------------------- Service client ---------------------------- */
+
+/** L'équipe répond dans une conversation (support, signalement ou question sur un article). */
+export async function adminReplyAction(formData: FormData) {
+  const admin = await requireAdmin();
+  const threadId = String(formData.get("threadId") || "");
+  const body = String(formData.get("body") || "").trim().slice(0, 2000);
+  if (!threadId || !body) return;
+
+  const thread = await prisma.thread.findUnique({ where: { id: threadId }, include: { members: true } });
+  if (!thread) return;
+
+  await prisma.$transaction(async (tx) => {
+    await tx.threadMember.upsert({
+      where: { threadId_userId: { threadId, userId: admin.id } },
+      create: { threadId, userId: admin.id, lastReadAt: new Date() },
+      update: { lastReadAt: new Date() },
+    });
+    await tx.message.create({ data: { threadId, senderId: admin.id, body } });
+    await tx.thread.update({ where: { id: threadId }, data: { updatedAt: new Date(), isClosed: false } });
+
+    const others = await tx.user.findMany({
+      where: { id: { in: thread.members.map((m) => m.userId) }, NOT: { id: admin.id }, role: { not: "ADMIN" } },
+      select: { id: true },
+    });
+    if (others.length) {
+      await tx.notification.createMany({
+        data: others.map((u) => ({
+          userId: u.id,
+          type: "MESSAGE",
+          title: "Réponse du service client",
+          body: body.slice(0, 120),
+          link: `/messages/${threadId}`,
+        })),
+      });
+    }
+  });
+  revalidatePath("/", "layout");
+}
+
+/** Marque une conversation comme traitée (ou la rouvre). */
+export async function toggleThreadClosedAction(formData: FormData) {
+  const admin = await requireAdmin();
+  const threadId = String(formData.get("threadId") || "");
+  const thread = await prisma.thread.findUnique({ where: { id: threadId } });
+  if (!thread) return;
+  await prisma.thread.update({ where: { id: threadId }, data: { isClosed: !thread.isClosed } });
+  await log(admin.id, thread.isClosed ? "CONVERSATION_ROUVERTE" : "CONVERSATION_TRAITEE", "Thread", threadId, thread.subject);
   revalidatePath("/", "layout");
 }
 

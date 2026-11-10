@@ -192,7 +192,7 @@ export default async function CartPage() {
               </li>
               <li className="flex gap-2">
                 <Icon name="wallet" size={14} className="text-[var(--color-gold)] shrink-0" />
-                Dépôt Mobile Money, espèces à la livraison ou sur place
+                Paiement par dépôt Mobile Money (MTN ou Airtel)
               </li>
             </ul>
           </aside>

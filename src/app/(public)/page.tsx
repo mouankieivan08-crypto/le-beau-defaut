@@ -247,7 +247,7 @@ export default async function HomePage() {
           {[
             { icon: "search", t: "Vous chinez", d: "Filtrez par univers, par grade de défaut, par budget et par quartier." },
             { icon: "eye", t: "Vous inspectez", d: "Photos du défaut, zone touchée, sévérité notée de 1 à 5. Rien n'est flouté." },
-            { icon: "cart", t: "Vous commandez", d: "Mobile Money ou espèces à la livraison. Le prix affiché est le prix payé." },
+            { icon: "cart", t: "Vous commandez", d: "Paiement par Mobile Money, confirmé par notre équipe. Le prix affiché est le prix payé." },
             { icon: "truck", t: "On livre", d: "Livraison dans tout Brazzaville, ou retrait en dépôt." },
           ].map((s, i) => (
             <li key={s.t} className="surface p-6 relative">

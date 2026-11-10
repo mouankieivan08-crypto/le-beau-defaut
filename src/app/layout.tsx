@@ -13,7 +13,7 @@ export const metadata: Metadata = {
     template: `%s · ${BRAND.name}`,
   },
   description:
-    "Mobilier neuf, invendu ou à léger défaut, jusqu'à 70 % moins cher à Brazzaville. Chaque défaut est contrôlé, photographié et annoncé. Livraison dans tout Brazzaville, paiement par Mobile Money ou à la livraison.",
+    "Mobilier neuf, invendu ou à léger défaut, jusqu'à 70 % moins cher à Brazzaville. Chaque défaut est contrôlé, photographié et annoncé. Livraison dans tout Brazzaville, paiement par Mobile Money (MTN 06 501 81 83 · Airtel 05 741 12 48).",
   keywords: [
     "Le Beau Défaut",
     "meubles Brazzaville",

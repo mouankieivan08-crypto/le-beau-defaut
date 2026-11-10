@@ -18,6 +18,7 @@ import {
   claimTypeLabel,
   claimResolutionLabel,
   isDeposit,
+  INTERNAL_NOTE_LABEL,
 } from "@/lib/constants";
 import { cancelOrderAction, declarePaymentAction } from "@/lib/actions/shop";
 import { AccountLayout } from "@/components/AccountNav";
@@ -44,7 +45,8 @@ export default async function OrderDetailPage({
     where: { id },
     include: {
       items: { include: { product: { select: { slug: true, sellerId: true } } } },
-      events: { orderBy: { createdAt: "asc" } },
+      // Les notes internes de l'équipe ne sont jamais montrées au client.
+      events: { where: { label: { not: INTERNAL_NOTE_LABEL } }, orderBy: { createdAt: "asc" } },
       delivery: { include: { courier: { include: { user: { select: { firstName: true, lastName: true, phone: true } } } } } },
       claims: { orderBy: { createdAt: "desc" } },
     },
@@ -75,9 +77,9 @@ export default async function OrderDetailPage({
           <h2 className="font-display text-2xl font-bold">Merci, c&apos;est commandé !</h2>
           <p className="font-script text-gilded text-2xl mt-1">Un petit défaut, une grande économie.</p>
           <p className="text-sm text-[var(--color-ink-muted)] mt-3 max-w-md mx-auto">
-            {order.paymentMethod.startsWith("MOBILE_MONEY")
-              ? "Validez la demande de paiement reçue sur votre téléphone. La préparation démarre dès réception."
-              : "Le vendeur confirme la disponibilité, puis un livreur vous appelle pour convenir du passage."}
+            Votre article est réservé. Déposez {money(order.total)} sur l&apos;un de nos numéros Mobile Money
+            ci-dessous, puis envoyez-nous la preuve : nous confirmons votre commande et vous recevez une
+            notification.
           </p>
         </div>
       )}
@@ -138,9 +140,7 @@ export default async function OrderDetailPage({
             )
           ) : (
             <Alert tone="warning" title="Paiement en attente">
-              {order.paymentMethod === "ESPECES_SUR_PLACE"
-                ? "Notre équipe vous contacte pour convenir du retrait. Vous réglez en espèces sur place."
-                : "Vous réglez en espèces au livreur, au moment de la remise."}
+              Notre équipe vous contacte pour finaliser le paiement de cette commande.
             </Alert>
           )}
         </div>
@@ -332,6 +332,16 @@ export default async function OrderDetailPage({
                 )}
               </div>
             )}
+          </section>
+
+          <section className="surface p-5">
+            <h2 className="font-display text-base font-bold mb-1">Besoin d&apos;aide ?</h2>
+            <p className="text-xs text-[var(--color-ink-muted)] mb-3">
+              Une question sur cette commande ou votre paiement ? L&apos;équipe vous répond dans vos messages.
+            </p>
+            <Link href={`/messages/support?commande=${order.reference}`} className="btn btn-outline w-full">
+              <Icon name="message" size={14} /> Contacter le service client
+            </Link>
           </section>
 
           {canCancel && (

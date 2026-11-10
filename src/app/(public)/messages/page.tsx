@@ -5,6 +5,8 @@ import { requireUser } from "@/lib/auth";
 import { relativeFR } from "@/lib/format";
 import { AccountLayout } from "@/components/AccountNav";
 import { Avatar, EmptyState } from "@/components/ui";
+import Icon from "@/components/Icon";
+import { threadKind } from "@/lib/constants";
 
 export const metadata: Metadata = { title: "Messages" };
 
@@ -31,7 +33,12 @@ export default async function MessagesPage() {
 
   return (
     <AccountLayout active="/messages" user={user}>
-      <h1 className="font-display text-[28px] font-bold mb-5">Messages</h1>
+      <div className="flex items-center justify-between gap-3 flex-wrap mb-5">
+        <h1 className="font-display text-[28px] font-bold">Messages</h1>
+        <Link href="/messages/support" className="btn btn-gold btn-sm">
+          <Icon name="message" size={14} /> Contacter le service client
+        </Link>
+      </div>
 
       {memberships.length === 0 ? (
         <EmptyState
@@ -45,7 +52,10 @@ export default async function MessagesPage() {
             const other = thread.members.find((m) => m.userId !== user.id)?.user;
             const last = thread.messages[0];
             const unread = last && last.senderId !== user.id && (!lastReadAt || last.createdAt > lastReadAt);
-            const name = other?.seller?.shopName ?? `${other?.firstName ?? ""} ${other?.lastName ?? ""}`;
+            const name =
+              threadKind(thread.subject) !== "QUESTION"
+                ? "Service client Le Beau Défaut"
+                : other?.seller?.shopName ?? `${other?.firstName ?? ""} ${other?.lastName ?? ""}`;
             return (
               <li key={thread.id}>
                 <Link

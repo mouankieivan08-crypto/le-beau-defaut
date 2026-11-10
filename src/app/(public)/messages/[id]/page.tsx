@@ -8,6 +8,7 @@ import { sendMessageAction } from "@/lib/actions/shop";
 import { AccountLayout } from "@/components/AccountNav";
 import Icon from "@/components/Icon";
 import { GradeBadge } from "@/components/ui";
+import { threadKind } from "@/lib/constants";
 
 export const metadata: Metadata = { title: "Conversation" };
 
@@ -36,7 +37,10 @@ export default async function ThreadPage({ params }: { params: Promise<{ id: str
   });
 
   const other = thread.members.find((m) => m.userId !== user.id)?.user;
-  const otherName = other?.seller?.shopName ?? `${other?.firstName ?? ""} ${other?.lastName ?? ""}`;
+  const otherName =
+    threadKind(thread.subject) !== "QUESTION"
+      ? "Service client Le Beau Défaut"
+      : other?.seller?.shopName ?? `${other?.firstName ?? ""} ${other?.lastName ?? ""}`;
 
   return (
     <AccountLayout active="/messages" user={user}>

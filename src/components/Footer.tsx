@@ -91,7 +91,7 @@ export default function Footer() {
               © {new Date().getFullYear()} {BRAND.name} — République du Congo. Tous droits réservés.
             </p>
             <p className="flex items-center gap-1.5">
-              <Icon name="shield" size={13} /> Paiement Mobile Money · Espèces à la livraison
+              <Icon name="shield" size={13} /> Paiement Mobile Money · MTN &amp; Airtel
             </p>
           </div>
         </div>

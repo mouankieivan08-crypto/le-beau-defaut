@@ -34,7 +34,7 @@ const FAQ: { q: string; a: string }[] = [
   },
   {
     q: "Comment payer ?",
-    a: "Par dépôt Mobile Money sur le numéro de Le Beau Défaut (affiché au moment de la commande, avec un bouton pour le copier), puis vous nous envoyez la capture du dépôt par WhatsApp et nous confirmons. Sinon, en espèces à la livraison, ou sur place au moment du retrait. Les entreprises peuvent payer par virement.",
+    a: "Par dépôt Mobile Money sur le numéro de Le Beau Défaut (affiché au moment de la commande, avec un bouton pour le copier), puis vous nous envoyez la capture du dépôt par WhatsApp et nous confirmons : vous recevez une notification et la livraison est lancée. Numéros : MTN MoMo 06 501 81 83 et Airtel Money 05 741 12 48. C'est notre seul moyen de paiement (pas d'espèces à la livraison ni de paiement sur place).",
   },
   {
     q: "Combien coûte la livraison et combien de temps prend-elle ?",

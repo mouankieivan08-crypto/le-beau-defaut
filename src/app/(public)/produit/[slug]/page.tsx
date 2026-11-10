@@ -293,6 +293,14 @@ export default async function ProductPage({ params }: Props) {
                 </a>
               )}
 
+              <Link
+                href={user ? `/messages/signaler?produit=${product.id}` : `/connexion?next=${encodeURIComponent(`/messages/signaler?produit=${product.id}`)}`}
+                className="text-xs text-[var(--color-ink-muted)] hover:text-[var(--color-danger)] underline self-start inline-flex items-center gap-1"
+                rel="nofollow"
+              >
+                <Icon name="alert" size={12} /> Signaler cette annonce
+              </Link>
+
               {product.quantity === 1 ? (
                 <p className="text-xs text-[var(--color-ink-muted)] flex items-center gap-1.5">
                   <Icon name="sparkle" size={13} className="text-[var(--color-gold)]" /> Pièce unique : elle ne sera pas réassortie
@@ -325,7 +333,7 @@ export default async function ProductPage({ params }: Props) {
             </p>
             <p className="flex items-start gap-2.5">
               <Icon name="wallet" size={15} className="mt-0.5 text-[var(--color-gold)] shrink-0" />
-              <span>Mobile Money (MTN, Airtel) ou espèces à la livraison.</span>
+              <span>Paiement par Mobile Money uniquement (MTN, Airtel).</span>
             </p>
           </div>
 

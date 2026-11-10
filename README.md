@@ -94,9 +94,9 @@ Les règles vivent dans `src/lib/constants.ts` (`GRADES`, `DEFECT_TYPES`).
 ### Le circuit de l'argent
 Le paiement **n'est pas automatisé**, et l'application ne le laisse jamais croire.
 
-1. L'acheteur choisit **dépôt Mobile Money**, **espèces à la livraison** ou **paiement sur place**.
-2. Pour un dépôt, la commande affiche les deux numéros de Le Beau Défaut — **06 501 81 83** (MTN MoMo) et
-   **05 541 12 48** (Airtel Money) — avec un bouton pour copier le numéro sans risque d'erreur.
+1. Seul moyen de paiement : le **dépôt Mobile Money** (ni espèces à la livraison, ni paiement sur place).
+2. La commande affiche les deux numéros de Le Beau Défaut — **06 501 81 83** (MTN MoMo) et
+   **05 741 12 48** (Airtel Money) — avec un bouton pour copier le numéro sans risque d'erreur.
 3. L'acheteur dépose, puis clique sur **« J'ai payé — envoyer la preuve »** : WhatsApp s'ouvre avec un
    message prérempli (référence et montant) auquel il joint la capture du dépôt.
 4. L'équipe vérifie le dépôt et marque la commande payée depuis l'administration.

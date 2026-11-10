@@ -4,10 +4,18 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser, requireUser } from "@/lib/auth";
-import { DEFAULT_COMMISSION_PCT } from "@/lib/constants";
+import {
+  DEFAULT_COMMISSION_PCT,
+  ONLY_PAYMENT_METHOD,
+  SUPPORT_PREFIX,
+  REPORT_PREFIX,
+  SUPPORT_TOPICS,
+  REPORT_REASONS,
+} from "@/lib/constants";
 import { sanitizeMessage } from "@/lib/safe-message";
 import { saveImage } from "@/lib/upload";
 import { releaseEscrowForOrder } from "@/lib/escrow";
+import { money } from "@/lib/format";
 
 /* ---------------------------- Favoris ---------------------------- */
 
@@ -108,7 +116,8 @@ export async function checkoutAction(_prev: { error?: string } | undefined, form
   const quartier = String(formData.get("quartier") || "").trim();
   const landmark = String(formData.get("landmark") || "").trim();
   const notes = String(formData.get("notes") || "").trim();
-  const paymentMethod = String(formData.get("paymentMethod") || "ESPECES_LIVRAISON");
+  // Un seul moyen de paiement : le dépôt Mobile Money. Ce que le formulaire envoie est ignoré.
+  const paymentMethod = ONLY_PAYMENT_METHOD;
 
   if (!recipientName || recipientName.length < 3) return { error: "Nom du destinataire requis." };
   if (recipientPhone.replace(/\D/g, "").length < 9) return { error: "Numéro de téléphone invalide." };
@@ -143,7 +152,7 @@ export async function checkoutAction(_prev: { error?: string } | undefined, form
       data: {
         reference,
         buyerId: user.id,
-        status: paymentMethod === "ESPECES_LIVRAISON" ? "CONFIRMEE" : "EN_ATTENTE_PAIEMENT",
+        status: "EN_ATTENTE_PAIEMENT",
         paymentMethod,
         paymentStatus: "EN_ATTENTE",
         subtotal,
@@ -178,9 +187,9 @@ export async function checkoutAction(_prev: { error?: string } | undefined, form
         },
         events: {
           create: {
-            status: paymentMethod === "ESPECES_LIVRAISON" ? "CONFIRMEE" : "EN_ATTENTE_PAIEMENT",
+            status: "EN_ATTENTE_PAIEMENT",
             label: "Commande enregistrée",
-            note: `Paiement : ${paymentMethod.replace(/_/g, " ").toLowerCase()}`,
+            note: "Paiement : dépôt Mobile Money, en attente de la preuve",
             actorId: user.id,
           },
         },
@@ -216,8 +225,8 @@ export async function checkoutAction(_prev: { error?: string } | undefined, form
       data: sellerIds.map((sellerId) => ({
         userId: sellerId,
         type: "COMMANDE",
-        title: "Nouvelle vente",
-        body: `Commande ${reference} — un de vos articles vient d'être acheté.`,
+        title: "Nouvelle commande",
+        body: `Commande ${reference} — un de vos articles est réservé, en attente du paiement Mobile Money.`,
         link: "/vendeur/ventes",
       })),
     });
@@ -226,11 +235,25 @@ export async function checkoutAction(_prev: { error?: string } | undefined, form
       data: {
         userId: user.id,
         type: "COMMANDE",
-        title: "Commande confirmée",
-        body: `Votre commande ${reference} a bien été enregistrée.`,
+        title: "Commande enregistrée",
+        body: `Votre commande ${reference} est réservée. Déposez ${money(total)} par Mobile Money et envoyez-nous la preuve : nous confirmons dès réception.`,
         link: `/compte/commandes/${created.id}`,
       },
     });
+
+    // L'équipe voit chaque nouvelle commande arriver.
+    const admins = await tx.user.findMany({ where: { role: "ADMIN", isActive: true }, select: { id: true } });
+    if (admins.length) {
+      await tx.notification.createMany({
+        data: admins.map((a) => ({
+          userId: a.id,
+          type: "COMMANDE",
+          title: "Nouvelle commande",
+          body: `${reference} · ${recipientName} · ${money(total)} — paiement Mobile Money attendu.`,
+          link: `/admin/commandes/${created.id}`,
+        })),
+      });
+    }
 
     return created;
   });
@@ -467,10 +490,105 @@ export async function declarePaymentAction(
       type: "COMMANDE",
       title: "Paiement à vérifier",
       body: `Commande ${order.reference} : preuve de dépôt reçue.`,
-      link: "/admin/verifications",
+      link: `/admin/commandes/${order.id}`,
     })),
   });
 
   revalidatePath("/", "layout");
   return { success: "Preuve envoyée. Nous vérifions le dépôt et confirmons votre commande au plus vite." };
+}
+
+/* ---------------------------- Service client & signalements ---------------------------- */
+
+async function teamIds() {
+  const admins = await prisma.user.findMany({ where: { role: "ADMIN", isActive: true }, select: { id: true } });
+  return admins.map((a) => a.id);
+}
+
+/**
+ * Le client écrit à l'équipe (commande, paiement, livraison…).
+ * La conversation est un fil de messages ordinaire, partagé avec tous les administrateurs.
+ */
+export async function contactSupportAction(
+  _prev: { error?: string } | undefined,
+  formData: FormData
+): Promise<{ error?: string }> {
+  const user = await requireUser("/messages/nouveau");
+  const topic = String(formData.get("topic") || "AUTRE");
+  const orderRef = String(formData.get("orderRef") || "").trim().slice(0, 40);
+  const body = String(formData.get("body") || "").trim().slice(0, 2000);
+  if (body.length < 5) return { error: "Décrivez votre demande en quelques mots." };
+
+  const topicLabel = SUPPORT_TOPICS.find((t) => t.key === topic)?.label ?? "Autre question";
+  const subject = `${SUPPORT_PREFIX}${topicLabel}${orderRef ? ` · ${orderRef}` : ""}`;
+  const admins = (await teamIds()).filter((id) => id !== user.id);
+
+  const thread = await prisma.thread.create({
+    data: {
+      subject,
+      members: { create: [{ userId: user.id, lastReadAt: new Date() }, ...admins.map((userId) => ({ userId }))] },
+      messages: { create: { senderId: user.id, body } },
+    },
+  });
+
+  if (admins.length) {
+    await prisma.notification.createMany({
+      data: admins.map((userId) => ({
+        userId,
+        type: "MESSAGE",
+        title: `Support : ${user.firstName} ${user.lastName}`,
+        body: `${topicLabel}${orderRef ? ` (${orderRef})` : ""} — ${body.slice(0, 100)}`,
+        link: `/admin/support/${thread.id}`,
+      })),
+    });
+  }
+
+  revalidatePath("/", "layout");
+  redirect(`/messages/${thread.id}`);
+}
+
+/** Un visiteur connecté signale une annonce : l'équipe la voit dans « Signalements ». */
+export async function reportProductAction(
+  _prev: { error?: string } | undefined,
+  formData: FormData
+): Promise<{ error?: string }> {
+  const productId = String(formData.get("productId") || "");
+  const user = await requireUser(`/messages/nouveau?signaler=${productId}`);
+  const reason = String(formData.get("reason") || "AUTRE");
+  const details = String(formData.get("details") || "").trim().slice(0, 2000);
+
+  const product = await prisma.product.findUnique({ where: { id: productId }, select: { id: true, title: true, reference: true } });
+  if (!product) return { error: "Annonce introuvable." };
+
+  const reasonLabel = REPORT_REASONS.find((r) => r.key === reason)?.label ?? "Autre";
+  const admins = (await teamIds()).filter((id) => id !== user.id);
+
+  const thread = await prisma.thread.create({
+    data: {
+      productId: product.id,
+      subject: `${REPORT_PREFIX}${reasonLabel}`,
+      members: { create: [{ userId: user.id, lastReadAt: new Date() }, ...admins.map((userId) => ({ userId }))] },
+      messages: {
+        create: {
+          senderId: user.id,
+          body: `Signalement de l'annonce ${product.reference} « ${product.title} » — ${reasonLabel}.${details ? `\n\n${details}` : ""}`,
+        },
+      },
+    },
+  });
+
+  if (admins.length) {
+    await prisma.notification.createMany({
+      data: admins.map((userId) => ({
+        userId,
+        type: "SYSTEME",
+        title: "Annonce signalée",
+        body: `${product.reference} · ${reasonLabel} — par ${user.firstName} ${user.lastName}`,
+        link: `/admin/support/${thread.id}`,
+      })),
+    });
+  }
+
+  revalidatePath("/", "layout");
+  redirect(`/messages/${thread.id}`);
 }

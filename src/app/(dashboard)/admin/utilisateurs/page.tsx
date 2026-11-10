@@ -105,9 +105,9 @@ export default async function AdminUsersPage({
                       <div className="flex items-center gap-2.5">
                         <Avatar first={u.firstName} last={u.lastName} url={u.avatarUrl} size={34} />
                         <div className="min-w-0">
-                          <p className="font-medium truncate">
+                          <Link href={`/admin/utilisateurs/${u.id}`} className="font-medium truncate block hover:text-[var(--color-gold-dark)]">
                             {u.firstName} {u.lastName}
-                          </p>
+                          </Link>
                           <p className="text-[11px] text-[var(--color-ink-muted)] truncate">
                             {u.email} · {phoneFR(u.phone)}
                           </p>

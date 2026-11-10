@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { useStickyAction } from "@/lib/use-sticky-action";
 import { checkoutAction } from "@/lib/actions/shop";
-import { PAYMENT_METHODS, QUARTIERS, CITIES } from "@/lib/constants";
+import { ONLY_PAYMENT_METHOD, QUARTIERS, CITIES } from "@/lib/constants";
 import PaymentDeposit from "./PaymentDeposit";
 import { money } from "@/lib/format";
 import Icon from "./Icon";
@@ -27,7 +27,6 @@ export default function CheckoutForm({
   const [state, onSubmit, pending] = useStickyAction(checkoutAction, undefined);
   const [city, setCity] = useState(address?.city ?? "Brazzaville");
   const [quartier, setQuartier] = useState(address?.quartier ?? "");
-  const [method, setMethod] = useState<string>("ESPECES_LIVRAISON");
 
   const quartiers = useMemo(() => {
     const fromZones = zones.filter((z) => z.city === city).map((z) => z.name);
@@ -170,57 +169,29 @@ export default function CheckoutForm({
             <span className="h-6 w-6 rounded-full bg-[var(--color-ink)] text-[var(--color-cream)] text-xs grid place-items-center font-sans">
               2
             </span>
-            Paiement
+            Paiement par Mobile Money
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {PAYMENT_METHODS.map((m) => (
-              <label
-                key={m.key}
-                className={`flex items-start gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all ${
-                  method === m.key
-                    ? "border-[var(--color-gold)] bg-[var(--color-gold-pale)]/35"
-                    : "border-[var(--color-sand)] hover:border-[var(--color-gold-light)]"
-                }`}
-              >
-                <input
-                  type="radio"
-                  name="paymentMethod"
-                  value={m.key}
-                  checked={method === m.key}
-                  onChange={() => setMethod(m.key)}
-                  className="mt-1 accent-[var(--color-gold)]"
-                />
-                <span>
-                  <span className="block text-sm font-semibold">{m.label}</span>
-                  <span className="block text-xs text-[var(--color-ink-muted)] mt-0.5">{m.hint}</span>
+          <input type="hidden" name="paymentMethod" value={ONLY_PAYMENT_METHOD} />
+          <ol className="flex flex-col gap-2 text-sm mb-4">
+            {[
+              "Vous validez la commande : l'article vous est réservé.",
+              "Vous déposez le montant exact sur l'un de nos numéros Mobile Money.",
+              "Vous envoyez la capture du dépôt sur WhatsApp ou depuis votre commande.",
+              "Nous vérifions et confirmons : vous recevez une notification, la livraison est lancée.",
+            ].map((step, i) => (
+              <li key={step} className="flex gap-2.5">
+                <span className="h-5 w-5 shrink-0 rounded-full bg-[var(--color-gold-pale)] text-[var(--color-gold-dark)] text-[11px] font-bold grid place-items-center">
+                  {i + 1}
                 </span>
-              </label>
+                <span className="text-[var(--color-ink-soft)]">{step}</span>
+              </li>
             ))}
-          </div>
-
-          {method === "DEPOT_MOBILE_MONEY" && (
-            <div className="mt-4">
-              <PaymentDeposit amount={total} compact />
-            </div>
-          )}
-
-          {method === "ESPECES_SUR_PLACE" && (
-            <div className="mt-4">
-              <Alert tone="info" title="Paiement sur place">
-                Notre équipe vous appelle pour convenir du lieu et de l&apos;heure du retrait. Vous réglez en
-                espèces en récupérant l&apos;article — rien n&apos;est prélevé avant.
-              </Alert>
-            </div>
-          )}
-
-          {method === "ESPECES_LIVRAISON" && (
-            <div className="mt-4">
-              <Alert tone="info" title="Espèces à la livraison">
-                Vous payez le livreur au moment de la remise, après avoir vu l&apos;article et son défaut.
-                Prévoyez l&apos;appoint si possible.
-              </Alert>
-            </div>
-          )}
+          </ol>
+          <PaymentDeposit amount={total} compact />
+          <p className="text-[11px] text-[var(--color-ink-muted)] mt-3">
+            Le dépôt Mobile Money est notre seul moyen de paiement : pas d&apos;espèces à la livraison ni de
+            paiement sur place.
+          </p>
         </section>
       </div>
 
@@ -263,7 +234,7 @@ export default function CheckoutForm({
         </div>
 
         <button className="btn btn-gold btn-lg w-full" disabled={pending || (!quartier && !allPickup)}>
-          {pending ? "Validation…" : `Confirmer — ${money(total)}`}
+          {pending ? "Validation…" : `Valider et payer par Mobile Money — ${money(total)}`}
         </button>
         <p className="text-[11px] text-center text-[var(--color-ink-muted)] mt-3 leading-relaxed">
           En confirmant, vous reconnaissez avoir pris connaissance des défauts décrits pour chaque article.

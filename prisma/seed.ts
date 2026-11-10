@@ -1235,7 +1235,7 @@ async function main() {
     "EN_ATTENTE_PAIEMENT", "EN_ATTENTE_PAIEMENT",
     "ANNULEE", "ANNULEE",
   ];
-  const methods = ["DEPOT_MOBILE_MONEY", "ESPECES_LIVRAISON", "ESPECES_SUR_PLACE", "ESPECES_LIVRAISON", "DEPOT_MOBILE_MONEY", "DEPOT_MOBILE_MONEY"];
+  const methods = ["DEPOT_MOBILE_MONEY"];
 
   const plans: Plan[] = [];
   let soldIdx = 0;

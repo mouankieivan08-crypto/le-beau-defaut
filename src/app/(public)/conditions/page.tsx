@@ -54,8 +54,8 @@ export default function TermsPage() {
         </p>
         <p>
           Le paiement n&apos;est pas automatisé : vous déposez le montant sur notre numéro Mobile Money, puis vous
-          nous envoyez la preuve par WhatsApp. Vous pouvez aussi régler en espèces à la livraison, ou sur place au
-          retrait. Aucun prélèvement automatique n&apos;est possible depuis votre compte.
+          nous envoyez la preuve par WhatsApp. C&apos;est le seul moyen de paiement accepté : ni espèces à la
+          livraison, ni paiement sur place. Aucun prélèvement automatique n&apos;est possible depuis votre compte.
         </p>
         <p>
           Une commande n&apos;est confirmée qu&apos;une fois le paiement vérifié par notre équipe, ou au moment de

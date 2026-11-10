@@ -171,27 +171,23 @@ export const DELIVERY_STATUS: Record<string, { label: string; tone: string }> = 
  */
 export const DEPOSIT_NUMBERS = [
   { operator: "MTN MoMo", raw: "065018183", display: "06 501 81 83", holder: "Le Beau Défaut" },
-  { operator: "Airtel Money", raw: "055411248", display: "05 541 12 48", holder: "Le Beau Défaut" },
+  { operator: "Airtel Money", raw: "057411248", display: "05 741 12 48", holder: "Le Beau Défaut" },
 ] as const;
 
 /** Numéro qui reçoit les preuves de paiement sur WhatsApp. */
 export const SUPPORT_WHATSAPP = DEPOSIT_NUMBERS[0].raw;
 
+/**
+ * Seul moyen de paiement accepté : le dépôt Mobile Money, vérifié à la main par l'équipe.
+ * Pas d'espèces à la livraison, pas de paiement sur place.
+ */
+export const ONLY_PAYMENT_METHOD = "DEPOT_MOBILE_MONEY";
+
 export const PAYMENT_METHODS = [
   {
     key: "DEPOT_MOBILE_MONEY",
     label: "Dépôt Mobile Money",
-    hint: "Vous déposez sur notre numéro, puis vous envoyez la preuve par WhatsApp.",
-  },
-  {
-    key: "ESPECES_SUR_PLACE",
-    label: "Paiement sur place",
-    hint: "Vous réglez en espèces au point de retrait convenu avec notre équipe.",
-  },
-  {
-    key: "ESPECES_LIVRAISON",
-    label: "Espèces à la livraison",
-    hint: "Vous payez le livreur au moment de la remise.",
+    hint: "Vous déposez sur notre numéro MTN ou Airtel, puis vous envoyez la preuve par WhatsApp.",
   },
 ] as const;
 
@@ -199,6 +195,8 @@ export const PAYMENT_METHODS = [
 const LEGACY_PAYMENT_LABELS: Record<string, string> = {
   MOBILE_MONEY_MTN: "Dépôt MTN MoMo",
   MOBILE_MONEY_AIRTEL: "Dépôt Airtel Money",
+  ESPECES_LIVRAISON: "Espèces à la livraison (ancien)",
+  ESPECES_SUR_PLACE: "Paiement sur place (ancien)",
   VIREMENT: "Virement bancaire",
 };
 
@@ -401,3 +399,39 @@ export const HOUSE_SHOP_SLUG = "le-beau-defaut";
 export const VISIBLE_VERTICALS: string[] = ["MOBILIER"];
 
 export const isVisibleVertical = (v: string) => VISIBLE_VERTICALS.includes(v);
+
+// ---------------------- SERVICE CLIENT ----------------------
+
+/**
+ * Les conversations avec l'équipe passent par les fils de messages existants.
+ * Leur sujet commence par l'un de ces préfixes : c'est ce qui les range dans
+ * « Support » ou « Signalements » côté administration.
+ */
+export const SUPPORT_PREFIX = "Support · ";
+export const REPORT_PREFIX = "Signalement · ";
+
+export const SUPPORT_TOPICS = [
+  { key: "COMMANDE", label: "Ma commande" },
+  { key: "PAIEMENT", label: "Mon paiement Mobile Money" },
+  { key: "LIVRAISON", label: "La livraison" },
+  { key: "COMPTE", label: "Mon compte" },
+  { key: "AUTRE", label: "Autre question" },
+] as const;
+
+export const REPORT_REASONS = [
+  { key: "PRIX", label: "Prix incorrect ou trompeur" },
+  { key: "DEFAUT", label: "Défaut mal décrit" },
+  { key: "PHOTOS", label: "Photos qui ne correspondent pas" },
+  { key: "INDISPONIBLE", label: "Article plus disponible" },
+  { key: "ARNAQUE", label: "Tentative d'arnaque" },
+  { key: "AUTRE", label: "Autre" },
+] as const;
+
+export function threadKind(subject: string): "SUPPORT" | "SIGNALEMENT" | "QUESTION" {
+  if (subject.startsWith(SUPPORT_PREFIX)) return "SUPPORT";
+  if (subject.startsWith(REPORT_PREFIX)) return "SIGNALEMENT";
+  return "QUESTION";
+}
+
+/** Libellé des notes internes du journal de commande : jamais montrées au client. */
+export const INTERNAL_NOTE_LABEL = "Note interne";

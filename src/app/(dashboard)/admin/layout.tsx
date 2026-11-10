@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/auth";
 import DashboardShell, { type NavItem } from "@/components/DashboardShell";
+import { SUPPORT_PREFIX, REPORT_PREFIX } from "@/lib/constants";
 
 export const metadata: Metadata = { title: { default: "Administration", template: "%s · Admin LBD" } };
 
@@ -26,14 +27,22 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     where: { status: "EN_ATTENTE_PAIEMENT", paymentStatus: "EN_ATTENTE", paymentDeclaredAt: { not: null } },
   });
 
+  const openSupport = await prisma.thread.count({
+    where: {
+      isClosed: false,
+      OR: [{ subject: { startsWith: SUPPORT_PREFIX } }, { subject: { startsWith: REPORT_PREFIX } }],
+    },
+  });
+
   const nav: NavItem[] = [
     { href: "/admin", label: "Vue d'ensemble", icon: "chart", exact: true },
+    { href: "/admin/verifications", label: "Paiements à confirmer", icon: "wallet", badge: proofsToCheck },
+    { href: "/admin/commandes", label: "Commandes", icon: "package" },
+    { href: "/admin/support", label: "Support & signalements", icon: "message", badge: openSupport },
+    { href: "/admin/reclamations", label: "Réclamations", icon: "shield", badge: openClaims },
+    { href: "/admin/livraisons", label: "Livraisons", icon: "truck", badge: toAssign },
     { href: "/admin/annonces", label: "Annonces", icon: "tag", badge: pendingProducts + pendingAuth },
     { href: "/admin/annonces/nouvelle", label: "Publier un article", icon: "plus" },
-    { href: "/admin/verifications", label: "Paiements à vérifier", icon: "wallet", badge: proofsToCheck },
-    { href: "/admin/commandes", label: "Commandes", icon: "package" },
-    { href: "/admin/livraisons", label: "Livraisons", icon: "truck", badge: toAssign },
-    { href: "/admin/reclamations", label: "Réclamations", icon: "shield", badge: openClaims },
     { href: "/admin/vendeurs", label: "Vendeurs", icon: "wallet", badge: pendingSellers },
     { href: "/admin/utilisateurs", label: "Utilisateurs", icon: "users" },
     { href: "/admin/reinitialisations", label: "Mots de passe", icon: "shield", badge: resetsEnAttente },

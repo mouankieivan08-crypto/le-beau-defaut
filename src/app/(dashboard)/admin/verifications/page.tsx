@@ -8,7 +8,7 @@ import { confirmDepositAction, rejectDepositAction } from "@/lib/actions/admin";
 import Icon from "@/components/Icon";
 import { Badge, PageHeader, EmptyState, Alert } from "@/components/ui";
 
-export const metadata: Metadata = { title: "Paiements à vérifier" };
+export const metadata: Metadata = { title: "Paiements à confirmer" };
 
 /**
  * Les dépôts Mobile Money en attente de confirmation.
@@ -37,8 +37,8 @@ export default async function PaymentChecksPage() {
   return (
     <>
       <PageHeader
-        title="Paiements à vérifier"
-        subtitle="Comparez la preuve avec le relevé Mobile Money, puis confirmez : la commande part aussitôt en préparation."
+        title="Paiements à confirmer"
+        subtitle="Comparez la preuve (ici ou sur WhatsApp) avec le relevé Mobile Money, puis confirmez : la commande est confirmée et le client notifié."
       />
 
       <div className="mb-5">
@@ -166,9 +166,12 @@ function OrderCard({ order: o }: { order: Row }) {
               <input type="hidden" name="orderId" value={o.id} />
               <input name="transaction" defaultValue={o.paymentRef ?? ""} placeholder="N° de transaction" className="field !py-1.5 !w-44 text-xs" />
               <button className="btn btn-sm !bg-[var(--color-grade-a)] !text-white">
-                <Icon name="check" size={14} /> Paiement reçu — confirmer
+                <Icon name="check" size={14} /> Paiement vérifié — confirmer la commande
               </button>
             </form>
+            <Link href={`/admin/commandes/${o.id}`} className="btn btn-ghost btn-sm">
+              Fiche complète
+            </Link>
             {whatsapp && (
               <a href={whatsapp} target="_blank" rel="noreferrer" className="btn btn-outline btn-sm">
                 <Icon name="phone" size={14} /> WhatsApp de l&apos;acheteur
