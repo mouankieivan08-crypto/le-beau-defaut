@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { getCurrentUser, requireUser } from "@/lib/auth";
 import { DEFAULT_COMMISSION_PCT } from "@/lib/constants";
 import { sanitizeMessage } from "@/lib/safe-message";
+import { saveImage } from "@/lib/upload";
 import { releaseEscrowForOrder } from "@/lib/escrow";
 
 /* ---------------------------- Favoris ---------------------------- */
@@ -412,4 +413,64 @@ export async function confirmReceptionAction(formData: FormData) {
   });
 
   revalidatePath("/", "layout");
+}
+
+/* ---------------------------- Preuve de paiement ---------------------------- */
+
+/**
+ * L'acheteur dépose la capture de son dépôt Mobile Money sur sa commande.
+ * Rien n'est encaissé automatiquement : l'équipe regarde la preuve et confirme à la main.
+ */
+export async function declarePaymentAction(
+  _prev: { error?: string; success?: string } | undefined,
+  formData: FormData
+): Promise<{ error?: string; success?: string }> {
+  const user = await requireUser();
+  const orderId = String(formData.get("orderId") || "");
+  const transaction = String(formData.get("transaction") || "").trim().slice(0, 80);
+
+  const order = await prisma.order.findFirst({
+    where: { id: orderId, buyerId: user.id },
+    select: { id: true, reference: true, total: true, paymentStatus: true },
+  });
+  if (!order) return { error: "Commande introuvable." };
+  if (order.paymentStatus === "PAYE") return { error: "Cette commande est déjà payée." };
+
+  const proof = await saveImage(formData.get("proof") as File | null);
+  if (!proof && !transaction) {
+    return { error: "Joignez la capture de votre dépôt, ou au moins le numéro de transaction reçu par SMS." };
+  }
+
+  await prisma.order.update({
+    where: { id: order.id },
+    data: {
+      paymentDeclaredAt: new Date(),
+      paymentRejectReason: null,
+      ...(proof ? { paymentProofUrl: proof } : {}),
+      ...(transaction ? { paymentRef: transaction } : {}),
+    },
+  });
+  await prisma.orderEvent.create({
+    data: {
+      orderId: order.id,
+      status: "EN_ATTENTE_PAIEMENT",
+      label: "Preuve de paiement envoyée",
+      note: transaction ? `Transaction ${transaction}` : "Capture du dépôt jointe",
+      actorId: user.id,
+    },
+  });
+
+  const admins = await prisma.user.findMany({ where: { role: "ADMIN" }, select: { id: true } });
+  await prisma.notification.createMany({
+    data: admins.map((a) => ({
+      userId: a.id,
+      type: "COMMANDE",
+      title: "Paiement à vérifier",
+      body: `Commande ${order.reference} : preuve de dépôt reçue.`,
+      link: "/admin/verifications",
+    })),
+  });
+
+  revalidatePath("/", "layout");
+  return { success: "Preuve envoyée. Nous vérifions le dépôt et confirmons votre commande au plus vite." };
 }

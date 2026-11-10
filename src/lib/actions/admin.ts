@@ -513,3 +513,81 @@ export async function releaseDueEscrowsAction() {
   }
   revalidatePath("/", "layout");
 }
+
+/* ---------------------------- Vérification des paiements ---------------------------- */
+
+/**
+ * L'équipe a vu le dépôt (capture sur le site ou sur WhatsApp) : la commande est payée
+ * et part en préparation. L'acheteur est prévenu.
+ */
+export async function confirmDepositAction(formData: FormData) {
+  const admin = await requireAdmin();
+  const orderId = String(formData.get("orderId") || "");
+  const transaction = String(formData.get("transaction") || "").trim().slice(0, 80);
+  const order = await prisma.order.findUnique({ where: { id: orderId }, select: { id: true, reference: true, buyerId: true, paymentStatus: true, paymentRef: true } });
+  if (!order || order.paymentStatus === "PAYE") return;
+
+  await prisma.$transaction([
+    prisma.order.update({
+      where: { id: order.id },
+      data: {
+        status: "PAYEE",
+        paymentStatus: "PAYE",
+        paidAt: new Date(),
+        paymentRejectReason: null,
+        paymentRef: transaction || order.paymentRef,
+      },
+    }),
+    prisma.orderEvent.create({
+      data: {
+        orderId: order.id,
+        status: "PAYEE",
+        label: "Paiement vérifié et confirmé",
+        note: transaction || order.paymentRef ? `Transaction ${transaction || order.paymentRef}` : null,
+        actorId: admin.id,
+      },
+    }),
+    prisma.notification.create({
+      data: {
+        userId: order.buyerId,
+        type: "COMMANDE",
+        title: "Paiement confirmé",
+        body: `Nous avons bien reçu votre dépôt pour la commande ${order.reference}. Elle part en préparation.`,
+        link: `/compte/commandes/${order.id}`,
+      },
+    }),
+    prisma.auditLog.create({
+      data: { actorId: admin.id, action: "PAIEMENT_CONFIRME", entity: "Order", entityId: order.reference, details: transaction || null },
+    }),
+  ]);
+  revalidatePath("/", "layout");
+}
+
+/** La preuve ne correspond pas (montant, numéro, capture illisible) : l'acheteur doit en renvoyer une. */
+export async function rejectDepositAction(formData: FormData) {
+  const admin = await requireAdmin();
+  const orderId = String(formData.get("orderId") || "");
+  const reason = String(formData.get("reason") || "").trim() || "Dépôt introuvable ou montant différent.";
+  const order = await prisma.order.findUnique({ where: { id: orderId }, select: { id: true, reference: true, buyerId: true, paymentStatus: true } });
+  if (!order || order.paymentStatus === "PAYE") return;
+
+  await prisma.$transaction([
+    prisma.order.update({ where: { id: order.id }, data: { paymentDeclaredAt: null, paymentRejectReason: reason } }),
+    prisma.orderEvent.create({
+      data: { orderId: order.id, status: "EN_ATTENTE_PAIEMENT", label: "Preuve de paiement refusée", note: reason, actorId: admin.id },
+    }),
+    prisma.notification.create({
+      data: {
+        userId: order.buyerId,
+        type: "COMMANDE",
+        title: "Paiement non retrouvé",
+        body: `Commande ${order.reference} : ${reason} Renvoyez une capture depuis votre commande.`,
+        link: `/compte/commandes/${order.id}`,
+      },
+    }),
+    prisma.auditLog.create({
+      data: { actorId: admin.id, action: "PAIEMENT_REFUSE", entity: "Order", entityId: order.reference, details: reason },
+    }),
+  ]);
+  revalidatePath("/", "layout");
+}

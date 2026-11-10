@@ -22,11 +22,15 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   });
 
   const heldOrders = await prisma.order.count({ where: { escrowStatus: "SOUS_SEQUESTRE" } });
+  const proofsToCheck = await prisma.order.count({
+    where: { status: "EN_ATTENTE_PAIEMENT", paymentStatus: "EN_ATTENTE", paymentDeclaredAt: { not: null } },
+  });
 
   const nav: NavItem[] = [
     { href: "/admin", label: "Vue d'ensemble", icon: "chart", exact: true },
     { href: "/admin/annonces", label: "Annonces", icon: "tag", badge: pendingProducts + pendingAuth },
     { href: "/admin/annonces/nouvelle", label: "Publier un article", icon: "plus" },
+    { href: "/admin/verifications", label: "Paiements à vérifier", icon: "wallet", badge: proofsToCheck },
     { href: "/admin/commandes", label: "Commandes", icon: "package" },
     { href: "/admin/livraisons", label: "Livraisons", icon: "truck", badge: toAssign },
     { href: "/admin/reclamations", label: "Réclamations", icon: "shield", badge: openClaims },

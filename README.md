@@ -40,7 +40,7 @@ Sur **`/acces-equipe`** (adresse discrète, non liée sur le site, non indexée)
 
 | Profil | E-mail | Ce qu'on y voit |
 |---|---|---|
-| Administration | `admin@lebeaudefaut.cg` | Tableau de bord, modération, séquestre, réclamations, commandes, livraisons, versements |
+| Administration | `lebeaudefaut@gmail.com` | Tableau de bord, modération, séquestre, réclamations, commandes, livraisons, versements |
 | Boutique maison | `maison@lebeaudefaut.cg` | Le stock de Le Beau Défaut : mobilier et sacs de luxe, avec leur fournisseur d'origine |
 | Livreur | `livreur@lebeaudefaut.cg` | Courses assignées, courses disponibles, historique |
 
@@ -49,7 +49,7 @@ Sur **`/acces-equipe`** (adresse discrète, non liée sur le site, non indexée)
 | Vendeur mobilier | `vendeur@lebeaudefaut.cg` | Maison Mbemba Mobilier : ventes, annonces, une annonce rejetée à corriger |
 | Vendeur luxe | `luxe@lebeaudefaut.cg` | Luxe & Seconde Main : sacs authentifiés |
 | Livreur | `livreur@lebeaudefaut.cg` | Courses assignées, courses disponibles, historique |
-| Administrateur | `admin@lebeaudefaut.cg` | Tableau de bord, modération, réclamations, commandes, livraisons, versements |
+| Administrateur | `lebeaudefaut@gmail.com` | Tableau de bord, modération, réclamations, commandes, livraisons, versements |
 
 ---
 

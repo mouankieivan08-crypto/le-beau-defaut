@@ -15,7 +15,8 @@ const DEMO_ACCOUNTS = [
 
 // Réservés à la page d'accès de l'équipe, qui n'est liée nulle part sur le site.
 const TEAM_ACCOUNTS = [
-  { label: "Administration", email: "admin@lebeaudefaut.cg" },
+  // Le vrai compte administrateur : seule l'adresse est préremplie, jamais le mot de passe.
+  { label: "Administration", email: "lebeaudefaut@gmail.com", realAccount: true },
   { label: "Boutique maison", email: "maison@lebeaudefaut.cg" },
   { label: "Livreur", email: "livreur@lebeaudefaut.cg" },
 ];
@@ -110,7 +111,7 @@ export function LoginForm({ next, team = false }: { next?: string; team?: boolea
               type="button"
               onClick={() => {
                 setEmail(a.email);
-                setPassword("Demo2026!");
+                setPassword("realAccount" in a && a.realAccount ? "" : "Demo2026!");
               }}
               className="chip bg-[var(--color-cream-deep)] text-[var(--color-ink-soft)] hover:bg-[var(--color-gold-pale)] hover:text-[var(--color-gold-dark)] transition-colors cursor-pointer"
             >

@@ -1,4 +1,6 @@
 import Link from "next/link";
+import PhotoInput from "@/components/PhotoInput";
+import ActionForm from "@/components/ActionForm";
 import PaymentDeposit from "@/components/PaymentDeposit";
 import EscrowPanel from "@/components/EscrowPanel";
 import { notFound } from "next/navigation";
@@ -17,7 +19,7 @@ import {
   claimResolutionLabel,
   isDeposit,
 } from "@/lib/constants";
-import { cancelOrderAction } from "@/lib/actions/shop";
+import { cancelOrderAction, declarePaymentAction } from "@/lib/actions/shop";
 import { AccountLayout } from "@/components/AccountNav";
 import ClaimForm from "@/components/ClaimForm";
 import Icon from "@/components/Icon";
@@ -99,7 +101,41 @@ export default async function OrderDetailPage({
       {order.status === "EN_ATTENTE_PAIEMENT" && (
         <div className="mb-5">
           {isDeposit(order.paymentMethod) ? (
-            <PaymentDeposit reference={order.reference} amount={order.total} />
+            order.paymentDeclaredAt ? (
+              <Alert tone="info" title="Preuve reçue, vérification en cours">
+                Nous contrôlons votre dépôt{order.paymentRef ? ` (transaction ${order.paymentRef})` : ""} et confirmons
+                la commande dès qu&apos;il est retrouvé. Vous serez prévenu ici.
+              </Alert>
+            ) : (
+              <div className="flex flex-col gap-4">
+                {order.paymentRejectReason && (
+                  <Alert tone="danger" title="Paiement non retrouvé">
+                    {order.paymentRejectReason} Renvoyez une capture ci-dessous ou écrivez-nous sur WhatsApp.
+                  </Alert>
+                )}
+                <PaymentDeposit reference={order.reference} amount={order.total} />
+                <div className="surface p-5">
+                  <h2 className="font-display text-base font-bold mb-1">Envoyer la preuve ici</h2>
+                  <p className="text-xs text-[var(--color-ink-muted)] mb-4">
+                    Joignez la capture de votre dépôt (ou le numéro de transaction reçu par SMS) : notre équipe la
+                    voit tout de suite et confirme votre commande.
+                  </p>
+                  <ActionForm action={declarePaymentAction} submitLabel="Envoyer la preuve" pendingLabel="Envoi…">
+                    <input type="hidden" name="orderId" value={order.id} />
+                    <div className="flex flex-col gap-3">
+                      <label className="label" htmlFor="proof">
+                        Capture du dépôt
+                      </label>
+                      <PhotoInput id="proof" name="proof" accept="image/*" className="text-sm" />
+                      <label className="label mt-1" htmlFor="transaction">
+                        Numéro de transaction (facultatif)
+                      </label>
+                      <input id="transaction" name="transaction" className="field" placeholder="Ex. MP251110.1432.A12345" />
+                    </div>
+                  </ActionForm>
+                </div>
+              </div>
+            )
           ) : (
             <Alert tone="warning" title="Paiement en attente">
               {order.paymentMethod === "ESPECES_SUR_PLACE"

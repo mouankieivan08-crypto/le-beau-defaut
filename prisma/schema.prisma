@@ -292,6 +292,10 @@ model Order {
   paymentMethod String  @default("ESPECES_LIVRAISON")
   paymentStatus String  @default("EN_ATTENTE") // EN_ATTENTE | PAYE | ECHOUE | REMBOURSE
   paymentRef    String?
+  // Preuve de dépôt Mobile Money envoyée par l'acheteur, vérifiée à la main par l'équipe.
+  paymentProofUrl     String?
+  paymentDeclaredAt   DateTime?
+  paymentRejectReason String?
 
   subtotal    Int
   deliveryFee Int @default(0)
