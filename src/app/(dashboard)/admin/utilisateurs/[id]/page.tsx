@@ -73,14 +73,7 @@ export default async function AdminUserDetail({ params }: { params: Promise<{ id
               Inscrit le {dateFR(user.createdAt)} · dernière connexion {relativeFR(user.lastLoginAt)} · {user._count.favorites} favori(s) ·{" "}
               {user._count.cartItems} article(s) dans le panier
             </p>
-            {user.seller && (
-              <p className="text-xs mt-1">
-                Boutique :{" "}
-                <Link href={`/boutique/${user.seller.shopSlug}`} className="underline">
-                  {user.seller.shopName}
-                </Link>
-              </p>
-            )}
+            
           </div>
           <div className="flex flex-wrap gap-2">
             {wa && (

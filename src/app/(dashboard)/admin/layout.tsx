@@ -9,10 +9,8 @@ export const metadata: Metadata = { title: { default: "Administration", template
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const user = await requireAdmin("/admin");
 
-  const [pendingProducts, pendingSellers, pendingPayouts, toAssign, pendingAuth, openClaims] = await Promise.all([
+  const [pendingProducts, toAssign, pendingAuth, openClaims] = await Promise.all([
     prisma.product.count({ where: { status: "EN_ATTENTE" } }),
-    prisma.sellerProfile.count({ where: { status: "EN_ATTENTE" } }),
-    prisma.payout.count({ where: { status: "EN_ATTENTE" } }),
     prisma.delivery.count({ where: { status: "A_ASSIGNER", order: { status: { notIn: ["ANNULEE", "EN_ATTENTE_PAIEMENT"] } } } }),
     prisma.product.count({ where: { vertical: "SACS", authenticity: "EN_COURS" } }),
     prisma.claim.count({ where: { status: { in: ["OUVERTE", "EN_EXAMEN"] } } }),
@@ -22,7 +20,6 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     where: { usedAt: null, expiresAt: { gt: new Date() } },
   });
 
-  const heldOrders = await prisma.order.count({ where: { escrowStatus: "SOUS_SEQUESTRE" } });
   const proofsToCheck = await prisma.order.count({
     where: { status: "EN_ATTENTE_PAIEMENT", paymentStatus: "EN_ATTENTE", paymentDeclaredAt: { not: null } },
   });

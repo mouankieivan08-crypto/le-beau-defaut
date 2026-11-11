@@ -40,15 +40,15 @@ export default async function AdminNewListingPage() {
 
       <div className="mb-5">
         {house ? (
-          <Alert tone="info" title={`Publié sous « ${house.shopName} »`}>
+          <Alert tone="info" title="Publié au nom de Le Beau Défaut">
             L&apos;article sera marqué <strong>vendu par Le Beau Défaut</strong> et mis en ligne immédiatement,
             sans passer par la file de modération. Indiquez le fournisseur d&apos;origine : il apparaîtra sur la
             fiche (« racheté à… »).
           </Alert>
         ) : (
-          <Alert tone="warning" title="Boutique maison introuvable">
+          <Alert tone="warning" title="Compte de publication introuvable">
             Aucune boutique n&apos;est marquée comme boutique maison en base. L&apos;article serait publié sans
-            vendeur : créez d&apos;abord la boutique maison depuis <Link href="/admin/vendeurs" className="underline">Vendeurs</Link>.
+            propriétaire : contactez le support technique pour configurer le compte de la boutique.
           </Alert>
         )}
       </div>

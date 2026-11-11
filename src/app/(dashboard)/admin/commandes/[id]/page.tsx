@@ -111,7 +111,6 @@ export default async function AdminOrderDetail({ params }: { params: Promise<{ i
 
   const st = ORDER_STATUS[order.status] ?? { label: order.status, tone: "neutral", step: -1 };
   const pay = PAYMENT_STATUS[order.paymentStatus] ?? { label: order.paymentStatus, tone: "neutral" };
-  const commission = order.items.reduce((s, i) => s + (i.lineTotal - i.sellerAmount), 0);
   const next = NEXT_STEPS[order.status] ?? [];
   // Tant que le paiement n'est pas confirmé, la seule action principale est la carte de confirmation.
   const mainStep = order.paymentStatus === "PAYE" ? next.find((n) => !["ANNULEE", "REMBOURSEE"].includes(n.status)) : undefined;
@@ -315,7 +314,7 @@ export default async function AdminOrderDetail({ params }: { params: Promise<{ i
                       <GradeBadge grade={it.gradeSnapshot} size="sm" /> {it.defectSnapshot}
                     </p>
                     <p className="text-xs text-[var(--color-ink-muted)] mt-1">
-                      {it.product.seller.seller?.shopName} · {phoneFR(it.product.seller.seller?.contactPhone)} · stock restant {it.product.quantity}
+                      Stock restant après commande : {it.product.quantity}
                     </p>
                   </div>
                   <div className="text-right text-sm whitespace-nowrap" style={{ fontVariantNumeric: "tabular-nums" }}>
@@ -332,7 +331,6 @@ export default async function AdminOrderDetail({ params }: { params: Promise<{ i
               <Row k={`Livraison (${order.quartier})`} v={money(order.deliveryFee)} />
               {order.discount > 0 && <Row k="Remise" v={`− ${money(order.discount)}`} />}
               <Row k="Total à encaisser" v={money(order.total)} strong />
-              <Row k="Commission Le Beau Défaut" v={money(commission)} />
               <Row k="Moyen de paiement" v={paymentMethodLabel(order.paymentMethod)} />
             </dl>
           </Card>
@@ -483,8 +481,7 @@ export default async function AdminOrderDetail({ params }: { params: Promise<{ i
                 })}
               </div>
               <p className="text-[11px] text-[var(--color-ink-muted)] mt-3">
-                Le client reçoit une notification à chaque étape. À la livraison, les versements vendeurs sont créés
-                automatiquement.
+                Le client reçoit une notification à chaque étape.
               </p>
             </Card>
           )}
@@ -543,22 +540,6 @@ export default async function AdminOrderDetail({ params }: { params: Promise<{ i
             </Card>
           )}
 
-          {order.payouts.length > 0 && (
-            <Card>
-              <h2 className="font-display text-lg font-bold mb-2">Versements vendeurs</h2>
-              <ul className="flex flex-col gap-2 text-sm">
-                {order.payouts.map((p) => (
-                  <li key={p.id} className="flex items-center justify-between gap-2">
-                    <span className="truncate">{p.seller.shopName}</span>
-                    <span className="flex items-center gap-2 whitespace-nowrap">
-                      {money(p.amount)}
-                      <Badge tone={p.status === "PAYE" ? "success" : "warning"}>{p.status === "PAYE" ? "Payé" : "À verser"}</Badge>
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </Card>
-          )}
         </div>
       </div>
     </>

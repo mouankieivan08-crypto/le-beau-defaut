@@ -11,7 +11,7 @@ export const metadata: Metadata = { title: "Paramètres" };
 const GROUPS: { title: string; keys: string[] }[] = [
   { title: "Plateforme", keys: ["site.name", "site.tagline"] },
   { title: "Contact client", keys: ["contact.phone", "contact.whatsapp", "contact.email"] },
-  { title: "Commissions & livraison", keys: ["commission.default", "commission.sacs", "delivery.defaultFee", "returns.days"] },
+  { title: "Livraison & réclamations", keys: ["delivery.defaultFee", "returns.days"] },
   { title: "Paiements Mobile Money", keys: ["payment.mtn.merchant", "payment.airtel.merchant"] },
   { title: "Modération", keys: ["moderation.required"] },
 ];

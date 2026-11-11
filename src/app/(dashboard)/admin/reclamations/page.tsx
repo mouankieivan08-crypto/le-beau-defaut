@@ -53,15 +53,6 @@ export default async function AdminClaimsPage({ searchParams }: { searchParams: 
   const total = counts.reduce((s, c) => s + c._count, 0);
   const rate = deliveredCount ? ((total / deliveredCount) * 100).toFixed(1).replace(".", ",") : "0";
 
-  // Vendeurs les plus concernés : indicateur de qualité des annonces
-  const sellerIds = [...new Set(claims.flatMap((c) => (c.orderItem ? [c.orderItem.sellerId] : c.order.items.map((i) => i.sellerId))))];
-  const sellers = sellerIds.length
-    ? await prisma.sellerProfile.findMany({
-        where: { userId: { in: sellerIds } },
-        select: { userId: true, shopName: true },
-      })
-    : [];
-  const shopByUser = Object.fromEntries(sellers.map((s) => [s.userId, s.shopName]));
 
   const tabCount = (key: string) =>
     key === "TOUT" ? total : key === "A_TRAITER" ? (countBy.OUVERTE ?? 0) + (countBy.EN_EXAMEN ?? 0) : countBy[key] ?? 0;
@@ -110,9 +101,6 @@ export default async function AdminClaimsPage({ searchParams }: { searchParams: 
       ) : (
         <ul className="flex flex-col gap-4">
           {claims.map((c) => {
-            const shop = c.orderItem
-              ? shopByUser[c.orderItem.sellerId]
-              : [...new Set(c.order.items.map((i) => shopByUser[i.sellerId]))].filter(Boolean).join(", ");
             const open = ["OUVERTE", "EN_EXAMEN"].includes(c.status);
             return (
               <li key={c.id} className={`surface p-5 ${open ? "border-l-4 !border-l-[var(--color-danger)]" : ""}`}>
@@ -151,11 +139,7 @@ export default async function AdminClaimsPage({ searchParams }: { searchParams: 
                       <a href={`tel:${c.buyer.phone}`} className="inline-flex items-center gap-1.5 hover:text-[var(--color-ink)]">
                         <Icon name="phone" size={12} /> {phoneFR(c.buyer.phone)}
                       </a>
-                      {shop && (
-                        <span className="inline-flex items-center gap-1.5">
-                          <Icon name="home" size={12} /> {shop}
-                        </span>
-                      )}
+
                     </div>
 
                     {c.orderItem && (

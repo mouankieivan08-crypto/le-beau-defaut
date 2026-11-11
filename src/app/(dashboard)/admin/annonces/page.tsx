@@ -159,7 +159,7 @@ export default async function AdminProductsPage({
                             {p.title}
                           </Link>
                           <p className="text-[11px] text-[var(--color-ink-muted)]">
-                            <span className="font-mono">{p.reference}</span> · {p.seller.seller?.shopName} · {relativeFR(p.createdAt)}
+                            <span className="font-mono">{p.reference}</span> · {relativeFR(p.createdAt)}
                           </p>
                         </div>
                       </div>

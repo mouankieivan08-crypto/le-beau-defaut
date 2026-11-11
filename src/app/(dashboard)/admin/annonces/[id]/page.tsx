@@ -51,7 +51,6 @@ export default async function AdminProductReview({ params }: { params: Promise<{
     { ok: defectPhotos > 0, label: `${defectPhotos} photo(s) du défaut` },
     { ok: product.images.length >= 2, label: `${product.images.length} photo(s) au total` },
     { ok: product.description.length >= 80, label: `Description de ${product.description.length} caractères` },
-    { ok: product.seller.seller?.status === "ACTIF", label: `Boutique ${product.seller.seller?.status?.toLowerCase() ?? "inconnue"}` },
   ];
 
   return (
@@ -65,7 +64,7 @@ export default async function AdminProductReview({ params }: { params: Promise<{
           <p className="font-mono text-xs text-[var(--color-ink-muted)]">{product.reference}</p>
           <h1 className="font-display text-[26px] font-bold leading-tight">{product.title}</h1>
           <p className="text-sm text-[var(--color-ink-muted)] mt-1">
-            {product.seller.seller?.shopName} · {product.category.name} · déposée {relativeFR(product.createdAt)}
+            {product.category.name} · déposée {relativeFR(product.createdAt)}
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -184,7 +183,7 @@ export default async function AdminProductReview({ params }: { params: Promise<{
               <form action={rejectProductAction} className="flex flex-col gap-2 mt-5 pt-5 border-t border-[var(--color-sand)]">
                 <input type="hidden" name="productId" value={product.id} />
                 <label className="label" htmlFor="reason">
-                  Motif du refus (envoyé au vendeur)
+                  Motif (note interne)
                 </label>
                 <select
                   className="field"
@@ -208,7 +207,7 @@ export default async function AdminProductReview({ params }: { params: Promise<{
                   placeholder="Expliquez précisément ce qu'il faut corriger."
                 />
                 <button className="btn btn-outline w-full !text-[var(--color-danger)] !border-[var(--color-danger)]/40">
-                  <Icon name="close" size={14} /> Renvoyer au vendeur
+                  <Icon name="close" size={14} /> Remettre en brouillon
                 </button>
               </form>
             </Card>

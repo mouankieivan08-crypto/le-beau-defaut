@@ -56,12 +56,12 @@ export default async function AdminUsersPage({
 
   return (
     <>
-      <PageHeader title="Utilisateurs" subtitle="Clients, vendeurs, livreurs et administrateurs." />
+      <PageHeader title="Utilisateurs" subtitle="Clients, livreurs et administrateurs." />
 
       <div className="grid grid-cols-1 xl:grid-cols-[1fr_320px] gap-5 items-start">
         <div>
           <div className="flex gap-1.5 mb-4 overflow-x-auto no-scrollbar">
-            {[{ key: "", label: "Tous", n: byRole.reduce((s, r) => s + r._count, 0) }, ...Object.values(ROLES).map((r) => ({ key: r.key, label: r.label + "s", n: countBy[r.key] ?? 0 }))].map(
+            {[{ key: "", label: "Tous", n: byRole.reduce((s, r) => s + r._count, 0) }, ...Object.values(ROLES).filter((r) => r.key !== "VENDEUR").map((r) => ({ key: r.key, label: r.label + "s", n: countBy[r.key] ?? 0 }))].map(
               (t) => (
                 <Link
                   key={t.key}
@@ -116,13 +116,12 @@ export default async function AdminUsersPage({
                     </td>
                     <td>
                       <Badge tone={ROLE_TONE[u.role]}>{ROLES[u.role as keyof typeof ROLES]?.label}</Badge>
-                      {u.seller && <p className="text-[11px] text-[var(--color-ink-muted)] mt-0.5">{u.seller.shopName}</p>}
                     </td>
                     <td className="text-xs text-[var(--color-ink-muted)] whitespace-nowrap">
                       <p>Inscrit le {dateFR(u.createdAt)}</p>
                       <p>Connexion {u.lastLoginAt ? relativeFR(u.lastLoginAt) : "—"}</p>
                       <p>
-                        {u._count.orders} commande(s){u.role === "VENDEUR" ? ` · ${u._count.products} annonce(s)` : ""}
+                        {u._count.orders} commande(s)
                       </p>
                     </td>
                     <td>
@@ -136,7 +135,7 @@ export default async function AdminUsersPage({
                           <form action={setUserRoleAction} className="flex gap-1">
                             <input type="hidden" name="userId" value={u.id} />
                             <select name="role" defaultValue={u.role} className="field !py-1 !w-auto text-xs" aria-label="Rôle">
-                              {Object.values(ROLES).map((r) => (
+                              {Object.values(ROLES).filter((r) => r.key !== "VENDEUR").map((r) => (
                                 <option key={r.key} value={r.key}>
                                   {r.label}
                                 </option>
@@ -192,7 +191,7 @@ export default async function AdminUsersPage({
               <input name="email" type="email" placeholder="E-mail" className="field" required />
               <input name="phone" type="tel" placeholder="Téléphone" className="field" />
               <select name="role" className="field" defaultValue={role || "LIVREUR"}>
-                {Object.values(ROLES).map((r) => (
+                {Object.values(ROLES).filter((r) => r.key !== "VENDEUR").map((r) => (
                   <option key={r.key} value={r.key}>
                     {r.label}
                   </option>

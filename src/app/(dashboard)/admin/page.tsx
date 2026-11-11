@@ -316,18 +316,11 @@ export default async function AdminDashboard() {
       </div>
 
       {/* Autres choses à traiter */}
-      {(pendingProducts.length > 0 || pendingSellers.length > 0 || toAssign > 0 || openClaims > 0 || (pendingPayouts._count ?? 0) > 0) && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 mb-6">
+      {(pendingProducts.length > 0 || toAssign > 0 || openClaims > 0) && (
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
           <TodoLink href="/admin/reclamations" icon="shield" count={openClaims} label="réclamation(s) à trancher" />
           <TodoLink href="/admin/annonces?statut=EN_ATTENTE" icon="tag" count={pendingProducts.length} label="annonce(s) à valider" />
-          <TodoLink href="/admin/vendeurs?statut=EN_ATTENTE" icon="home" count={pendingSellers.length} label="boutique(s) à activer" />
           <TodoLink href="/admin/livraisons?statut=A_ASSIGNER" icon="truck" count={toAssign} label="livraison(s) sans livreur" />
-          <TodoLink
-            href="/admin/paiements"
-            icon="wallet"
-            count={pendingPayouts._count}
-            label={`versement(s) · ${moneyCompact(pendingPayouts._sum.amount ?? 0)} F`}
-          />
         </div>
       )}
 
@@ -338,13 +331,6 @@ export default async function AdminDashboard() {
           value={`${moneyCompact(gmv)} F`}
           icon="chart"
           delta={{ pct: deltaPct(gmv, gmvPrev), vs: "vs 30 j précédents" }}
-        />
-        <Stat
-          label="Commissions LBD"
-          value={`${moneyCompact(commission)} F`}
-          icon="wallet"
-          tone="gold"
-          delta={{ pct: deltaPct(commission, commissionPrev), vs: "vs 30 j précédents" }}
         />
         <Stat
           label="Commandes"
@@ -496,7 +482,7 @@ export default async function AdminDashboard() {
                     <div className="min-w-0 flex-1">
                       <p className="text-sm font-medium truncate">{p.title}</p>
                       <p className="text-[11px] text-[var(--color-ink-muted)] truncate">
-                        {p.seller.seller?.shopName} · {relativeFR(p.createdAt)}
+                        <span className="font-mono">{p.reference}</span> · {relativeFR(p.createdAt)}
                       </p>
                     </div>
                     <GradeBadge grade={p.defectGrade} size="sm" />
@@ -506,26 +492,6 @@ export default async function AdminDashboard() {
             </ul>
           )}
 
-          {pendingSellers.length > 0 && (
-            <div className="mt-5 pt-4 border-t border-[var(--color-sand)]">
-              <p className="label">Boutiques en attente</p>
-              <ul className="flex flex-col gap-2">
-                {pendingSellers.map((s) => (
-                  <li key={s.id} className="flex items-center justify-between gap-2 text-sm">
-                    <span className="truncate">
-                      {s.shopName}{" "}
-                      <span className="text-[var(--color-ink-muted)] text-xs">
-                        · {s.user.firstName} {s.user.lastName}
-                      </span>
-                    </span>
-                    <Link href="/admin/vendeurs?statut=EN_ATTENTE" className="btn btn-outline btn-sm">
-                      Examiner
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
         </Card>
       </div>
     </>
