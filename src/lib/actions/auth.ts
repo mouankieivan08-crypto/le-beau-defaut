@@ -185,12 +185,16 @@ export async function updateProfileAction(_prev: FormState, formData: FormData):
 
   // Changement d'adresse e-mail (= identifiant de connexion) : mot de passe exigé.
   const email = String(formData.get("email") || user.email).trim().toLowerCase();
-  const emailChanged = email !== user.email;
+  const emailChanged = email !== user.email.trim().toLowerCase();
   if (emailChanged) {
     if (!z.string().email().safeParse(email).success) return { error: "Adresse e-mail invalide." };
     const current = String(formData.get("currentPassword") || "");
     if (!current || !(await verifyPassword(current, user.passwordHash))) {
-      return { error: "Pour changer l'e-mail, indiquez votre mot de passe actuel." };
+      return {
+        error: current
+          ? `Mot de passe incorrect pour le compte ${user.email}. Vous êtes connecté avec ce compte : tapez son mot de passe, ou déconnectez-vous et connectez-vous avec l'autre adresse.`
+          : `Vous êtes connecté avec ${user.email}. Pour remplacer cette adresse, tapez votre mot de passe actuel dans la case prévue.`,
+      };
     }
     if (await prisma.user.findFirst({ where: { email, NOT: { id: user.id } } })) {
       return { error: "Cette adresse e-mail est déjà utilisée par un autre compte." };
