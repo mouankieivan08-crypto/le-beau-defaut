@@ -156,7 +156,7 @@ export default function CheckoutForm({
           {allPickup && (
             <div className="mt-4">
               <Alert tone="info">
-                Ces articles sont volumineux : retrait sur place. Le vendeur vous contacte pour fixer un
+                Ces articles sont volumineux : retrait sur place. Nous vous contactons pour fixer un
                 rendez-vous.
               </Alert>
             </div>

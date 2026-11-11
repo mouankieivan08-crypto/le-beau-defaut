@@ -71,7 +71,6 @@ export default function Footer() {
 
             <FooterCol title="Le Beau Défaut">
               <FooterLink href="/a-propos">Notre histoire</FooterLink>
-              <FooterLink href="/vendre">Vendre son stock</FooterLink>
               <FooterLink href="/inscription">Créer un compte</FooterLink>
               <FooterLink href="/aide">Aide & livraison</FooterLink>
               <FooterLink href="/identite">Identité visuelle</FooterLink>

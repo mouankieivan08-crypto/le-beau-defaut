@@ -17,16 +17,8 @@ const FAQ: { q: string; a: string }[] = [
     a: "Chez Le Beau Défaut, l'article est vendu par notre équipe. Nous reprenons le mobilier à petit défaut, nous le vérifions et nous le remettons en vente avec sa note de défaut affichée.",
   },
   {
-    q: "Pourquoi mon numéro a-t-il été masqué dans la messagerie ?",
-    a: "Parce que c'est ce qui vous protège. Une vente conclue par téléphone échappe au séquestre et à la réclamation : si l'article est faux ou n'arrive jamais, personne ne peut vous rembourser. Les numéros, adresses e-mail et liens sont donc retirés automatiquement des conversations entre particuliers.",
-  },
-  {
-    q: "Puis-je acheter et vendre avec le même compte ?",
-    a: "Oui. Depuis votre compte, « Ouvrir une boutique » ajoute un espace vente à côté de votre espace achat. Vous passez de l'un à l'autre par le menu de votre profil, sans vous déconnecter.",
-  },
-  {
-    q: "J'ai du mobilier à vendre. Comment faire ?",
-    a: "Nous achetons le lot, puis nous le revendons nous-mêmes. Écrivez-nous depuis la page « Vendre avec nous » ; nous venons voir les pièces et nous vous faisons une offre.",
+    q: "Qui vend les articles du site ?",
+    a: "Uniquement Le Beau Défaut. Il n'y a pas de vendeurs extérieurs : chaque article est à nous, inspecté et photographié par notre équipe, et c'est nous qui le livrons.",
   },
   {
     q: "Le défaut sera-t-il vraiment celui de la photo ?",
@@ -50,7 +42,7 @@ const FAQ: { q: string; a: string }[] = [
   },
   {
     q: "Le prix est-il négociable ?",
-    a: "Seulement quand l'annonce l'indique (« Prix négociable »). Utilisez alors le bouton « Poser une question » pour échanger avec le vendeur.",
+    a: "Seulement quand l'annonce l'indique (« Prix négociable »). Utilisez alors le bouton « Poser une question » pour en parler avec notre équipe.",
   },
 ];
 

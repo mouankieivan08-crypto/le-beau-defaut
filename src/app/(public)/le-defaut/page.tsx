@@ -119,7 +119,7 @@ export default async function DefectGuidePage() {
             {[
               ["Le type", "Rayure, tache, accroc, décoloration, pièce manquante, fin de série…"],
               ["La zone", "« Accoudoir gauche », « pied arrière », « doublure intérieure ». Jamais « un peu partout »."],
-              ["La sévérité", "De 1 (à peine visible) à 5 (marqué), sur une échelle identique pour tous les vendeurs."],
+              ["La sévérité", "De 1 (à peine visible) à 5 (marqué), sur une échelle identique pour tous nos articles."],
               ["La photo", "Au moins un gros plan du défaut, obligatoire pour publier."],
             ].map(([t, d], i) => (
               <li key={t} className="flex gap-3.5">
@@ -168,7 +168,7 @@ export default async function DefectGuidePage() {
         <h2 className="font-display text-[30px] font-bold mt-3">La garantie « défaut conforme »</h2>
         <p className="text-[var(--color-cream)]/75 max-w-xl mx-auto mt-3 leading-relaxed">
           Si l&apos;article reçu présente un défaut qui n&apos;était pas annoncé, signalez-le sous 3 jours : nous le
-          reprenons et vous remboursons. Le vendeur, lui, voit sa note baisser. C&apos;est ce qui rend la grille fiable.
+          reprenons et vous remboursons. C&apos;est ce qui rend la grille fiable.
         </p>
         <p className="font-script text-gilded text-3xl mt-6">Les petits défauts font de grandes économies</p>
         <Link href="/catalogue" className="btn btn-gold btn-lg mt-7">

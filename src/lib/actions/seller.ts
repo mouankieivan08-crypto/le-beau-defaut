@@ -394,65 +394,10 @@ export async function updateShopAction(_prev: State, formData: FormData): Promis
 /* ---------------------------- Ouvrir une boutique ---------------------------- */
 
 /**
- * N'importe quel compte peut se mettre à vendre sans cesser d'acheter.
- * On crée sa boutique, l'équipe la valide, et l'espace vente s'ouvre à côté de l'espace achat.
+ * Ouverture de boutique désactivée : Le Beau Défaut est le seul vendeur.
  */
-export async function becomeSellerAction(_prev: State, formData: FormData): Promise<State> {
-  const user = await requireUser("/devenir-vendeur");
-  if (user.seller) return { error: "Vous avez déjà une boutique." };
-
-  const shopName = String(formData.get("shopName") || "").trim();
-  const type = String(formData.get("type") || "PARTICULIER");
-  const city = String(formData.get("city") || "Brazzaville");
-  const contactPhone = String(formData.get("contactPhone") || "").trim();
-  const description = String(formData.get("description") || "").trim();
-  const mobileMoney = String(formData.get("mobileMoney") || "").trim();
-  const mobileMoneyOp = String(formData.get("mobileMoneyOp") || "") || null;
-
-  if (shopName.length < 2) return { error: "Donnez un nom à votre boutique." };
-  if (contactPhone.replace(/\D/g, "").length < 9) return { error: "Numéro de téléphone invalide." };
-
-  let shopSlug = slugify(shopName);
-  if (await prisma.sellerProfile.findUnique({ where: { shopSlug } })) {
-    shopSlug = `${shopSlug}-${Date.now().toString(36).slice(-4)}`;
-  }
-
-  await prisma.sellerProfile.create({
-    data: {
-      userId: user.id,
-      shopName,
-      shopSlug,
-      type,
-      city,
-      contactPhone,
-      description: description || null,
-      mobileMoney: mobileMoney || null,
-      mobileMoneyOp,
-      status: "EN_ATTENTE",
-    },
-  });
-
-  const admins = await prisma.user.findMany({ where: { role: "ADMIN" }, select: { id: true } });
-  await prisma.notification.createMany({
-    data: admins.map((a) => ({
-      userId: a.id,
-      type: "SYSTEME",
-      title: "Nouvelle boutique à activer",
-      body: `${shopName} (${city}) demande à vendre sur la plateforme de Le Beau Défaut.`,
-      link: "/admin/vendeurs?statut=EN_ATTENTE",
-    })),
-  });
-
-  await prisma.notification.create({
-    data: {
-      userId: user.id,
-      type: "SYSTEME",
-      title: "Boutique enregistrée",
-      body: "Nous vérifions votre boutique. Vous pourrez publier dès son activation.",
-      link: "/vendeur",
-    },
-  });
-
-  revalidatePath("/", "layout");
-  return { success: "Boutique enregistrée. Notre équipe la vérifie, en général sous 24 h ouvrées." };
+export async function becomeSellerAction(_prev: State, _formData: FormData): Promise<State> {
+  await requireUser("/catalogue");
+  // Le Beau Défaut est le seul vendeur : on n'ouvre plus de boutiques extérieures.
+  return { error: "Le Beau Défaut est le seul vendeur de la plateforme." };
 }

@@ -16,7 +16,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { path: "", priority: 1, freq: "daily" as const },
     { path: "catalogue", priority: 0.9, freq: "daily" as const },
     { path: "le-defaut", priority: 0.7, freq: "monthly" as const },
-    { path: "vendre", priority: 0.7, freq: "monthly" as const },
     { path: "a-propos", priority: 0.5, freq: "monthly" as const },
     { path: "aide", priority: 0.5, freq: "monthly" as const },
     { path: "identite", priority: 0.3, freq: "yearly" as const },
@@ -32,7 +31,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   // Seuls les articles réellement visibles sont proposés à Google : un article d'un
   // univers fermé, listé ici, deviendrait une page introuvable dans ses résultats.
-  const [products, categories, shops] = await Promise.all([
+  const [products, categories] = await Promise.all([
     prisma.product.findMany({
       where: PUBLISHED,
       select: { slug: true, updatedAt: true, images: { where: { isCover: true }, select: { url: true }, take: 1 } },
@@ -42,10 +41,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     prisma.category.findMany({
       where: { isActive: true, vertical: { in: VISIBLE_VERTICALS }, products: { some: PUBLISHED } },
       select: { slug: true },
-    }),
-    prisma.sellerProfile.findMany({
-      where: { status: "ACTIF", user: { products: { some: PUBLISHED } } },
-      select: { shopSlug: true, updatedAt: true },
     }),
   ]);
 
@@ -60,12 +55,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })),
     ...categories.map((c) => ({
       url: `${base}/catalogue?categorie=${c.slug}`,
-      changeFrequency: "weekly" as const,
-      priority: 0.6,
-    })),
-    ...shops.map((s) => ({
-      url: `${base}/boutique/${s.shopSlug}`,
-      lastModified: s.updatedAt,
       changeFrequency: "weekly" as const,
       priority: 0.6,
     })),

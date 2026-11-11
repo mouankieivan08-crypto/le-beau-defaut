@@ -114,7 +114,8 @@ export async function requireAdmin(nextPath?: string) {
 export async function requireSeller(nextPath?: string) {
   const user = await requireUser(nextPath);
   if (user.role === "ADMIN") return user;
-  if (!user.seller) redirect("/devenir-vendeur");
+  // Le Beau Défaut est le seul vendeur : l'espace vendeur n'est plus ouvert aux comptes extérieurs.
+  if (!user.seller?.isHouse) redirect("/compte");
   if (user.seller.status === "SUSPENDU") redirect("/compte");
   return user;
 }

@@ -17,7 +17,9 @@ export default function SaleModePanel({
   supplierName?: string | null;
   compact?: boolean;
 }) {
-  const house = saleMode === "MAISON";
+  // Le Beau Défaut est le seul vendeur de la plateforme : chaque article est à nous.
+  void saleMode;
+  const house = true;
 
   const points = house
     ? [

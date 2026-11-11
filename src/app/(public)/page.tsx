@@ -264,28 +264,28 @@ export default async function HomePage() {
         </ol>
       </section>
 
-      {/* ---------------------------- APPEL VENDEURS ---------------------------- */}
+      {/* ---------------------------- NOTRE PROMESSE ---------------------------- */}
       <section className="mx-auto max-w-[1280px] px-4 pb-6">
         <div className="surface overflow-hidden grid grid-cols-1 md:grid-cols-[1.3fr_1fr]">
           <div className="p-9 md:p-12">
             <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--color-gold-dark)] mb-2">
-              Vous avez du stock qui dort ?
+              Une seule boutique : la nôtre
             </p>
             <h2 className="font-display text-[30px] font-bold leading-tight">
-              Un défaut n&apos;est pas une perte.
+              Nous choisissons chaque pièce.
               <br />
-              C&apos;est une vente à trouver.
+              Vous achetez en confiance.
             </h2>
             <p className="text-[15px] text-[var(--color-ink-soft)] mt-4 leading-relaxed max-w-lg">
-              Magasins de meubles, importateurs, showrooms : confiez-nous vos invendus, vos retours client
-              et vos fins de série. Vous gardez la main sur le prix, nous prenons une commission simple sur
-              la vente. Pas d&apos;abonnement, pas de frais d&apos;entrée.
+              Tout ce que vous voyez sur le site appartient à Le Beau Défaut. Nous sélectionnons, inspectons et
+              photographions chaque article, défaut compris, puis nous le livrons nous-mêmes. Pas d&apos;intermédiaire,
+              pas de vendeur inconnu : vous traitez directement avec nous.
             </p>
             <ul className="flex flex-col gap-2 mt-6">
               {[
-                "Vous déposez l'annonce en 5 minutes depuis votre téléphone",
-                "Nous validons la cohérence défaut / prix sous 24 h",
-                "Vous êtes payé par Mobile Money après chaque livraison",
+                "Chaque défaut est montré en photo et noté A, B ou C",
+                "Paiement simple par Mobile Money, confirmé par notre équipe",
+                "Vous suivez votre commande jusqu'à la livraison",
               ].map((li) => (
                 <li key={li} className="flex items-start gap-2.5 text-sm text-[var(--color-ink-soft)]">
                   <Icon name="check-circle" size={16} className="mt-0.5 text-[var(--color-success)] shrink-0" />
@@ -297,8 +297,8 @@ export default async function HomePage() {
               <Link href="/catalogue" className="btn btn-gold btn-lg">
                 Découvrir le catalogue
               </Link>
-              <Link href="/vendre" className="btn btn-outline btn-lg">
-                Comment ça marche
+              <Link href="/le-defaut" className="btn btn-outline btn-lg">
+                Comment on note les défauts
               </Link>
             </div>
           </div>

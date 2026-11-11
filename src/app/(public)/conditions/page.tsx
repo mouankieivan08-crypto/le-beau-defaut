@@ -17,33 +17,34 @@ export default function TermsPage() {
     >
       <LegalSection title="1. Ce qu'est Le Beau Défaut">
         <p>
-          Une place de marché de {BRAND.city} qui assume le défaut. Chaque article porte un petit défaut,
+          La boutique en ligne de {BRAND.city} qui assume le défaut. Chaque article porte un petit défaut,
           photographié, situé et noté — c&apos;est ce qui justifie son prix.
         </p>
         <p>
-          <strong>Mobilier :</strong> les articles nous appartiennent, nous en sommes le vendeur.
+          Tous les articles du site appartiennent à Le Beau Défaut : nous en sommes le seul vendeur. Il
+          n&apos;y a pas de vendeurs tiers sur la plateforme.
         </p>
       </LegalSection>
 
       <LegalSection title="2. Votre compte">
         <p>
           Il faut avoir 18 ans, donner des informations exactes et garder son mot de passe pour soi. Un compte
-          sert à acheter, et à vendre dès que vous ouvrez une boutique.
+          sert à acheter et à suivre ses commandes.
         </p>
         <p>
-          Nous pouvons suspendre un compte qui publie de fausses annonces, dissimule un défaut, cherche à sortir
-          la transaction de la plateforme, ou harcèle un autre membre.
+          Nous pouvons suspendre un compte qui fournit de fausses informations, abuse des réclamations ou
+          manque de respect à notre équipe.
         </p>
       </LegalSection>
 
       <LegalSection title="3. La règle du défaut">
         <p>
-          Toute annonce indique le défaut : son type, sa zone, sa gravité, et au moins une photo qui le montre. Le
+          Chaque article indique son défaut : son type, sa zone, sa gravité, et au moins une photo qui le montre. Le
           grade (A, B ou C) impose une remise minimale, vérifiée automatiquement.
         </p>
         <p>
-          Cacher un défaut, c&apos;est le retrait de l&apos;annonce ; recommencer, c&apos;est la fermeture de la
-          boutique. <Link href="/le-defaut" className="underline underline-offset-2">Voir la grille</Link>.
+          Si un défaut n&apos;a pas été signalé, vous pouvez faire une réclamation après la livraison.{" "}
+          <Link href="/le-defaut" className="underline underline-offset-2">Voir la grille</Link>.
         </p>
       </LegalSection>
 

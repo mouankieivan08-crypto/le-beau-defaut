@@ -344,33 +344,17 @@ export default async function ProductPage({ params }: Props) {
 
           <SaleModePanel saleMode={product.saleMode} supplierName={product.supplierName} />
 
-          {/* Vendeur */}
-          {product.seller.seller && (
-            <div className="surface p-4">
-              <p className="label mb-2.5">{isHouseSale ? "Notre boutique" : "Vendeur"}</p>
-              <div className="flex items-center gap-3">
-                <Avatar
-                  first={product.seller.seller.shopName}
-                  last=""
-                  url={product.seller.seller.logoUrl}
-                  size={42}
-                />
-                <div className="min-w-0 flex-1">
-                  <p className="font-semibold text-sm truncate">{product.seller.seller.shopName}</p>
-                  <div className="flex items-center gap-2 text-xs text-[var(--color-ink-muted)]">
-                    {product.seller.seller.ratingCount > 0 ? (
-                      <Rating value={product.seller.seller.rating} count={product.seller.seller.ratingCount} size={11} />
-                    ) : (
-                      <span>Nouveau vendeur</span>
-                    )}
-                  </div>
-                </div>
-                <Link href={`/boutique/${product.seller.seller.shopSlug}`} className="btn btn-ghost btn-sm">
-                  Voir <Icon name="chevron-right" size={13} />
-                </Link>
+          {/* Vendeur : toujours Le Beau Défaut, seul vendeur de la plateforme */}
+          <div className="surface p-4">
+            <p className="label mb-2.5">Vendu par</p>
+            <div className="flex items-center gap-3">
+              <Avatar first="Le Beau" last="Défaut" url={null} size={42} />
+              <div className="min-w-0 flex-1">
+                <p className="font-semibold text-sm truncate">Le Beau Défaut</p>
+                <p className="text-xs text-[var(--color-ink-muted)]">Article inspecté et livré par notre équipe</p>
               </div>
             </div>
-          )}
+          </div>
         </div>
       </div>
 
