@@ -96,43 +96,65 @@ export default function MobileMenu({
           <div className="border-t border-[var(--color-sand)] mt-2 pt-2 flex flex-col gap-0.5">
             {isLoggedIn ? (
               <>
-                <Link
-                  href={homeForRole(role ?? "CLIENT")}
-                  onClick={fermer}
-                  className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg hover:bg-[var(--color-cream-deep)] text-sm font-medium"
-                >
-                  <Icon name="grid" size={16} /> Tableau de bord
-                </Link>
-                <Link
-                  href="/compte/commandes"
-                  onClick={fermer}
-                  className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg hover:bg-[var(--color-cream-deep)] text-sm font-medium"
-                >
-                  <Icon name="package" size={16} /> Mes commandes
-                </Link>
-                {canSell && (
-                  <Link
-                    href="/vendeur"
-                    onClick={fermer}
-                    className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg hover:bg-[var(--color-cream-deep)] text-sm font-medium"
-                  >
-                    <Icon name="tag" size={16} /> Espace vente
-                  </Link>
+                {role === "ADMIN" ? (
+                  <>
+                    <Link href="/admin" onClick={fermer} className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg hover:bg-[var(--color-cream-deep)] text-sm font-medium">
+                      <Icon name="grid" size={16} /> Administration
+                    </Link>
+                    <Link href="/admin/commandes" onClick={fermer} className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg hover:bg-[var(--color-cream-deep)] text-sm font-medium">
+                      <Icon name="package" size={16} /> Commandes clients
+                    </Link>
+                    <Link href="/admin/verifications" onClick={fermer} className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg hover:bg-[var(--color-cream-deep)] text-sm font-medium">
+                      <Icon name="wallet" size={16} /> Paiements à confirmer
+                    </Link>
+                    <Link href="/admin/support" onClick={fermer} className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg hover:bg-[var(--color-cream-deep)] text-sm font-medium">
+                      <Icon name="message" size={16} /> Support client
+                    </Link>
+                    <Link href="/admin/profil" onClick={fermer} className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg hover:bg-[var(--color-cream-deep)] text-sm font-medium">
+                      <Icon name="settings" size={16} /> Mon profil
+                    </Link>
+                  </>
+                ) : (
+                  <>
+                    <Link
+                      href={homeForRole(role ?? "CLIENT")}
+                      onClick={fermer}
+                      className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg hover:bg-[var(--color-cream-deep)] text-sm font-medium"
+                    >
+                      <Icon name="grid" size={16} /> Tableau de bord
+                    </Link>
+                    <Link
+                      href="/compte/commandes"
+                      onClick={fermer}
+                      className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg hover:bg-[var(--color-cream-deep)] text-sm font-medium"
+                    >
+                      <Icon name="package" size={16} /> Mes commandes
+                    </Link>
+                    {canSell && (
+                      <Link
+                        href="/vendeur"
+                        onClick={fermer}
+                        className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg hover:bg-[var(--color-cream-deep)] text-sm font-medium"
+                      >
+                        <Icon name="tag" size={16} /> Espace vente
+                      </Link>
+                    )}
+                    <Link
+                      href="/compte/favoris"
+                      onClick={fermer}
+                      className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg hover:bg-[var(--color-cream-deep)] text-sm font-medium"
+                    >
+                      <Icon name="heart" size={16} /> Mes favoris
+                    </Link>
+                    <Link
+                      href="/messages"
+                      onClick={fermer}
+                      className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg hover:bg-[var(--color-cream-deep)] text-sm font-medium"
+                    >
+                      <Icon name="message" size={16} /> Messages
+                    </Link>
+                  </>
                 )}
-                <Link
-                  href="/compte/favoris"
-                  onClick={fermer}
-                  className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg hover:bg-[var(--color-cream-deep)] text-sm font-medium"
-                >
-                  <Icon name="heart" size={16} /> Mes favoris
-                </Link>
-                <Link
-                  href="/messages"
-                  onClick={fermer}
-                  className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg hover:bg-[var(--color-cream-deep)] text-sm font-medium"
-                >
-                  <Icon name="message" size={16} /> Messages
-                </Link>
                 <a
                   href="/api/deconnexion"
                   className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg hover:bg-[var(--color-grade-c-bg)] text-sm font-medium text-[var(--color-danger)]"

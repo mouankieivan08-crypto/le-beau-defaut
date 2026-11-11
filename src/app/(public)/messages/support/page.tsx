@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
-import { requireUser } from "@/lib/auth";
+import { requireClientSpace } from "@/lib/auth";
 import { contactSupportAction } from "@/lib/actions/shop";
 import { SUPPORT_TOPICS, SUPPORT_WHATSAPP } from "@/lib/constants";
 import { phoneFR, waLink } from "@/lib/format";
@@ -13,7 +13,7 @@ export const metadata: Metadata = { title: "Contacter le service client" };
 
 export default async function SupportPage({ searchParams }: { searchParams: Promise<{ commande?: string; sujet?: string }> }) {
   const { commande = "", sujet = "" } = await searchParams;
-  const user = await requireUser("/messages/support");
+  const user = await requireClientSpace("/messages/support", "/admin/support");
 
   const orders = await prisma.order.findMany({
     where: { buyerId: user.id },

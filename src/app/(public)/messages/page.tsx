@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
-import { requireUser } from "@/lib/auth";
+import { requireClientSpace } from "@/lib/auth";
 import { relativeFR } from "@/lib/format";
 import { AccountLayout } from "@/components/AccountNav";
 import { Avatar, EmptyState } from "@/components/ui";
@@ -11,7 +11,7 @@ import { threadKind } from "@/lib/constants";
 export const metadata: Metadata = { title: "Messages" };
 
 export default async function MessagesPage() {
-  const user = await requireUser("/messages");
+  const user = await requireClientSpace("/messages", "/admin/support");
 
   const memberships = await prisma.threadMember.findMany({
     where: { userId: user.id },

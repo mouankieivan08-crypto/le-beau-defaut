@@ -3,12 +3,27 @@ import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/auth";
 import CheckoutForm from "@/components/CheckoutForm";
-import { Breadcrumb } from "@/components/ui";
+import Link from "next/link";
+import { Alert, Breadcrumb } from "@/components/ui";
 
 export const metadata: Metadata = { title: "Finaliser la commande" };
 
 export default async function CheckoutPage() {
   const user = await requireUser("/commande");
+
+  // Le compte administrateur gère les commandes des clients, il ne passe pas commande.
+  if (user.role === "ADMIN") {
+    return (
+      <div className="mx-auto max-w-[640px] px-4 py-12">
+        <Alert tone="info" title="Vous êtes connecté en administrateur">
+          Les commandes se passent avec un compte client. Depuis l&apos;administration, vous suivez et confirmez les commandes de vos clients.
+        </Alert>
+        <Link href="/admin/commandes" className="btn btn-primary mt-4">
+          Voir les commandes clients
+        </Link>
+      </div>
+    );
+  }
 
   const [items, zones, address, setting] = await Promise.all([
     prisma.cartItem.findMany({

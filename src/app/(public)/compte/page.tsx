@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
-import { requireUser } from "@/lib/auth";
+import { requireClientSpace } from "@/lib/auth";
 import { cardSelect, PUBLISHED } from "@/lib/queries";
 import { money, dateFR } from "@/lib/format";
 import { ORDER_STATUS } from "@/lib/constants";
@@ -15,7 +15,7 @@ export const metadata: Metadata = { title: "Mon compte" };
 const STEP_LABELS = ["Commandée", "Payée", "Confirmée", "Préparée", "En route", "Livrée"];
 
 export default async function AccountPage() {
-  const user = await requireUser("/compte");
+  const user = await requireClientSpace("/compte", "/admin");
 
   const [orders, favCount, stats, unread, favs] = await Promise.all([
     prisma.order.findMany({

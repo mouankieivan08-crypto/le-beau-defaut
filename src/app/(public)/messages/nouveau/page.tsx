@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
-import { requireUser } from "@/lib/auth";
+import { requireClientSpace } from "@/lib/auth";
 import { money } from "@/lib/format";
 import { sendMessageAction } from "@/lib/actions/shop";
 import { AccountLayout } from "@/components/AccountNav";
@@ -20,7 +20,7 @@ const SUGGESTIONS = [
 
 export default async function NewThreadPage({ searchParams }: { searchParams: Promise<{ produit?: string }> }) {
   const { produit } = await searchParams;
-  const user = await requireUser(`/messages/nouveau?produit=${produit ?? ""}`);
+  const user = await requireClientSpace(`/messages/nouveau?produit=${produit ?? ""}`, "/admin/support");
   if (!produit) redirect("/messages");
 
   const product = await prisma.product.findUnique({

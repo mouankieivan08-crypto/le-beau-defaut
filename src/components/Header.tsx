@@ -123,25 +123,47 @@ export default async function Header() {
                       </p>
                       <p className="text-[11px] text-[var(--color-ink-muted)] truncate">{user.email}</p>
                     </div>
-                    <Link href={homeForRole(user.role)} className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm hover:bg-[var(--color-cream-deep)]">
-                      <Icon name="grid" size={15} /> Mon tableau de bord
-                    </Link>
-                    <Link href="/compte/commandes" className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm hover:bg-[var(--color-cream-deep)]">
-                      <Icon name="package" size={15} /> Mes commandes
-                    </Link>
-
-                    {/* Un seul compte, deux espaces : on achète et on vend sans se déconnecter. */}
-                    <div className="border-t border-[var(--color-sand)] my-1 pt-1">
-                      <Link href="/compte" className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm hover:bg-[var(--color-cream-deep)]">
-                        <Icon name="cart" size={15} /> Espace achat
+                    {user.role === "ADMIN" ? (
+                      <>
+                        <Link href="/admin" className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm hover:bg-[var(--color-cream-deep)]">
+                          <Icon name="grid" size={15} /> Administration
+                        </Link>
+                        <Link href="/admin/commandes" className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm hover:bg-[var(--color-cream-deep)]">
+                          <Icon name="package" size={15} /> Commandes clients
+                        </Link>
+                        <Link href="/admin/verifications" className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm hover:bg-[var(--color-cream-deep)]">
+                          <Icon name="wallet" size={15} /> Paiements à confirmer
+                        </Link>
+                        <Link href="/admin/support" className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm hover:bg-[var(--color-cream-deep)]">
+                          <Icon name="message" size={15} /> Support client
+                        </Link>
+                        <Link href="/admin/profil" className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm hover:bg-[var(--color-cream-deep)]">
+                          <Icon name="settings" size={15} /> Mon profil
+                        </Link>
+                      </>
+                    ) : (
+                      <>
+                      <Link href={homeForRole(user.role)} className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm hover:bg-[var(--color-cream-deep)]">
+                        <Icon name="grid" size={15} /> Mon tableau de bord
                       </Link>
-                    </div>
-                    <Link href="/messages" className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm hover:bg-[var(--color-cream-deep)]">
-                      <Icon name="message" size={15} /> Messages
-                    </Link>
-                    <Link href="/compte/profil" className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm hover:bg-[var(--color-cream-deep)]">
-                      <Icon name="settings" size={15} /> Mon profil
-                    </Link>
+                      <Link href="/compte/commandes" className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm hover:bg-[var(--color-cream-deep)]">
+                        <Icon name="package" size={15} /> Mes commandes
+                      </Link>
+
+                      {/* Un seul compte, deux espaces : on achète et on vend sans se déconnecter. */}
+                      <div className="border-t border-[var(--color-sand)] my-1 pt-1">
+                        <Link href="/compte" className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm hover:bg-[var(--color-cream-deep)]">
+                          <Icon name="cart" size={15} /> Espace achat
+                        </Link>
+                      </div>
+                      <Link href="/messages" className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm hover:bg-[var(--color-cream-deep)]">
+                        <Icon name="message" size={15} /> Messages
+                      </Link>
+                      <Link href="/compte/profil" className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm hover:bg-[var(--color-cream-deep)]">
+                        <Icon name="settings" size={15} /> Mon profil
+                      </Link>
+                      </>
+                    )}
                     <form action={logoutAction} className="border-t border-[var(--color-sand)] mt-1 pt-1">
                       <button className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-[var(--color-danger)] hover:bg-[var(--color-grade-c-bg)]">
                         <Icon name="logout" size={15} /> Se déconnecter

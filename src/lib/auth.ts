@@ -91,6 +91,16 @@ export async function requireRole(roles: string[], nextPath?: string) {
   return user;
 }
 
+/**
+ * Pages de l'espace client (commandes, messages, profil…). Un administrateur n'est pas un
+ * client : il est renvoyé vers l'écran équivalent de l'administration.
+ */
+export async function requireClientSpace(nextPath: string, adminPath: string) {
+  const user = await requireUser(nextPath);
+  if (user.role === "ADMIN") redirect(adminPath);
+  return user;
+}
+
 export async function requireAdmin(nextPath?: string) {
   return requireRole(["ADMIN"], nextPath);
 }

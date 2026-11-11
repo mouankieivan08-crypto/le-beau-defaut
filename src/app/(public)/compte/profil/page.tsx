@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { requireUser } from "@/lib/auth";
+import { requireClientSpace } from "@/lib/auth";
 import { ROLES } from "@/lib/constants";
 import { dateFR } from "@/lib/format";
 import { AccountLayout } from "@/components/AccountNav";
@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui";
 export const metadata: Metadata = { title: "Mon profil" };
 
 export default async function ProfilePage() {
-  const user = await requireUser("/compte/profil");
+  const user = await requireClientSpace("/compte/profil", "/admin/profil");
 
   return (
     <AccountLayout active="/compte/profil" user={user}>

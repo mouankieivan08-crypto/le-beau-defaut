@@ -113,6 +113,8 @@ export default async function AdminOrderDetail({ params }: { params: Promise<{ i
   const pay = PAYMENT_STATUS[order.paymentStatus] ?? { label: order.paymentStatus, tone: "neutral" };
   const commission = order.items.reduce((s, i) => s + (i.lineTotal - i.sellerAmount), 0);
   const next = NEXT_STEPS[order.status] ?? [];
+  // Tant que le paiement n'est pas confirmé, la seule action principale est la carte de confirmation.
+  const mainStep = order.paymentStatus === "PAYE" ? next.find((n) => !["ANNULEE", "REMBOURSEE"].includes(n.status)) : undefined;
   const awaitingPayment = order.paymentStatus === "EN_ATTENTE" && !["ANNULEE", "REMBOURSEE"].includes(order.status);
   const phone = order.recipientPhone || order.buyer.phone;
   const wa = waLink(phone, `Bonjour ${order.buyer.firstName}, c'est Le Beau Défaut au sujet de votre commande ${order.reference} (${money(order.total)}).`);
@@ -159,17 +161,16 @@ export default async function AdminOrderDetail({ params }: { params: Promise<{ i
           <div className="flex items-center justify-between gap-3 flex-wrap mb-4">
             <div>
               <h2 className="font-display text-lg font-bold flex items-center gap-2">
-                <Icon name="wallet" size={18} className="text-[var(--color-gold-dark)]" /> Vérifier le paiement Mobile Money
+                <Icon name="wallet" size={18} className="text-[var(--color-gold-dark)]" /> Paiement du client à confirmer
               </h2>
               <p className="text-xs text-[var(--color-ink-muted)]">
-                Montant attendu : <strong className="text-[var(--color-ink)]">{money(order.total)}</strong> sur{" "}
-                {DEPOSIT_NUMBERS.map((n) => `${n.operator} ${n.display}`).join(" ou ")}
+                {order.buyer.firstName} {order.buyer.lastName} doit avoir payé <strong className="text-[var(--color-ink)]">{money(order.total)}</strong>. Vous avez vu la preuve ? Confirmez.
               </p>
             </div>
             {order.paymentDeclaredAt ? (
               <Badge tone="info">Preuve envoyée {relativeFR(order.paymentDeclaredAt)}</Badge>
             ) : (
-              <Badge tone="warning">Aucune preuve sur le site — voir WhatsApp</Badge>
+              <Badge tone="warning">Preuve à voir sur WhatsApp</Badge>
             )}
           </div>
 
@@ -187,7 +188,7 @@ export default async function AdminOrderDetail({ params }: { params: Promise<{ i
                 </a>
               ) : (
                 <div className="h-36 rounded-xl border border-dashed border-[var(--color-sand)] grid place-items-center text-xs text-[var(--color-ink-muted)] text-center p-3">
-                  Pas de capture sur le site. Le client l&apos;a peut-être envoyée sur WhatsApp.
+                  La preuve arrive sur WhatsApp.
                 </div>
               )}
               {order.paymentRef && (
@@ -201,52 +202,44 @@ export default async function AdminOrderDetail({ params }: { params: Promise<{ i
             </div>
 
             <div className="flex flex-col gap-4">
-              <Alert tone="info" title="Avant de confirmer">
-                Ouvrez le téléphone MTN ou Airtel et retrouvez le dépôt : bon montant, bon expéditeur. Une capture peut être
-                retouchée, seul le relevé fait foi.
-              </Alert>
-
               <form action={confirmDepositAction} className="flex flex-col gap-3">
                 <input type="hidden" name="orderId" value={order.id} />
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div>
-                    <label className="label" htmlFor="operator">
-                      Reçu sur
-                    </label>
-                    <select id="operator" name="operator" className="field" defaultValue="">
-                      <option value="">— Non précisé —</option>
-                      {DEPOSIT_NUMBERS.map((n) => (
-                        <option key={n.raw} value={`${n.operator} ${n.display}`}>
-                          {n.operator} · {n.display}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <div>
-                    <label className="label" htmlFor="transaction">
-                      N° de transaction
-                    </label>
-                    <input id="transaction" name="transaction" defaultValue={order.paymentRef ?? ""} className="field" placeholder="Ex. MP251110.1432.A12345" />
-                  </div>
-                </div>
-                <div>
-                  <label className="label" htmlFor="message">
-                    Message au client (facultatif)
-                  </label>
-                  <textarea
-                    id="message"
-                    name="message"
-                    rows={2}
-                    className="field"
-                    placeholder="Par défaut : « Paiement reçu… votre commande est confirmée, nous préparons la livraison. »"
-                  />
-                </div>
-                <button className="btn btn-lg !bg-[var(--color-grade-a)] !text-white">
-                  <Icon name="check-circle" size={17} /> Paiement vérifié — confirmer la commande
+                <button className="btn btn-lg w-full !bg-[var(--color-grade-a)] !text-white">
+                  <Icon name="check-circle" size={18} /> Confirmer le paiement et la commande
                 </button>
                 <p className="text-[11px] text-[var(--color-ink-muted)]">
-                  Le client reçoit aussitôt une notification « Commande confirmée ». La commande passe dans « À préparer ».
+                  Le client est notifié aussitôt : « Commande confirmée ». Vous gérez ensuite la préparation et la livraison ci-dessous.
                 </p>
+                <details>
+                  <summary className="text-xs text-[var(--color-ink-muted)] cursor-pointer">Ajouter un détail (facultatif)</summary>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
+                    <div>
+                      <label className="label" htmlFor="operator">
+                        Reçu sur
+                      </label>
+                      <select id="operator" name="operator" className="field" defaultValue="">
+                        <option value="">— Non précisé —</option>
+                        {DEPOSIT_NUMBERS.map((n) => (
+                          <option key={n.raw} value={`${n.operator} ${n.display}`}>
+                            {n.operator} · {n.display}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="label" htmlFor="transaction">
+                        N° de transaction
+                      </label>
+                      <input id="transaction" name="transaction" defaultValue={order.paymentRef ?? ""} className="field" />
+                    </div>
+                    <div className="sm:col-span-2">
+                      <label className="label" htmlFor="message">
+                        Message personnalisé au client
+                      </label>
+                      <textarea id="message" name="message" rows={2} className="field" placeholder="Laissez vide pour le message standard." />
+                    </div>
+                  </div>
+                </details>
               </form>
 
               <div className="flex flex-wrap gap-2 pt-3 border-t border-[var(--color-sand)]">
@@ -287,6 +280,18 @@ export default async function AdminOrderDetail({ params }: { params: Promise<{ i
       {st.step >= 0 && (
         <Card className="mb-5">
           <Steps current={st.step} labels={["Commandée", "Payée", "Confirmée", "Préparée", "En route", "Livrée"]} />
+          {mainStep && (
+            <form action={setOrderStatusAction} className="mt-4 pt-4 border-t border-[var(--color-sand)] flex items-center justify-between gap-3 flex-wrap">
+              <input type="hidden" name="orderId" value={order.id} />
+              <input type="hidden" name="status" value={mainStep.status} />
+              <p className="text-sm text-[var(--color-ink-muted)]">
+                Étape suivante — le client la verra dans son suivi et recevra une notification.
+              </p>
+              <button className="btn btn-primary">
+                <Icon name="arrow-right" size={15} /> {mainStep.label}
+              </button>
+            </form>
+          )}
         </Card>
       )}
 

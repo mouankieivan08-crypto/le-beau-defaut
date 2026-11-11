@@ -109,6 +109,7 @@ async function nextOrderReference() {
 
 export async function checkoutAction(_prev: { error?: string } | undefined, formData: FormData) {
   const user = await requireUser("/commande");
+  if (user.role === "ADMIN") return { error: "Le compte administrateur ne passe pas commande : utilisez un compte client." };
 
   const recipientName = String(formData.get("recipientName") || "").trim();
   const recipientPhone = String(formData.get("recipientPhone") || "").trim();

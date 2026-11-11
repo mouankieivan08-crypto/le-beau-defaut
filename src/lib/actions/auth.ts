@@ -183,9 +183,32 @@ export async function updateProfileAction(_prev: FormState, formData: FormData):
   });
   if (dup) return { error: "Ce numéro est déjà utilisé par un autre compte." };
 
-  await prisma.user.update({ where: { id: user.id }, data: parsed.data });
+  // Changement d'adresse e-mail (= identifiant de connexion) : mot de passe exigé.
+  const email = String(formData.get("email") || user.email).trim().toLowerCase();
+  const emailChanged = email !== user.email;
+  if (emailChanged) {
+    if (!z.string().email().safeParse(email).success) return { error: "Adresse e-mail invalide." };
+    const current = String(formData.get("currentPassword") || "");
+    if (!current || !(await verifyPassword(current, user.passwordHash))) {
+      return { error: "Pour changer l'e-mail, indiquez votre mot de passe actuel." };
+    }
+    if (await prisma.user.findFirst({ where: { email, NOT: { id: user.id } } })) {
+      return { error: "Cette adresse e-mail est déjà utilisée par un autre compte." };
+    }
+  }
+
+  const updated = await prisma.user.update({ where: { id: user.id }, data: { ...parsed.data, email } });
+  if (emailChanged) {
+    await createSession({
+      userId: updated.id,
+      email: updated.email,
+      role: updated.role,
+      firstName: updated.firstName,
+      lastName: updated.lastName,
+    });
+  }
   revalidatePath("/", "layout");
-  return { success: "Profil mis à jour." };
+  return { success: emailChanged ? `Profil mis à jour. Connectez-vous désormais avec ${email}.` : "Profil mis à jour." };
 }
 
 export async function changePasswordAction(_prev: FormState, formData: FormData): Promise<FormState> {

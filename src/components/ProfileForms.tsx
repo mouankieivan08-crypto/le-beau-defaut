@@ -29,7 +29,8 @@ export function ProfileForm({ profile }: { profile: Profile }) {
         </div>
         <div>
           <label className="label" htmlFor="email">E-mail</label>
-          <input id="email" value={profile.email} className="field opacity-60" disabled />
+          <input id="email" name="email" type="email" autoComplete="email" defaultValue={profile.email} className="field" required />
+          <p className="text-[11px] text-[var(--color-ink-muted)] mt-1">C&apos;est l&apos;adresse de connexion.</p>
         </div>
         <div>
           <label className="label" htmlFor="phone">Téléphone</label>
@@ -52,6 +53,11 @@ export function ProfileForm({ profile }: { profile: Profile }) {
             ))}
           </select>
         </div>
+      </div>
+
+      <div className="max-w-sm">
+        <label className="label" htmlFor="currentPasswordProfile">Mot de passe actuel (seulement si vous changez l&apos;e-mail)</label>
+        <input id="currentPasswordProfile" name="currentPassword" type="password" autoComplete="current-password" className="field" />
       </div>
 
       <div>

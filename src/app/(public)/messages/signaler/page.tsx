@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
-import { requireUser } from "@/lib/auth";
+import { requireClientSpace } from "@/lib/auth";
 import { reportProductAction } from "@/lib/actions/shop";
 import { REPORT_REASONS } from "@/lib/constants";
 import { money } from "@/lib/format";
@@ -15,7 +15,7 @@ export const metadata: Metadata = { title: "Signaler une annonce", robots: { ind
 
 export default async function ReportPage({ searchParams }: { searchParams: Promise<{ produit?: string }> }) {
   const { produit } = await searchParams;
-  const user = await requireUser(`/messages/signaler?produit=${produit ?? ""}`);
+  const user = await requireClientSpace(`/messages/signaler?produit=${produit ?? ""}`, "/admin/support?type=SIGNALEMENT");
   if (!produit) redirect("/messages");
 
   const product = await prisma.product.findUnique({

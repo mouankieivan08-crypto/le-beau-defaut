@@ -6,7 +6,7 @@ import EscrowPanel from "@/components/EscrowPanel";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
-import { requireUser } from "@/lib/auth";
+import { requireClientSpace } from "@/lib/auth";
 import { money, dateFR, dateTimeFR, phoneFR } from "@/lib/format";
 import {
   ORDER_STATUS,
@@ -39,7 +39,7 @@ export default async function OrderDetailPage({
 }) {
   const { id } = await params;
   const { nouveau } = await searchParams;
-  const user = await requireUser(`/compte/commandes/${id}`);
+  const user = await requireClientSpace(`/compte/commandes/${id}`, `/admin/commandes/${id}`);
 
   const order = await prisma.order.findUnique({
     where: { id },

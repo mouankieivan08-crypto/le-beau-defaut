@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
-import { requireUser } from "@/lib/auth";
+import { requireClientSpace } from "@/lib/auth";
 import { dateTimeFR, money } from "@/lib/format";
 import { sendMessageAction } from "@/lib/actions/shop";
 import { AccountLayout } from "@/components/AccountNav";
@@ -14,7 +14,7 @@ export const metadata: Metadata = { title: "Conversation" };
 
 export default async function ThreadPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const user = await requireUser(`/messages/${id}`);
+  const user = await requireClientSpace(`/messages/${id}`, `/admin/support/${id}`);
 
   const thread = await prisma.thread.findUnique({
     where: { id },

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
-import { requireUser } from "@/lib/auth";
+import { requireClientSpace } from "@/lib/auth";
 import { money, dateFR } from "@/lib/format";
 import { ORDER_STATUS, paymentMethodLabel } from "@/lib/constants";
 import { AccountLayout } from "@/components/AccountNav";
@@ -18,7 +18,7 @@ const FILTERS = [
 ];
 
 export default async function OrdersPage({ searchParams }: { searchParams: Promise<{ filtre?: string }> }) {
-  const user = await requireUser("/compte/commandes");
+  const user = await requireClientSpace("/compte/commandes", "/admin/commandes");
   const { filtre = "" } = await searchParams;
 
   const statusFilter =
