@@ -43,7 +43,7 @@ export default async function NewThreadPage({ searchParams }: { searchParams: Pr
       <Link href={`/produit/${product.slug}`} className="btn btn-ghost btn-sm mb-3 -ml-2">
         <Icon name="arrow-left" size={14} /> Retour à l&apos;article
       </Link>
-      <h1 className="font-display text-[28px] font-bold mb-5">Poser une question au vendeur</h1>
+      <h1 className="font-display text-[28px] font-bold mb-5">Poser une question sur cet article</h1>
 
       <div className="surface p-4 flex items-center gap-4 mb-5">
         {product.images[0] && (
@@ -56,7 +56,7 @@ export default async function NewThreadPage({ searchParams }: { searchParams: Pr
             <GradeBadge grade={product.defectGrade} size="sm" /> {product.defectSummary}
           </p>
           <p className="text-sm font-semibold mt-1">
-            {money(product.price)} · <span className="font-normal text-[var(--color-ink-muted)]">{product.seller.seller?.shopName}</span>
+            {money(product.price)}
           </p>
         </div>
       </div>

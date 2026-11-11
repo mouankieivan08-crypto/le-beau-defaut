@@ -136,15 +136,9 @@ export default function ProductCard({
               {product.quartier ? `${product.quartier}, ` : ""}
               {product.city}
             </span>
-            {product.saleMode === "MAISON" ? (
-              <span className="inline-flex items-center gap-1 text-[var(--color-gold-dark)] font-medium shrink-0">
-                <Icon name="sparkle" size={11} /> Notre stock
-              </span>
-            ) : (
-              product.seller?.seller?.shopName && (
-                <span className="truncate max-w-[45%] text-right">{product.seller.seller.shopName}</span>
-              )
-            )}
+            <span className="inline-flex items-center gap-1 text-[var(--color-gold-dark)] font-medium shrink-0">
+              <Icon name="sparkle" size={11} /> Notre stock
+            </span>
           </div>
         </div>
       </div>

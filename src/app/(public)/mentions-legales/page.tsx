@@ -17,7 +17,7 @@ export default function LegalNoticePage() {
     >
       <LegalSection title="Éditeur du site">
         <p>
-          <strong>{BRAND.name}</strong> — place de marché du mobilier à petit défaut, à {BRAND.city} (République du Congo).
+          <strong>{BRAND.name}</strong> — boutique en ligne de mobilier à petit défaut, à {BRAND.city} (République du Congo).
         </p>
         <p>
           Contact : <strong>{BRAND.email}</strong> · WhatsApp {phoneFR(DEPOSIT_NUMBERS[0].raw)}
@@ -46,18 +46,16 @@ export default function LegalNoticePage() {
       <LegalSection title="Propriété intellectuelle">
         <p>
           Le nom Le Beau Défaut, son monogramme, sa charte graphique et les textes du site appartiennent à
-          l&apos;éditeur. Les photographies d&apos;articles appartiennent à leurs vendeurs, qui autorisent leur
-          publication sur le site en les déposant.
+          l&apos;éditeur. Les photographies d&apos;articles sont réalisées par notre équipe.
         </p>
         <p>
-          Toute reprise du logo ou des contenus sans accord écrit est interdite. Un vendeur peut demander le
-          retrait de ses photographies à tout moment en nous écrivant.
+          Toute reprise du logo, des photographies ou des contenus sans accord écrit est interdite.
         </p>
       </LegalSection>
 
       <LegalSection title="Rôle de Le Beau Défaut dans les ventes">
         <p>
-          Les articles présentés sur le site appartiennent à Le Beau Défaut. Nous sommes le vendeur et nous répondons
+          Les articles présentés sur le site appartiennent à Le Beau Défaut. Nous les vendons directement et nous répondons
           de la conformité de ce qui est livré.
         </p>
       </LegalSection>

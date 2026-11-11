@@ -24,16 +24,11 @@ export default function PrivacyPage() {
           historique des étapes. Nécessaires à la vente, à la comptabilité et au suivi des réclamations.
         </p>
         <p>
-          <strong>Vos messages</strong> — les échanges avec un vendeur ou avec notre équipe, conservés pour
-          pouvoir trancher en cas de désaccord. Les numéros de téléphone, adresses e-mail et liens y sont
-          automatiquement masqués entre particuliers.
+          <strong>Vos messages</strong> — vos échanges avec notre équipe (questions, service client,
+          réclamations), conservés pour pouvoir vous répondre et régler un éventuel désaccord.
         </p>
         <p>
-          <strong>Vos photos</strong> — celles de vos annonces et celles jointes à une réclamation.
-        </p>
-        <p>
-          <strong>Si vous vendez</strong> — nom de boutique, numéro Mobile Money de versement, et selon le cas
-          RCCM et NIU.
+          <strong>Vos photos</strong> — celles que vous joignez à une réclamation ou à une preuve de paiement.
         </p>
         <p>
           Nous ne collectons aucune donnée bancaire : le paiement se fait par dépôt Mobile Money sur notre
@@ -62,8 +57,8 @@ export default function PrivacyPage() {
           <strong>Notre équipe</strong>, pour traiter les commandes, les livraisons et les réclamations.
         </p>
         <p>
-          <strong>Le vendeur</strong> d&apos;un article que vous achetez : votre prénom et le nécessaire à la
-          préparation. Votre numéro n&apos;est communiqué qu&apos;au livreur chargé de votre commande.
+          <strong>Le livreur</strong> chargé de votre commande : votre nom, votre adresse et votre numéro, pour
+          vous livrer. Personne d&apos;autre.
         </p>
         <p>
           <strong>Nos prestataires techniques</strong> : Vercel (hébergement du site) et Supabase (base de données

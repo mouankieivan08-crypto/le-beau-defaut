@@ -234,7 +234,7 @@ export default async function ProductPage({ params }: Props) {
             </Alert>
           ) : isOwner ? (
             <Alert tone="info" title="C'est votre annonce">
-              <Link href={`/vendeur/annonces/${product.id}`} className="underline font-medium">
+              <Link href={`/admin/annonces/${product.id}`} className="underline font-medium">
                 Modifier l&apos;annonce
               </Link>
             </Alert>

@@ -13,7 +13,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
   if (user) redirect(next && next.startsWith("/") ? next : homeForRole(user.role));
 
   return (
-    <AuthShell title="Bon retour parmi nous" subtitle="Connectez-vous pour retrouver vos favoris, vos commandes et votre boutique.">
+    <AuthShell title="Bon retour parmi nous" subtitle="Connectez-vous pour retrouver vos favoris et vos commandes.">
       <LoginForm next={next} />
     </AuthShell>
   );

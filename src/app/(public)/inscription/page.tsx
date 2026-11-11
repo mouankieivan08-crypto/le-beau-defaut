@@ -7,8 +7,7 @@ import AuthShell from "@/components/AuthShell";
 
 export const metadata: Metadata = { title: "Créer un compte" };
 
-export default async function RegisterPage({ searchParams }: { searchParams: Promise<{ type?: string }> }) {
-  const { type } = await searchParams;
+export default async function RegisterPage() {
   const user = await getCurrentUser();
   if (user) redirect(homeForRole(user.role));
 
@@ -17,7 +16,7 @@ export default async function RegisterPage({ searchParams }: { searchParams: Pro
       title="Rejoindre Le Beau Défaut"
       subtitle="Achetez malin, ou donnez une seconde chance à votre stock."
     >
-      <RegisterForm defaultType={type === "vendeur" ? "VENDEUR" : "CLIENT"} />
+      <RegisterForm />
     </AuthShell>
   );
 }

@@ -82,7 +82,7 @@ export default async function CartPage() {
                           {p.title}
                         </Link>
                         <p className="text-xs text-[var(--color-ink-muted)] mt-0.5">
-                          {p.seller.seller?.shopName} · {p.city}
+                          Le Beau Défaut · {p.city}
                         </p>
                       </div>
                       <GradeBadge grade={p.defectGrade} size="sm" />

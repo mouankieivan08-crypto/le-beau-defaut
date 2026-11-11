@@ -31,7 +31,7 @@ export default function Footer() {
               <Logo size={42} variant="full" onDark />
               <p className="font-script text-gilded text-xl mt-3">{BRAND.tagline}</p>
               <p className="text-sm text-[var(--color-cream)]/65 mt-4 max-w-xs leading-relaxed">
-                La marketplace congolaise qui assume le défaut : chaque article est photographié sous son
+                La boutique congolaise qui assume le défaut : chaque article est photographié sous son
                 mauvais angle, décrit sans détour, et vendu au juste prix.
               </p>
               <div className="flex items-center gap-3 mt-5 text-[var(--color-cream)]/60">

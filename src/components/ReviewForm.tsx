@@ -64,7 +64,7 @@ export default function ReviewForm({ productId, existing }: { productId: string;
         name="comment"
         rows={3}
         defaultValue={existing?.comment ?? ""}
-        placeholder="Votre commentaire (facultatif) — état à la réception, livraison, contact vendeur…"
+        placeholder="Votre commentaire (facultatif) — état à la réception, livraison, accueil…"
         className="field mb-4"
       />
 

@@ -22,7 +22,7 @@ export default async function TeamAccessPage({ searchParams }: { searchParams: P
   return (
     <AuthShell
       title="Accès équipe"
-      subtitle="Administration, boutique maison et livraisons. Cette page ne s'adresse pas aux clients."
+      subtitle="Administration et livraisons. Cette page ne s'adresse pas aux clients."
     >
       <LoginForm next={next} team />
     </AuthShell>

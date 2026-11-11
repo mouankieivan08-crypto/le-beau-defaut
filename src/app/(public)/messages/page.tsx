@@ -55,7 +55,7 @@ export default async function MessagesPage() {
             const name =
               threadKind(thread.subject) !== "QUESTION"
                 ? "Service client Le Beau Défaut"
-                : other?.seller?.shopName ?? `${other?.firstName ?? ""} ${other?.lastName ?? ""}`;
+                : other?.seller ? "Le Beau Défaut" : `${other?.firstName ?? ""} ${other?.lastName ?? ""}`;
             return (
               <li key={thread.id}>
                 <Link

@@ -40,7 +40,7 @@ export default async function ThreadPage({ params }: { params: Promise<{ id: str
   const otherName =
     threadKind(thread.subject) !== "QUESTION"
       ? "Service client Le Beau Défaut"
-      : other?.seller?.shopName ?? `${other?.firstName ?? ""} ${other?.lastName ?? ""}`;
+      : other?.seller ? "Le Beau Défaut" : `${other?.firstName ?? ""} ${other?.lastName ?? ""}`;
 
   return (
     <AccountLayout active="/messages" user={user}>

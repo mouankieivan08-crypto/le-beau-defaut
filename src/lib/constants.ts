@@ -222,7 +222,7 @@ export const PAYMENT_STATUS: Record<string, { label: string; tone: string }> = {
 export const CLAIM_TYPES = [
   { key: "DEFAUT_NON_ANNONCE", label: "Un défaut n'était pas annoncé", hint: "Une rayure, une tache ou une casse absente de la fiche." },
   { key: "ARTICLE_DIFFERENT", label: "L'article ne correspond pas", hint: "Couleur, matière, dimensions ou modèle différents." },
-  { key: "CASSE_TRANSPORT", label: "Article cassé au transport", hint: "Il est arrivé endommagé entre le vendeur et vous." },
+  { key: "CASSE_TRANSPORT", label: "Article cassé au transport", hint: "Il est arrivé endommagé pendant la livraison." },
   { key: "PIECE_MANQUANTE", label: "Il manque une pièce", hint: "Visserie, tablette, bandoulière, accessoire annoncé." },
   { key: "NON_LIVRE", label: "Je n'ai jamais reçu la commande", hint: "La commande est marquée livrée mais rien n'est arrivé." },
   { key: "AUTRE", label: "Autre problème", hint: "Décrivez-le en quelques lignes." },

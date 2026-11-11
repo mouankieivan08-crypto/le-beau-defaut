@@ -278,8 +278,8 @@ export default async function HomePage() {
             </h2>
             <p className="text-[15px] text-[var(--color-ink-soft)] mt-4 leading-relaxed max-w-lg">
               Tout ce que vous voyez sur le site appartient à Le Beau Défaut. Nous sélectionnons, inspectons et
-              photographions chaque article, défaut compris, puis nous le livrons nous-mêmes. Pas d&apos;intermédiaire,
-              pas de vendeur inconnu : vous traitez directement avec nous.
+              photographions chaque article, défaut compris, puis nous le livrons nous-mêmes : vous traitez
+              directement avec nous.
             </p>
             <ul className="flex flex-col gap-2 mt-6">
               {[

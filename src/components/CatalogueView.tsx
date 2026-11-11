@@ -57,7 +57,7 @@ export default async function CatalogueView({
   const activeFilters = [
     params.q && { label: `« ${params.q} »`, href: url({ q: "" }) },
     params.circuit && {
-      label: params.circuit === "MAISON" ? "Vendu par Le Beau Défaut" : "Entre particuliers",
+      label: "Vendu par Le Beau Défaut",
       href: url({ circuit: "" }),
     },
     params.grade && { label: `Grade ${params.grade}`, href: url({ grade: "" }) },
@@ -165,20 +165,6 @@ export default async function CatalogueView({
                 </div>
               </FilterBlock>
             )}
-
-            <FilterBlock title="Notre stock">
-              <div className="flex flex-col gap-1">
-                <FilterRadio name="circuit" value="" label="Peu importe" checked={!params.circuit} />
-                <FilterRadio
-                  name="circuit"
-                  value="MAISON"
-                  label="Le Beau Défaut"
-                  hint="Notre stock, notre garantie"
-                  count={f.circuits.MAISON}
-                  checked={params.circuit === "MAISON"}
-                />
-              </div>
-            </FilterBlock>
 
             <FilterBlock title="Le défaut">
               <div className="flex flex-col gap-1">

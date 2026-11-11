@@ -18,7 +18,7 @@ const FAQ: { q: string; a: string }[] = [
   },
   {
     q: "Qui vend les articles du site ?",
-    a: "Uniquement Le Beau Défaut. Il n'y a pas de vendeurs extérieurs : chaque article est à nous, inspecté et photographié par notre équipe, et c'est nous qui le livrons.",
+    a: "Le Beau Défaut. Chaque article est à nous, inspecté et photographié par notre équipe, et c'est nous qui le livrons.",
   },
   {
     q: "Le défaut sera-t-il vraiment celui de la photo ?",

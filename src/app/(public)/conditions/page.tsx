@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { BRAND, CLAIM_WINDOW_DAYS, DEFAULT_COMMISSION_PCT, ESCROW_RELEASE_DAYS } from "@/lib/constants";
+import { BRAND, CLAIM_WINDOW_DAYS } from "@/lib/constants";
 import { LegalShell, LegalSection } from "@/components/Legal";
 
 export const metadata: Metadata = {
@@ -21,8 +21,7 @@ export default function TermsPage() {
           photographié, situé et noté — c&apos;est ce qui justifie son prix.
         </p>
         <p>
-          Tous les articles du site appartiennent à Le Beau Défaut : nous en sommes le seul vendeur. Il
-          n&apos;y a pas de vendeurs tiers sur la plateforme.
+          Tous les articles du site appartiennent à Le Beau Défaut : vous achetez directement chez nous.
         </p>
       </LegalSection>
 
@@ -59,19 +58,14 @@ export default function TermsPage() {
           livraison, ni paiement sur place. Aucun prélèvement automatique n&apos;est possible depuis votre compte.
         </p>
         <p>
-          Une commande n&apos;est confirmée qu&apos;une fois le paiement vérifié par notre équipe, ou au moment de
-          la remise pour les paiements en espèces.
+          Une commande n&apos;est confirmée qu&apos;une fois le paiement Mobile Money vérifié par notre équipe.
         </p>
       </LegalSection>
 
-      <LegalSection title="5. Paiement et réception">
+      <LegalSection title="5. Suivi de la commande">
         <p>
-          Votre argent est conservé par Le Beau Défaut jusqu&apos;à la réception du meuble. Vous confirmez la réception
-          d&apos;un bouton ; sans réponse de votre part, le versement part automatiquement {ESCROW_RELEASE_DAYS} jours
-          après la livraison.
-        </p>
-        <p>
-          Si vous ouvrez une réclamation dans ce délai, l&apos;argent reste bloqué le temps que nous tranchions.
+          Une fois le paiement confirmé, vous suivez chaque étape depuis votre compte : confirmée, en préparation, en
+          route, livrée. Vous recevez une notification à chaque changement.
         </p>
       </LegalSection>
 
@@ -99,24 +93,9 @@ export default function TermsPage() {
         </p>
       </LegalSection>
 
-      <LegalSection title="8. Si vous vendez">
+      <LegalSection title="8. Responsabilité">
         <p>
-          Vous décrivez honnêtement le défaut, et vous préparez le meuble dès la commande. Notre commission est de
-          {DEFAULT_COMMISSION_PCT} % du prix de vente, prélevée uniquement quand la vente aboutit ; publier ne coûte rien.
-        </p>
-        <p>
-          Les échanges restent sur la plateforme. Une vente conclue en dehors nous prive de notre commission et nous
-          empêche de sécuriser la transaction.
-        </p>
-        <p>
-          Sont interdits : les produits volés, les armes, les médicaments, les animaux, et tout ce que la loi
-          congolaise interdit de vendre.
-        </p>
-      </LegalSection>
-
-      <LegalSection title="9. Responsabilité">
-        <p>
-          Nous répondons de la conformité de ce qui est livré. Nous sécurisons le paiement et arbitrons les litiges
+          Nous répondons de la conformité de ce qui est livré. Nous vérifions chaque paiement et traitons les réclamations
           avec le souci de transparence annoncé dans cette page.
         </p>
         <p>
@@ -125,7 +104,7 @@ export default function TermsPage() {
         </p>
       </LegalSection>
 
-      <LegalSection title="10. Modification et droit applicable">
+      <LegalSection title="9. Modification et droit applicable">
         <p>
           Ces conditions peuvent évoluer ; la date de mise à jour figure en haut de page. Les commandes en cours
           restent régies par la version acceptée au moment de l&apos;achat.
