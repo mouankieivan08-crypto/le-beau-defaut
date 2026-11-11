@@ -962,7 +962,7 @@ async function main() {
     ["site.tagline", "Les petits défauts font de grandes économies", "Signature"],
     ["contact.phone", "065018183", "Téléphone du service client"],
     ["contact.whatsapp", "065018183", "WhatsApp"],
-    ["contact.email", "beaudefaut@gmail.com", "E-mail de contact"],
+    ["contact.email", "lebeaudefaut@gmail.com", "E-mail de contact"],
     ["commission.default", "15", "Commission par défaut (%)"],
     ["commission.sacs", "20", "Commission sacs de luxe (%)"],
     ["delivery.defaultFee", "3000", "Frais de livraison hors zone (FCFA)"],
@@ -990,7 +990,7 @@ async function main() {
   console.log("→ Comptes…");
   const admin = await prisma.user.create({
     data: {
-      email: "admin@lebeaudefaut.cg", phone: "060000001", passwordHash: hash,
+      email: "lebeaudefaut@gmail.com", phone: "060000001", passwordHash: hash,
       firstName: "Ivan", lastName: "Mouanki", role: "ADMIN", city: "Brazzaville",
       isVerified: true, createdAt: daysAgo(120),
     },
@@ -1678,7 +1678,7 @@ async function main() {
   console.log("  Vendeur fourre-tout : vendeur@lebeaudefaut.cg");
   console.log("  Boutique maison  : maison@lebeaudefaut.cg   (equipe)");
   console.log("  Livreur          : livreur@lebeaudefaut.cg  (equipe)");
-  console.log("  Administration   : admin@lebeaudefaut.cg    (equipe, /acces-equipe)");
+  console.log("  Administration   : lebeaudefaut@gmail.com (equipe, /acces-equipe)");
 }
 
 main()

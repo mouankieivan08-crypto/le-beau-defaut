@@ -305,7 +305,7 @@ export const BRAND = {
   short: "LBD",
   tagline: "Les petits défauts font de grandes économies",
   pillars: ["Mobilier", "Décoration", "Qualité", "Prix raisonnable"],
-  email: "beaudefaut@gmail.com",
+  email: "lebeaudefaut@gmail.com",
   city: "Brazzaville",
 };
 
